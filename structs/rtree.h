@@ -5,23 +5,29 @@
 #include <vector>
 #include "figures.hpp"
 
+#define ORDER 3
 
 class Rtree{
   
-  public:
-    
-    bool insert(Figure);
-  
   private:
-    
-    void split();
-    
+
+    Figure myFigure;
     MBB minimum;
     
-    Rtree *first, *second, *third;
+    size_t cur_figs{};
+    Rtree* regions[ORDER];
     
-    Figure myFigure;
+    void split();
 
+  public:
+    
+    Rtree() = default;
+    Rtree(Figure);
+
+    Rtree* search(const Figure&);
+    
+    bool insert(Figure);
+    
 };
 
 
