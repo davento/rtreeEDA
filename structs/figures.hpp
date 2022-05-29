@@ -5,38 +5,48 @@
 
 
 struct Point{
-    int x,y;
+    int x, y;
+
 };
 
 struct MBB{
 
     //top left, bottom right
-    Point top_l, bottom_r;
+    Point topLeft, bottomRight;
 
 };
 
-struct figures{
+struct Figure{
 
     private:
+        
         std::vector<Point> points;
+        MBB bound;
 
     public:
 
-        MBB getMbb(){
+        Figure(Point& p){
+            // TODO: sdl input, overload == and != for the point struct
             
-            MBB mbb;
+            points.push_back(p);
+            bound.bottomRight.x = bound.topLeft.x = p.x;
+            bound.bottomRight.y = bound.topLeft.y = p.y;
+            Point other;
+            
+            //get other point from sdl input
+            
+            while(other != p){
 
-            Point tl;
-            Point br;
+                points.push_back(other);
+                
+                bound.topLeft.x = std::min(bound.topLeft.x, other.x);
+                bound.bottomRight.x = std::max(bound.bottomRight.x, other.x);
+                bound.topLeft.y = std::min(bound.topLeft.y, other.y);
+                bound.bottomRight.y = std::max(bound.bottomRight.y, other.y);
 
-            for(auto p: points){
-                tl.x = std::min(tl.x, p.x);
-                tl.y = std::min(tl.y, p.y);
+                // get other point in sdl
 
-                br.x = std::max(br.x, p.x);
-                br.y = std::max(br.y, p.y);
             }
-
         }
 
 };

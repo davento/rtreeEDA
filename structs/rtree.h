@@ -3,22 +3,25 @@
 
 
 #include <vector>
-#include "figures.h"
-
-struct Bound{
-  double topY, leftX;
-  double height, width;
-};
+#include "figures.hpp"
 
 
 class Rtree{
+  
   public:
-    bool insert(figure);
+    
+    bool insert(Figure);
+  
   private:
+    
     void split();
-    Bound minimum;
+    
+    MBB minimum;
+    
     Rtree *first, *second, *third;
-    std::vector<figure> figures;
+    
+    Figure myFigure;
+
 };
 
 
