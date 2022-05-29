@@ -11,7 +11,7 @@ Rtree* Rtree::search(const Figure& f){
 }
 
 void Rtree::split(){
-    
+
 }
 
 
@@ -24,5 +24,6 @@ bool Rtree::insert(Figure f){
     }
 
     this->node[cur_figs++] = &Rtree{f};
+    //update MBB
 }
 
