@@ -48,6 +48,13 @@ struct MBB{
         SDL_RenderDrawLine(renderer, rx, ty, rx , by);
     }
 
+    static MBB merge(const MBB& m1, const MBB& m2){
+        MBB res;
+        target.topLeft = Point::min(m1.topLeft, m2.topLeft);
+        target.bottomRight = Point::max(m1.bottomRight, m2.bottomRight);
+        return res;
+    }
+
     void clear(){
         topLeft = {40000,40000};
         bottomRight = {0,0};
