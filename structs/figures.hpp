@@ -24,6 +24,10 @@ struct Point{
         };
     }
 
+    Point(int pos_x, int pos_y): x(pos_x), y(pos_y){
+        
+    }
+
     friend bool operator==(const Point& left, const Point& other){
         return left.x == other.x && left.y == other.y;
     }
@@ -54,6 +58,8 @@ struct MBB{
     Point topLeft, bottomRight;
     
     MBB(): topLeft({40000,40000}), bottomRight({0,0}){}
+
+    
     void draw(SDL_Renderer* renderer) const {
         const int &lx = topLeft.x, &ty = topLeft.y, &rx = bottomRight.x, &by = bottomRight.y;
         SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);

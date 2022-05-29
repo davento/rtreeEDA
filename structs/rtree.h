@@ -7,13 +7,22 @@
 
 #define ORDER 3
 
+const int INF = 1e9+10;
+
+
+
+
+
+
+
 class Rtree{
   
   private:
 
 
-    Figure myFigure;
-    MBB minimum;
+    Figure* myFigure;
+    Rtree* father;
+    MBB bound;
     
     size_t cur_figs{};
     Rtree* regions[ORDER];
@@ -23,11 +32,13 @@ class Rtree{
   public:
     
     Rtree() = default;
-    Rtree(Figure);
+    Rtree(Figure*);
 
-    Rtree* search(const Figure&);
+    Rtree* search(Figure *);
+    Rtree* chooseSubtree(Figure *);
     
-    bool insert(Figure);
+    bool insert(Figure *);
+    inline bool isLeaf();
     
 };
 
