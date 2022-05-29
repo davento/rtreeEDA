@@ -11,6 +11,7 @@ class Rtree{
   
   private:
 
+
     Figure myFigure;
     MBB minimum;
     

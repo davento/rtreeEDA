@@ -35,7 +35,7 @@ bool Rtree::insert(Figure f){
         return true;
     }
 
-    this->regions[cur_figs++] = &Rtree{f};
-    //update MBB
+    this->node[cur_figs++] = &Rtree{f};
+    MBB::merge(this->minimum, f.bound);
 }
 
