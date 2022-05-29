@@ -24,6 +24,6 @@ bool Rtree::insert(Figure f){
     }
 
     this->node[cur_figs++] = &Rtree{f};
-    //update MBB
+    MBB::merge(this->minimum, f.bound);
 }
 

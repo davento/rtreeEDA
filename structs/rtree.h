@@ -11,11 +11,13 @@ class Rtree{
   
   private:
 
+
     Figure myFigure;
     MBB minimum;
     
     size_t cur_figs{};
     Rtree* node[ORDER];
+
     
     void split();
 

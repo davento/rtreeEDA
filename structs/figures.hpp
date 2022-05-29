@@ -7,12 +7,31 @@
 struct Point{
     int x, y;
 
+    static inline Point max(const Point &m1, const Point &m2){
+        return{
+            std::max(m1.x, m2.x),
+            std::max(m1.y, m2.y)
+        };
+    }
+
+    static inline Point min(const Point &m1, const Point &m2){
+        return{
+            std::min(m1.x, m2.x),
+            std::min(m1.y, m2.y)
+        };
+    }
+
 };
 
 struct MBB{
 
     //top left, bottom right
     Point topLeft, bottomRight;
+
+    static void  merge(MBB& target, const MBB& source){
+        target.topLeft = Point::min(target.topLeft, source.topLeft);
+        target.bottomRight = Point::max(target.bottomRight, source.bottomRight);
+    }
 
 };
 
@@ -22,6 +41,8 @@ struct Figure{
         
         std::vector<Point> points;
         MBB bound;
+
+        friend class Rtree;
 
     public:
 
