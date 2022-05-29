@@ -1,8 +1,11 @@
 #ifndef _FIGURES_HPP_
 #define _FIGURES_HPP_
 
+#include <SDL2/SDL_render.h>
 #include <vector>
-
+#include <SDL2/SDL.h>
+#include <cmath>
+#include <iostream>
 
 struct Point{
     int x, y;
@@ -21,12 +24,49 @@ struct Point{
         };
     }
 
+    friend bool operator==(const Point& left, const Point& other){
+        return left.x == other.x && left.y == other.y;
+    }
+    friend bool operator!=(const Point& left, const Point& other){
+        return !(left == other);
+    }
+
+    double length(const Point& other){
+        return std::sqrt(std::pow(other.x - x, 2) + std::pow(other.y - y, 2));
+    }
+
+    bool closeEnough(const Point& other){
+        const int RADIO = 4;
+        if(length(other) < RADIO*2)
+            return true;
+        return false;
+
+    }
+    void draw(SDL_Renderer* renderer) const {
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderDrawPoint(renderer, x, y);
+    }   
 };
 
 struct MBB{
 
     //top left, bottom right
     Point topLeft, bottomRight;
+    
+    MBB(): topLeft({40000,40000}), bottomRight({0,0}){}
+    void draw(SDL_Renderer* renderer) const {
+        const int &lx = topLeft.x, &ty = topLeft.y, &rx = bottomRight.x, &by = bottomRight.y;
+        SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+        SDL_RenderDrawLine(renderer, lx, ty, rx , ty);
+        SDL_RenderDrawLine(renderer, lx, ty, lx , by);
+        SDL_RenderDrawLine(renderer, lx, by, rx , by);
+        SDL_RenderDrawLine(renderer, rx, ty, rx , by);
+    }
+
+    void clear(){
+        topLeft = {40000,40000};
+        bottomRight = {0,0};
+    }
 
     static void  merge(MBB& target, const MBB& source){
         target.topLeft = Point::min(target.topLeft, source.topLeft);
@@ -44,30 +84,61 @@ struct Figure{
 
         friend class Rtree;
 
+    static inline Point max(const Point &m1, const Point &m2){
+        return{
+            std::max(m1.x, m2.x),
+            std::max(m1.y, m2.y)
+        };
+    }
+
+    static inline Point min(const Point &m1, const Point &m2){
+        return{
+            std::min(m1.x, m2.x),
+            std::min(m1.y, m2.y)
+        };
+    }
+        
+    void updateBound(const Point& newPoint){
+        bound.topLeft = min(bound.topLeft, newPoint);
+        bound.bottomRight = max(bound.bottomRight, newPoint);
+    }
+    
     public:
 
-        Figure(Point& p){
-            // TODO: sdl input, overload == and != for the point struct
-            
-            points.push_back(p);
-            bound.bottomRight.x = bound.topLeft.x = p.x;
-            bound.bottomRight.y = bound.topLeft.y = p.y;
-            Point other;
-            
-            //get other point from sdl input
-            
-            while(other != p){
+        Figure() = default; 
 
-                points.push_back(other);
-                
-                bound.topLeft.x = std::min(bound.topLeft.x, other.x);
-                bound.bottomRight.x = std::max(bound.bottomRight.x, other.x);
-                bound.topLeft.y = std::min(bound.topLeft.y, other.y);
-                bound.bottomRight.y = std::max(bound.bottomRight.y, other.y);
-
-                // get other point in sdl
+        bool addPoint(const Point& p){
+            if(!points.size()){
+                points.push_back(p);
+                updateBound(p);
+                return true;
 
             }
+            if(points[0].closeEnough(p)){
+                points.push_back(points[0]);
+                return false;
+            }
+            else{
+                points.push_back(p);
+                updateBound(p);
+                return true;
+            }
+            
+        }
+        void clear(){
+            points.clear();
+            bound.clear(); 
+        }
+
+        void draw(SDL_Renderer* renderer) const {
+            for(const auto& point: points)
+                point.draw(renderer);
+            if(points.size() <= 1)
+                return;
+            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+            for(size_t i = 0; i != points.size() - 1; i++)
+                SDL_RenderDrawLine(renderer, points[i].x, points[i].y, points[i+1].x, points[i+1].y);
+            bound.draw(renderer);
         }
 
 };
