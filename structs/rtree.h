@@ -15,7 +15,7 @@ class Rtree{
     MBB minimum;
     
     size_t cur_figs{};
-    Rtree* node[ORDER];
+    Rtree* regions[ORDER];
     
     void split();
 

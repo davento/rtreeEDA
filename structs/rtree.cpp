@@ -23,7 +23,7 @@ bool Rtree::insert(Figure f){
         return true;
     }
 
-    this->node[cur_figs++] = &Rtree{f};
+    this->regions[cur_figs++] = &Rtree{f};
     //update MBB
 }
 
