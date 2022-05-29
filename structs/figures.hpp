@@ -64,10 +64,10 @@ struct MBB{
     }
 
     static MBB merge(const MBB& m1, const MBB& m2){
-        MBB res;
+        MBB target;
         target.topLeft = Point::min(m1.topLeft, m2.topLeft);
         target.bottomRight = Point::max(m1.bottomRight, m2.bottomRight);
-        return res;
+        return target;
     }
 
     void clear(){
@@ -75,10 +75,6 @@ struct MBB{
         bottomRight = {0,0};
     }
 
-    static void  merge(MBB& target, const MBB& source){
-        target.topLeft = Point::min(target.topLeft, source.topLeft);
-        target.bottomRight = Point::max(target.bottomRight, source.bottomRight);
-    }
 
 };
 

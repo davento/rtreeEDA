@@ -6,12 +6,13 @@ Rtree::Rtree(Figure f):myFigure(f){
 
 
 Rtree* Rtree::search(const Figure& f){
-    //TODO
+    //TODO: search
     return {};
+
 }
 
 void Rtree::split(){
-
+    
 }
 
 
@@ -23,7 +24,7 @@ bool Rtree::insert(Figure f){
         MBB res = {INF, INF};
         int minP = INF;
         for(auto region : regions) {
-            MBB aux = merge(f.bound, region->minimum);
+            MBB aux = MBB::merge(f.bound, region->minimum);
             int l = aux.bottomRight.x-aux.topLeft.x;
             int w = aux.bottomRight.y-aux.topLeft.y;
             if(2*(l+w) <= minP) {
@@ -35,7 +36,7 @@ bool Rtree::insert(Figure f){
         return true;
     }
 
-    this->node[cur_figs++] = &Rtree{f};
+    this->regions[cur_figs++] = &Rtree{f};
     MBB::merge(this->minimum, f.bound);
 }
 
