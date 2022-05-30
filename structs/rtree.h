@@ -3,6 +3,7 @@
 
 
 #include <vector>
+#include <algorithm>
 #include "figures.hpp"
 
 #define ORDER 3
@@ -25,21 +26,39 @@ class Rtree{
     MBB bound;
     
     size_t cur_figs{};
-    Rtree* regions[ORDER];
+    std::vector<Rtree*> regions;
     
-    void split();
+    static std::pair<Rtree*, Rtree*> split(Rtree*);
+    void handleOverflow(Figure *f);
 
   public:
     
-    Rtree() = default;
+    Rtree(){
+      regions.reserve(ORDER + 1);
+    };
+    
+    Rtree(std::vector<Rtree*> reg, MBB mb): regions(reg.begin(), reg.end()),
+    bound(mb){
+      cur_figs = regions.size();
+    }
+
+    // this is only done if node is a 'figure node'
     Rtree(Figure*);
+    
 
     Rtree* search(Figure *);
     Rtree* chooseSubtree(Figure *);
     
     bool insert(Figure *);
     inline bool isLeaf();
-    
+
+    Rtree update(std::vector<Rtree*> reg, MBB mb){
+      regions = reg;
+      bound = mb;
+      cur_figs = regions.size();
+    }
+
+    MBB getBound(){ return bound;}
 };
 
 

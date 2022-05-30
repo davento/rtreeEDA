@@ -59,6 +59,24 @@ struct MBB{
     
     MBB(): topLeft({40000,40000}), bottomRight({0,0}){}
 
+    static MBB regionsMbb(std::vector<Rtree*> regions){
+        MBB res;
+        
+        for(auto region: regions){
+            res = merge(res, region->getBound());
+        }
+        return res;
+    }
+
+
+    int Perimeter(){
+        
+        int l = this->bottomRight.x-this->topLeft.x;
+        int w = this->bottomRight.y-this->topLeft.y;
+
+        return 2*(l+w);
+    }
+
     
     void draw(SDL_Renderer* renderer) const {
         const int &lx = topLeft.x, &ty = topLeft.y, &rx = bottomRight.x, &by = bottomRight.y;

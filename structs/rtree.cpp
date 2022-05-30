@@ -7,7 +7,7 @@ Rtree::Rtree(Figure* f):myFigure(f){
 }
 
 
-Rtree* Rtree::search(const Figure& f){
+Rtree* Rtree::search(Figure* f){
     //TODO: search
     return {};
 }
@@ -18,11 +18,11 @@ inline bool Rtree::isLeaf(){
 }
 
 //gets the node that
-Rtree *Rtree::chooseSubtree(const Figure& f){
+Rtree *Rtree::chooseSubtree(Figure* f){
 
     //if node is a figure node
     //return to region node (figure->father)
-    if(this->myFigure != nullptr) return this->father;
+    if(this->isLeaf()) return this;
 
     MBB res ;
 
@@ -31,7 +31,7 @@ Rtree *Rtree::chooseSubtree(const Figure& f){
     int pos = 0;
     //choose region with minimum perimeter
     for(auto region : regions) {
-        MBB aux = MBB::merge(f.bound, region->bound);
+        MBB aux = MBB::merge(f->bound, region->bound);
         int l = aux.bottomRight.x-aux.topLeft.x;
         int w = aux.bottomRight.y-aux.topLeft.y;
         if(2*(l+w) <= minP) {
@@ -45,15 +45,77 @@ Rtree *Rtree::chooseSubtree(const Figure& f){
     return regions[pos];
 }
 
-void Rtree::split(){
+std::pair<Rtree*, Rtree*> Rtree::split(Rtree* u){
+    int m = u->cur_figs;
     
+    //sort by x
+    sort(u->regions.begin(), u->regions.end(),
+    [](const Rtree* m1, const Rtree* m2){
+        return m1->myFigure->bound.topLeft.x < m2->myFigure->bound.topLeft.x;
+    });
+
+
+    //u anb u' resulting of the split
+    Rtree* v = new Rtree;
+    Rtree* p = new Rtree;
+
+    std::vector<Rtree*> s1;
+    std::vector<Rtree*> s2;
+
+    MBB m1;
+    MBB m2;
+    
+    for( int i = ceil(m * 0.4); i < m - ceil(m * 0.4); i++){
+        // s1 = first i regions (points)
+        // s2 = the other i regions (points)
+        s1 = {u->regions.begin(), u->regions.begin() + i};
+        s2 = {u->regions.begin()+i , u->regions.end() };
+
+        //get mbb and choose minimum
+        auto t1 = MBB::regionsMbb(s1);
+        auto t2 = MBB::regionsMbb(s2);
+
+        if(t1.Perimeter() < m1.Perimeter()) {m1 = t1; v->update(s1,m1);}
+        if(t2.Perimeter() < m2.Perimeter()) {m1 = t1; p->update(s2,m2);}
+    }
+
+    //same thing but with y
+    sort(u->regions.begin(), u->regions.end(),
+    [](const Rtree* m1, const Rtree* m2){
+        return m1->myFigure->bound.topLeft.y < m2->myFigure->bound.topLeft.y;
+    });
+
+
+   for( int i = ceil(m * 0.4); i < m - ceil(m * 0.4); i++){
+        // s1 = first i regions (points)
+        // s2 = the other i regions (points)
+        s1 = {u->regions.begin(), u->regions.begin() + i};
+        s2 = {u->regions.begin()+i , u->regions.end() };
+
+        //get mbb and choose minimum
+        auto t1 = MBB::regionsMbb(s1);
+        auto t2 = MBB::regionsMbb(s2);
+
+        if(t1.Perimeter() < m1.Perimeter()) {m1 = t1; v->update(s1,m1);}
+        if(t2.Perimeter() < m2.Perimeter()) {m1 = t1; p->update(s2,m2);}
+    }
+
+    return {v,p};
 }
 
+
+void Rtree::handleOverflow(Figure *f){
+
+    Rtree* u, *v;
+    auto pr = Rtree::split(this);
+    u = pr.first;
+    v = pr.second;
+
+}
 
 bool Rtree::insert(Figure *f){
 
     if(!this->isLeaf()){
-        
         return this->chooseSubtree(f)->insert(f);
     }
 
@@ -61,25 +123,17 @@ bool Rtree::insert(Figure *f){
     
     //if overflow
     if(cur->cur_figs >= ORDER){
-        // choose subtree
-        MBB res ;
-
-        int minP = INF;
-        for(auto region : regions) {
-            MBB aux = MBB::merge(f->bound, region->bound);
-            int l = aux.bottomRight.x-aux.topLeft.x;
-            int w = aux.bottomRight.y-aux.topLeft.y;
-            if(2*(l+w) <= minP) {
-                minP = 2*(l+w);
-                res = aux;
-            }
-        }
-
+        
+        this->regions.push_back(new Rtree{f});
+        this->cur_figs++;        
+        this->handleOverflow(f);
+        
         return true;
     }
 
     //else insert
-    this->regions[cur_figs++] = new Rtree{f};
+    this->regions.push_back(new Rtree{f});
+    this->cur_figs++;
     this->bound = MBB::merge(this->bound, f->bound);
     return true;
 }
