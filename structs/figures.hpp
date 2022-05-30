@@ -59,15 +59,6 @@ struct MBB{
     
     MBB(): topLeft({40000,40000}), bottomRight({0,0}){}
 
-    static MBB regionsMbb(std::vector<Rtree*> regions){
-        MBB res;
-        
-        for(auto region: regions){
-            res = merge(res, region->getBound());
-        }
-        return res;
-    }
-
 
     int Perimeter(){
         
@@ -79,6 +70,8 @@ struct MBB{
 
     
     void draw(SDL_Renderer* renderer) const {
+        if(topLeft.x == 40000 && topLeft.y == 40000)
+            return;
         const int &lx = topLeft.x, &ty = topLeft.y, &rx = bottomRight.x, &by = bottomRight.y;
         SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
         SDL_RenderDrawLine(renderer, lx, ty, rx , ty);
@@ -132,8 +125,9 @@ struct Figure{
     
     public:
 
-        Figure() = default; 
+        Figure(){}; 
 
+        MBB getBound() const { return bound; }
         bool addPoint(const Point& p){
             if(!points.size()){
                 points.push_back(p);
@@ -158,7 +152,9 @@ struct Figure{
         }
 
         void draw(SDL_Renderer* renderer) const {
-            for(const auto& point: points)
+            if(!points.size())
+                return;
+            for(const auto& point: points) 
                 point.draw(renderer);
             if(points.size() <= 1)
                 return;

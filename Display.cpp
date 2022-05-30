@@ -17,6 +17,8 @@ bool Display::initialize(double dim){
     }
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     isRunning = true;
+    
+    r = new Rtree;
 
     return true;
 }
@@ -48,7 +50,8 @@ void Display::processInputs(){
                     SDL_GetMouseState(&x, &y);
                     if(event.button.button == SDL_BUTTON_LEFT){
                        if(!fig.addPoint({x,y})){
-                           figures.push_back(fig);
+                           //figures.push_back(fig);
+                           r->insert(&fig);
                            fig.clear();
                        }
                     }
@@ -72,7 +75,8 @@ void Display::generateOutput(){
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
     fig.draw(renderer);
-    for(const auto& figure: figures)
-        figure.draw(renderer);
+    //for(const auto& figure: figures)
+    //    figure.draw(renderer);
+    r->draw(renderer);
     SDL_RenderPresent(renderer);
 }

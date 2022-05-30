@@ -2,7 +2,7 @@
 
 
 
-Rtree::Rtree(Figure* f):myFigure(f){
+Rtree::Rtree(Figure* f){
     
 }
 
@@ -13,9 +13,7 @@ Rtree* Rtree::search(Figure* f){
 }
 
 
-inline bool Rtree::isLeaf(){
-    return this->regions[0]->myFigure != nullptr;
-}
+
 
 //gets the node that
 Rtree *Rtree::chooseSubtree(Figure* f){
@@ -49,9 +47,9 @@ std::pair<Rtree*, Rtree*> Rtree::split(Rtree* u){
     int m = u->cur_figs;
     
     //sort by x
-    sort(u->regions.begin(), u->regions.end(),
-    [](const Rtree* m1, const Rtree* m2){
-        return m1->myFigure->bound.topLeft.x < m2->myFigure->bound.topLeft.x;
+    sort(u->myFigures.begin(), u->myFigures.end(),
+    [](const Figure* m1, const Figure* m2){
+        return m1->bound.topLeft.x < m2->bound.topLeft.x;
     });
 
 
@@ -72,17 +70,17 @@ std::pair<Rtree*, Rtree*> Rtree::split(Rtree* u){
         s2 = {u->regions.begin()+i , u->regions.end() };
 
         //get mbb and choose minimum
-        auto t1 = MBB::regionsMbb(s1);
-        auto t2 = MBB::regionsMbb(s2);
+        auto t1 = Rtree::regionsMbb(s1);
+        auto t2 = Rtree::regionsMbb(s2);
 
         if(t1.Perimeter() < m1.Perimeter()) {m1 = t1; v->update(s1,m1);}
         if(t2.Perimeter() < m2.Perimeter()) {m1 = t1; p->update(s2,m2);}
     }
 
     //same thing but with y
-    sort(u->regions.begin(), u->regions.end(),
-    [](const Rtree* m1, const Rtree* m2){
-        return m1->myFigure->bound.topLeft.y < m2->myFigure->bound.topLeft.y;
+    sort(u->myFigures.begin(), u->myFigures.end(),
+    [](const Figure* m1, const Figure* m2){
+        return m1->bound.topLeft.y < m2->bound.topLeft.y;
     });
 
 
@@ -93,8 +91,8 @@ std::pair<Rtree*, Rtree*> Rtree::split(Rtree* u){
         s2 = {u->regions.begin()+i , u->regions.end() };
 
         //get mbb and choose minimum
-        auto t1 = MBB::regionsMbb(s1);
-        auto t2 = MBB::regionsMbb(s2);
+        auto t1 = Rtree::regionsMbb(s1);
+        auto t2 = Rtree::regionsMbb(s2);
 
         if(t1.Perimeter() < m1.Perimeter()) {m1 = t1; v->update(s1,m1);}
         if(t2.Perimeter() < m2.Perimeter()) {m1 = t1; p->update(s2,m2);}
@@ -110,6 +108,21 @@ void Rtree::handleOverflow(Figure *f){
     auto pr = Rtree::split(this);
     u = pr.first;
     v = pr.second;
+    if(!u->father){
+        Rtree* root = new Rtree;
+        root->regions.push_back(u);
+        root->regions.push_back(v);
+    }
+    else{
+        Rtree* w = u->father;
+        w->bound = MBB::merge(w->bound, v->bound);
+        w->regions.push_back(v);
+        if(w->regions.size() > ORDER){
+            w->handleOverflow(f);
+        }
+    }
+
+
 
 }
 
@@ -122,19 +135,22 @@ bool Rtree::insert(Figure *f){
     Rtree* cur = this;
     
     //if overflow
-    if(cur->cur_figs >= ORDER){
+    if(myFigures.size() == ORDER){
         
-        this->regions.push_back(new Rtree{f});
-        this->cur_figs++;        
+        myFigures.push_back(new Figure(*f));
+        ++cur_figs;        
         this->handleOverflow(f);
         
         return true;
     }
 
     //else insert
-    this->regions.push_back(new Rtree{f});
-    this->cur_figs++;
+    //this->regions.push_back(new Rtree{f})
+    myFigures.push_back(new Figure(*f));
+    ++cur_figs;
     this->bound = MBB::merge(this->bound, f->bound);
+    //this->myFigure = f;
     return true;
+
 }
 
