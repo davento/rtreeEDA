@@ -2,21 +2,10 @@
 
 
 
-Rtree::Rtree(Figure* f){
-    
-}
-
-
-Rtree* Rtree::search(Figure* f){
-    //TODO: search
-    return {};
-}
-
-
 
 
 //gets the node that
-Rtree *Rtree::chooseSubtree(Figure* f){
+RNode* RNode::chooseSubtree(Figure* f){
 
     //if node is a figure node
     //return to region node (figure->father)
@@ -29,7 +18,7 @@ Rtree *Rtree::chooseSubtree(Figure* f){
     int pos = 0;
     //choose region with minimum perimeter
     for(auto region : regions) {
-        MBB aux = MBB::merge(f->bound, region->bound);
+        MBB aux = MBB::merge(f->getBound(), region->bound);
         int l = aux.bottomRight.x-aux.topLeft.x;
         int w = aux.bottomRight.y-aux.topLeft.y;
         if(2*(l+w) <= minP) {
@@ -43,22 +32,22 @@ Rtree *Rtree::chooseSubtree(Figure* f){
     return regions[pos];
 }
 
-std::pair<Rtree*, Rtree*> Rtree::split(Rtree* u){
+std::pair<RNode*, RNode*> RNode::split(RNode* u){
     int m = u->cur_figs;
     
     //sort by x
     sort(u->myFigures.begin(), u->myFigures.end(),
     [](const Figure* m1, const Figure* m2){
-        return m1->bound.topLeft.x < m2->bound.topLeft.x;
+        return m1->getBound().topLeft.x < m2->getBound().topLeft.x;
     });
 
 
     //u anb u' resulting of the split
-    Rtree* v = new Rtree;
-    Rtree* p = new Rtree;
+    RNode* v = new RNode;
+    RNode* p = new RNode;
 
-    std::vector<Rtree*> s1;
-    std::vector<Rtree*> s2;
+    std::vector<RNode*> s1;
+    std::vector<RNode*> s2;
 
     MBB m1;
     MBB m2;
@@ -70,8 +59,8 @@ std::pair<Rtree*, Rtree*> Rtree::split(Rtree* u){
         s2 = {u->regions.begin()+i , u->regions.end() };
 
         //get mbb and choose minimum
-        auto t1 = Rtree::regionsMbb(s1);
-        auto t2 = Rtree::regionsMbb(s2);
+        auto t1 = RNode::regionsMbb(s1);
+        auto t2 = RNode::regionsMbb(s2);
 
         if(t1.Perimeter() < m1.Perimeter()) {m1 = t1; v->update(s1,m1);}
         if(t2.Perimeter() < m2.Perimeter()) {m1 = t1; p->update(s2,m2);}
@@ -80,7 +69,7 @@ std::pair<Rtree*, Rtree*> Rtree::split(Rtree* u){
     //same thing but with y
     sort(u->myFigures.begin(), u->myFigures.end(),
     [](const Figure* m1, const Figure* m2){
-        return m1->bound.topLeft.y < m2->bound.topLeft.y;
+        return m1->getBound().topLeft.y < m2->getBound().topLeft.y;
     });
 
 
@@ -91,8 +80,8 @@ std::pair<Rtree*, Rtree*> Rtree::split(Rtree* u){
         s2 = {u->regions.begin()+i , u->regions.end() };
 
         //get mbb and choose minimum
-        auto t1 = Rtree::regionsMbb(s1);
-        auto t2 = Rtree::regionsMbb(s2);
+        auto t1 = RNode::regionsMbb(s1);
+        auto t2 = RNode::regionsMbb(s2);
 
         if(t1.Perimeter() < m1.Perimeter()) {m1 = t1; v->update(s1,m1);}
         if(t2.Perimeter() < m2.Perimeter()) {m1 = t1; p->update(s2,m2);}
@@ -102,37 +91,44 @@ std::pair<Rtree*, Rtree*> Rtree::split(Rtree* u){
 }
 
 
-void Rtree::handleOverflow(Figure *f){
+MBB RNode::regionsMbb( std::vector<RNode*> regions){
+    MBB res;
+    for(auto region: regions){
+        res = MBB::merge(res, region->bound);
+    }
+    return res;
+}
 
-    Rtree* u, *v;
-    auto pr = Rtree::split(this);
+
+void RNode::handleOverflow(Figure *f){
+
+    RNode* u, *v;
+    auto pr = RNode::split(this);
     u = pr.first;
     v = pr.second;
+    
     if(!u->father){
-        Rtree* root = new Rtree;
+        RNode* root = new RNode;
         root->regions.push_back(u);
         root->regions.push_back(v);
     }
     else{
-        Rtree* w = u->father;
+        RNode* w = u->father;
         w->bound = MBB::merge(w->bound, v->bound);
         w->regions.push_back(v);
         if(w->regions.size() > ORDER){
             w->handleOverflow(f);
         }
     }
-
-
-
 }
 
-bool Rtree::insert(Figure *f){
+bool RNode::insert(Figure *f){
 
     if(!this->isLeaf()){
         return this->chooseSubtree(f)->insert(f);
     }
 
-    Rtree* cur = this;
+    RNode* cur = this;
     
     //if overflow
     if(myFigures.size() == ORDER){
@@ -148,9 +144,28 @@ bool Rtree::insert(Figure *f){
     //this->regions.push_back(new Rtree{f})
     myFigures.push_back(new Figure(*f));
     ++cur_figs;
-    this->bound = MBB::merge(this->bound, f->bound);
+    this->bound = MBB::merge(this->bound, f->getBound());
     //this->myFigure = f;
     return true;
 
 }
 
+
+
+
+
+
+RNode* Rtree::search(Figure* f){
+    //TODO: search
+    return root->search(f);
+}
+
+bool Rtree::insert(Figure *f){
+
+    //insert
+    root->insert(f);
+
+    if(root->father != nullptr) root = root->father;
+
+    return true;
+}

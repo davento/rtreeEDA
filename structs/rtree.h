@@ -11,6 +11,39 @@
 const int INF = 1e9+10;
 
 
+struct RNode{
+  
+  std::vector<Figure*> myFigures;
+  RNode* father;
+  MBB bound;
+    
+  size_t cur_figs{};
+  std::vector<RNode*> regions;
+    
+  
+  static std::pair<RNode*, RNode*> split(RNode*);
+  static MBB regionsMbb( std::vector<RNode*> regions);
+
+  inline bool isLeaf() const {return regions.empty();}    
+
+
+
+  RNode(){
+    myFigures.reserve(ORDER + 1);
+    regions.reserve(ORDER + 1);
+  }
+
+  void update(std::vector<RNode*> reg, MBB mb){
+    regions = reg; bound = mb;
+    cur_figs = regions.size();
+  }
+
+  RNode* search(Figure *);
+  RNode* chooseSubtree(Figure *);
+    
+  bool insert(Figure *);
+  void handleOverflow(Figure *f);
+};
 
 
 
@@ -20,61 +53,20 @@ class Rtree{
   
   private:
 
-
-    std::vector<Figure*> myFigures;
-    Rtree* father;
-    MBB bound;
-    
-    size_t cur_figs{};
-    std::vector<Rtree*> regions;
-    
-    static std::pair<Rtree*, Rtree*> split(Rtree*);
-    void handleOverflow(Figure *f);
+    RNode* root;
 
   public:
     
-    Rtree():father(nullptr){
-      myFigures.reserve(ORDER + 1);
-      regions.reserve(ORDER + 1);
+    Rtree(){
+      root =  new RNode;
     };
     
-    Rtree(std::vector<Rtree*> reg, MBB mb):
-    bound(mb), regions(reg.begin(), reg.end()){
-      cur_figs = regions.size();
-    }
 
-    // this is only done if node is a 'figure node'
-    Rtree(Figure*);
-    
-
-    Rtree* search(Figure *);
-    Rtree* chooseSubtree(Figure *);
-    
+    RNode* search(Figure *);    
     bool insert(Figure *);
-    inline bool isLeaf() const {
-      /*if(regions.size())
-        return this->regions[0]->myFigure != nullptr;
-      else
-        return true;*/
-      return regions.empty();
-    }    
-    void update(std::vector<Rtree*> reg, MBB mb){
-      regions = reg;
-      bound = mb;
-      cur_figs = regions.size();
-    }
-
-    static MBB regionsMbb( std::vector<Rtree*> regions){
-        MBB res;
-        
-        for(auto region: regions){
-            res = MBB::merge(res, region->getBound());
-        }
-        return res;
-    }
 
 
-    MBB getBound(){ return bound;}
+
 
     void draw(SDL_Renderer* renderer) const {
       
@@ -88,6 +80,7 @@ class Rtree{
           region->draw(renderer);
       }
     }
+
 };
 
 
