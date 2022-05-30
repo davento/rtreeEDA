@@ -65,7 +65,7 @@ struct MBB{
         int l = this->bottomRight.x-this->topLeft.x;
         int w = this->bottomRight.y-this->topLeft.y;
 
-        return 2*(l+w);
+        return std::abs(2*(l+w));
     }
 
     

@@ -11,18 +11,18 @@ RNode* RNode::chooseSubtree(Figure* f){
     //return to region node (figure->father)
     if(this->isLeaf()) return this;
 
-    MBB res ;
-
+    MBB res;
     int minP = INF;
     int minpos = 0;
     int pos = 0;
     //choose region with minimum perimeter
     for(auto region : regions) {
         MBB aux = MBB::merge(f->getBound(), region->bound);
-        int l = aux.bottomRight.x-aux.topLeft.x;
-        int w = aux.bottomRight.y-aux.topLeft.y;
-        if(2*(l+w) <= minP) {
-            minP = 2*(l+w);
+        
+        int p = aux.Perimeter();
+
+        if(p <= minP) {
+            minP = p;
             res = aux;
             minpos = pos;
         }
@@ -33,7 +33,7 @@ RNode* RNode::chooseSubtree(Figure* f){
 }
 
 std::pair<RNode*, RNode*> RNode::split(RNode* u){
-    int m = u->cur_figs;
+    int m = u->myFigures.size();
     
     //sort by x
     sort(u->myFigures.begin(), u->myFigures.end(),
@@ -46,24 +46,28 @@ std::pair<RNode*, RNode*> RNode::split(RNode* u){
     RNode* v = new RNode;
     RNode* p = new RNode;
 
-    std::vector<RNode*> s1;
-    std::vector<RNode*> s2;
+    std::vector<Figure*> s1;
+    std::vector<Figure*> s2;
 
     MBB m1;
     MBB m2;
     
-    for( int i = ceil(m * 0.4); i < m - ceil(m * 0.4); i++){
+    for( int i = ceil(m * 0.4); i <= m - ceil(m * 0.4); i++){
         // s1 = first i regions (points)
         // s2 = the other i regions (points)
-        s1 = {u->regions.begin(), u->regions.begin() + i};
-        s2 = {u->regions.begin()+i , u->regions.end() };
-
+        std::cout << "jean paul\n";
+        // f1 f2     f3 f4
+        s1 = {u->myFigures.begin(), u->myFigures.begin() + i};
+        s2 = {u->myFigures.begin()+i , u->myFigures.end() };
+        std::cout << "huby tuesta\n";
         //get mbb and choose minimum
         auto t1 = RNode::regionsMbb(s1);
         auto t2 = RNode::regionsMbb(s2);
-
+        
+        
+        std::cout << t1.Perimeter() << " " << t2.Perimeter() << "\n";
         if(t1.Perimeter() < m1.Perimeter()) {m1 = t1; v->update(s1,m1);}
-        if(t2.Perimeter() < m2.Perimeter()) {m1 = t1; p->update(s2,m2);}
+        if(t2.Perimeter() < m2.Perimeter()) {m2 = t2; p->update(s2,m2);}
     }
 
     //same thing but with y
@@ -73,32 +77,46 @@ std::pair<RNode*, RNode*> RNode::split(RNode* u){
     });
 
 
-   for( int i = ceil(m * 0.4); i < m - ceil(m * 0.4); i++){
+   for( int i = ceil(m * 0.4); i <= m - ceil(m * 0.4); i++){
         // s1 = first i regions (points)
         // s2 = the other i regions (points)
-        s1 = {u->regions.begin(), u->regions.begin() + i};
-        s2 = {u->regions.begin()+i , u->regions.end() };
-
+        s1 = {u->myFigures.begin(), u->myFigures.begin() + i};
+        s2 = {u->myFigures.begin()+i , u->myFigures.end() };
+        
         //get mbb and choose minimum
-        auto t1 = RNode::regionsMbb(s1);
-        auto t2 = RNode::regionsMbb(s2);
+        //
+        MBB t1 = RNode::regionsMbb(s1);
+        MBB t2 = RNode::regionsMbb(s2);
 
-        if(t1.Perimeter() < m1.Perimeter()) {m1 = t1; v->update(s1,m1);}
-        if(t2.Perimeter() < m2.Perimeter()) {m1 = t1; p->update(s2,m2);}
+        if(t1.Perimeter() < m1.Perimeter()){ 
+            m1 = t1; 
+            v->update(s1,m1);
+        }
+
+        if(t2.Perimeter() < m2.Perimeter()){ 
+            m2 = t2; 
+            p->update(s2,m2);
+        }
     }
-
+    std::cout << m1.Perimeter() << " " << m2.Perimeter() << "\n";
     return {v,p};
 }
 
 
 MBB RNode::regionsMbb( std::vector<RNode*> regions){
-    MBB res;
+    MBB res = regions[0]->bound;
     for(auto region: regions){
         res = MBB::merge(res, region->bound);
     }
     return res;
 }
-
+MBB RNode::regionsMbb( std::vector<Figure*> figures){
+    MBB res = figures[0]->getBound();
+    for(auto figure: figures){
+        res = MBB::merge(res, figure->getBound());
+    }
+    return res;
+}
 
 void RNode::handleOverflow(Figure *f){
 
@@ -111,6 +129,8 @@ void RNode::handleOverflow(Figure *f){
         RNode* root = new RNode;
         root->regions.push_back(u);
         root->regions.push_back(v);
+        root->bound = MBB::merge(u->bound, v->bound);
+        father = root;
     }
     else{
         RNode* w = u->father;
@@ -128,7 +148,6 @@ bool RNode::insert(Figure *f){
         return this->chooseSubtree(f)->insert(f);
     }
 
-    RNode* cur = this;
     
     //if overflow
     if(myFigures.size() == ORDER){
