@@ -23,18 +23,18 @@ struct RNode{
   
 
   template<class cnt>
-  void  RNode::minimumPerimeter(cnt &u, RNode* v, RNode* p);
+  void  minimumPerimeter(cnt &u, RNode* v, RNode* p);
 
   template<class cnt>
-  std::pair<RNode*, RNode*> RNode::split(cnt &u);
+  std::pair<RNode*, RNode*> split(cnt &u);
 
   
   template<class cnt>
-  MBB RNode::regionsMbb( cnt c);
+  MBB regionsMbb( cnt c);
 
   inline bool isLeaf() const {return regions.empty();}    
 
-
+  MBB getBound() const {return bound;}
 
   RNode(): father(nullptr){
     myFigures.reserve(ORDER + 1);

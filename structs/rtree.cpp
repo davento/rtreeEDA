@@ -7,6 +7,7 @@
 //gets the node that
 RNode* RNode::chooseSubtree(Figure* f){
 
+    std::cout << "choosing son \n";
     //if node is a figure node
     //return to region node (figure->father)
     if(this->isLeaf()) return this;
@@ -15,6 +16,7 @@ RNode* RNode::chooseSubtree(Figure* f){
     int minP = INF;
     int minpos = 0;
     int pos = 0;
+    RNode* result = nullptr;
     //choose region with minimum perimeter
     for(auto region : regions) {
         MBB aux = MBB::merge(f->getBound(), region->bound);
@@ -25,11 +27,13 @@ RNode* RNode::chooseSubtree(Figure* f){
             minP = p;
             res = aux;
             minpos = pos;
+            result = region;
         }
-        pos++;
+        ++pos;
+        
     }
-
-    return regions[pos];
+    std::cout << "son choosed: " << pos << "\n"; 
+    return regions[minpos];
 }
 
 template<class cnt>
@@ -37,10 +41,10 @@ void  RNode::minimumPerimeter(cnt &u, RNode* v, RNode* p){
     
 
     int m = u.size();
-    using T = typename cnt::value_type();
+    using T = typename cnt::value_type;
 
-    cnt<T> s1;
-    cnt<T> s2;
+    cnt s1;
+    cnt s2;
 
     MBB m1 = v->bound;
     MBB m2 = p->bound;
@@ -71,7 +75,7 @@ std::pair<RNode*, RNode*> RNode::split(cnt &u){
     RNode* v = new RNode;
     RNode* p = new RNode;
 
-    using T = typename cnt::value_type();
+    using T = typename cnt::value_type;
     
     //sort by x left
     sort(u.begin(), u.end(),
@@ -107,9 +111,9 @@ std::pair<RNode*, RNode*> RNode::split(cnt &u){
 template<class cnt>
 MBB RNode::regionsMbb( cnt c){
 
-    MBB res = c.front()->bound;
+    MBB res = c.front()->getBound();
     for(auto region: c){
-        res = MBB::merge(res, region->bound);
+        res = MBB::merge(res, region->getBound());
     }
     return res;
 }
@@ -147,11 +151,13 @@ void RNode::handleOverflow(Figure *f){
 }
 
 bool RNode::insert(Figure *f){
-
+    std::cout << "insertando... \n";
     if(!this->isLeaf()){
-        return this->chooseSubtree(f)->insert(f);
+        std::cout << "no soy hoja \n";
+        RNode *node = this->chooseSubtree(f);
+        return node->insert(f);
     }
-
+    std::cout << "soy hoja\n";
     
     //if overflow
     if(myFigures.size() == ORDER){
