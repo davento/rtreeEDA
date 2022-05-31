@@ -11,6 +11,8 @@
 const int INF = 1e9+10;
 
 
+
+
 struct RNode{
   
   std::vector<Figure*> myFigures;
@@ -19,7 +21,13 @@ struct RNode{
     
   size_t cur_figs{};
   std::vector<RNode*> regions;
-    
+
+  void operator = (RNode* other){
+    this->bound = other->bound;
+    this->cur_figs = other->cur_figs;
+    this->myFigures = other->myFigures;
+    this->regions = other->regions;
+  }
   
 
   template<class cnt>
@@ -30,7 +38,7 @@ struct RNode{
 
   
   template<class cnt>
-  MBB regionsMbb( cnt c);
+  static MBB regionsMbb( cnt c);
 
   inline bool isLeaf() const {return regions.empty();}    
 
@@ -72,10 +80,6 @@ struct RNode{
 
 
 };
-
-
-
-
 
 class Rtree{
   
