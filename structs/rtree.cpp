@@ -32,98 +32,102 @@ RNode* RNode::chooseSubtree(Figure* f){
     return regions[pos];
 }
 
-std::pair<RNode*, RNode*> RNode::split(RNode* u){
-    int m = u->myFigures.size();
+template<class cnt>
+void  RNode::minimumPerimeter(cnt &u, RNode* v, RNode* p){
     
-    //sort by x
-    sort(u->myFigures.begin(), u->myFigures.end(),
-    [](const Figure* m1, const Figure* m2){
-        return m1->getBound().topLeft.x < m2->getBound().topLeft.x;
-    });
 
+    int m = u.size();
+    using T = typename cnt::value_type();
+
+    cnt<T> s1;
+    cnt<T> s2;
+
+    MBB m1 = v->bound;
+    MBB m2 = p->bound;
+    
+    for( int i = ceil(m * 0.4); i <= m - ceil(m * 0.4); i++){
+        // s1 = first i regions (points)
+        // s2 = the other i regions (points)
+        s1 = {u.begin(), u.begin() + i};
+        s2 = {u.begin()+i , u.end() };
+        
+        //get mbb and choose minimum
+        auto t1 = RNode::regionsMbb(s1);
+        auto t2 = RNode::regionsMbb(s2);        
+        
+        std::cout << t1.Perimeter() << " " << t2.Perimeter() << "\n";
+        if(t1.Perimeter() + t2.Perimeter() < m1.Perimeter() + m2.Perimeter()){
+            m1 = t1; m2 = t2;
+            v->update(s1,m1); p->update(s2,m2);
+        }
+    }
+}
+
+template<class cnt>
+std::pair<RNode*, RNode*> RNode::split(cnt &u){
+    
 
     //u anb u' resulting of the split
     RNode* v = new RNode;
     RNode* p = new RNode;
 
-    std::vector<Figure*> s1;
-    std::vector<Figure*> s2;
-
-    MBB m1;
-    MBB m2;
+    using T = typename cnt::value_type();
     
-    for( int i = ceil(m * 0.4); i <= m - ceil(m * 0.4); i++){
-        // s1 = first i regions (points)
-        // s2 = the other i regions (points)
-        std::cout << "jean paul\n";
-        // f1 f2     f3 f4
-        s1 = {u->myFigures.begin(), u->myFigures.begin() + i};
-        s2 = {u->myFigures.begin()+i , u->myFigures.end() };
-        std::cout << "huby tuesta\n";
-        //get mbb and choose minimum
-        auto t1 = RNode::regionsMbb(s1);
-        auto t2 = RNode::regionsMbb(s2);
-        
-        
-        std::cout << t1.Perimeter() << " " << t2.Perimeter() << "\n";
-        if(t1.Perimeter() < m1.Perimeter()) {m1 = t1; v->update(s1,m1);}
-        if(t2.Perimeter() < m2.Perimeter()) {m2 = t2; p->update(s2,m2);}
-    }
-
-    //same thing but with y
-    sort(u->myFigures.begin(), u->myFigures.end(),
-    [](const Figure* m1, const Figure* m2){
-        return m1->getBound().topLeft.y < m2->getBound().topLeft.y;
+    //sort by x left
+    sort(u.begin(), u.end(),
+    [](const T m1, const T m2){
+        return m1->getBound().topLeft.x < m2->getBound().topLeft.x;
     });
 
+    minimumPerimeter(u,v,p);
+    //sort by x right
+    sort(u.begin(), u.end(),
+    [](const T m1, const T m2){
+        return m1->getBound().bottomRight.x < m2->getBound().bottomRight.x;
+    });
+    minimumPerimeter(u,v,p);
 
-   for( int i = ceil(m * 0.4); i <= m - ceil(m * 0.4); i++){
-        // s1 = first i regions (points)
-        // s2 = the other i regions (points)
-        s1 = {u->myFigures.begin(), u->myFigures.begin() + i};
-        s2 = {u->myFigures.begin()+i , u->myFigures.end() };
-        
-        //get mbb and choose minimum
-        //
-        MBB t1 = RNode::regionsMbb(s1);
-        MBB t2 = RNode::regionsMbb(s2);
+    //same thing but with y left
+    sort(u.begin(), u.end(),
+    [](const T m1, const T m2){
+        return m1->getBound().topLeft.y < m2->getBound().topLeft.y;
+    });
+    minimumPerimeter(u,v,p);
 
-        if(t1.Perimeter() < m1.Perimeter()){ 
-            m1 = t1; 
-            v->update(s1,m1);
-        }
+    //same thing but with y right
+    sort(u.begin(), u.end(),
+    [](const T m1, const T m2){
+        return m1->getBound().bottomRight.y < m2->getBound().bottomRight.y;
+    });
+    minimumPerimeter(u,v,p);
 
-        if(t2.Perimeter() < m2.Perimeter()){ 
-            m2 = t2; 
-            p->update(s2,m2);
-        }
-    }
-    std::cout << m1.Perimeter() << " " << m2.Perimeter() << "\n";
     return {v,p};
 }
 
+template<class cnt>
+MBB RNode::regionsMbb( cnt c){
 
-MBB RNode::regionsMbb( std::vector<RNode*> regions){
-    MBB res = regions[0]->bound;
-    for(auto region: regions){
+    MBB res = c.front()->bound;
+    for(auto region: c){
         res = MBB::merge(res, region->bound);
     }
     return res;
 }
-MBB RNode::regionsMbb( std::vector<Figure*> figures){
-    MBB res = figures[0]->getBound();
-    for(auto figure: figures){
-        res = MBB::merge(res, figure->getBound());
-    }
-    return res;
-}
+
 
 void RNode::handleOverflow(Figure *f){
 
     RNode* u, *v;
-    auto pr = RNode::split(this);
-    u = pr.first;
-    v = pr.second;
+    if(this->isLeaf()){
+        auto p = split(this->myFigures);
+        u = p.first;
+        v = p.second;
+    }
+    else{
+        auto p = split(this->regions);
+        u = p.first;
+        v = p.second;
+    }
     
     if(!u->father){
         RNode* root = new RNode;

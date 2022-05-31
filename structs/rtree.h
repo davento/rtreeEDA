@@ -21,9 +21,17 @@ struct RNode{
   std::vector<RNode*> regions;
     
   
-  static std::pair<RNode*, RNode*> split(RNode*);
-  static MBB regionsMbb( std::vector<RNode*> regions);
-  static MBB regionsMbb( std::vector<Figure*> figures);
+
+  template<class cnt>
+  void  RNode::minimumPerimeter(cnt &u, RNode* v, RNode* p);
+
+  template<class cnt>
+  std::pair<RNode*, RNode*> RNode::split(cnt &u);
+
+  
+  template<class cnt>
+  MBB RNode::regionsMbb( cnt c);
+
   inline bool isLeaf() const {return regions.empty();}    
 
 
