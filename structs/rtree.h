@@ -22,13 +22,6 @@ struct RNode{
   size_t cur_figs{};
   std::vector<RNode*> regions;
 
-  void operator = (RNode* other){
-    this->bound = other->bound;
-    this->cur_figs = other->cur_figs;
-    this->myFigures = other->myFigures;
-    this->regions = other->regions;
-  }
-
   template<class cnt>
   static MBB regionsMbb( cnt c);
   
