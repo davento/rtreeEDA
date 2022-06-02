@@ -22,24 +22,7 @@ struct RNode{
   size_t cur_figs{};
   std::vector<RNode*> regions;
 
-  void operator = (RNode* other){
-    this->bound = other->bound;
-    this->cur_figs = other->cur_figs;
-    this->myFigures = other->myFigures;
-    this->regions = other->regions;
-  }
   
-
-  template<class cnt>
-  void  minimumPerimeter(cnt &u, RNode* v, RNode* p);
-
-  template<class cnt>
-  std::pair<RNode*, RNode*> split(cnt &u);
-
-  
-  template<class cnt>
-  static MBB regionsMbb( cnt c);
-
   inline bool isLeaf() const {return regions.empty();}    
 
   MBB getBound() const {return bound;}
@@ -61,10 +44,7 @@ struct RNode{
 
 
   RNode* search(Figure *){return nullptr;}
-  RNode* chooseSubtree(Figure *);
-    
-  bool insert(Figure *);
-  void handleOverflow(Figure *f);
+
   
   void draw(SDL_Renderer* renderer) const {
       if(isLeaf()&& !myFigures.empty()){

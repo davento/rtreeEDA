@@ -8,6 +8,7 @@ void addChildrenToFather(RNode* root, RNode* nodeOverflowed, RNode* v){
     root->regions.push_back(nodeOverflowed);
     root->regions.push_back(v);
 }
+
 template<class cnt>
 void minimumPerimeter(cnt &u, RNode* v, RNode* p){
 
@@ -177,15 +178,7 @@ RNode* insert(RNode* node, Figure* figure){
     return node;    
 }
 
-template<class cnt>
-MBB RNode::regionsMbb( cnt c){
 
-    MBB res = c.front()->getBound();
-    for(auto region: c){
-        res = MBB::merge(res, region->getBound());
-    }
-    return res;
-}
 
 RNode* Rtree::search(Figure* f){
     //TODO: search
