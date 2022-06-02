@@ -178,7 +178,15 @@ RNode* insert(RNode* node, Figure* figure){
     return node;    
 }
 
+template<class cnt>
+MBB RNode::regionsMbb( cnt c){
 
+    MBB res = c.front()->getBound();
+    for(auto region: c){
+        res = MBB::merge(res, region->getBound());
+    }
+    return res;
+}
 
 RNode* Rtree::search(Figure* f){
     //TODO: search
