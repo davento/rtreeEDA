@@ -2,10 +2,31 @@
 #define _FIGURES_HPP_
 
 #include <SDL2/SDL_render.h>
+#include <SDL2/SDL_stdinc.h>
 #include <vector>
 #include <SDL2/SDL.h>
 #include <cmath>
 #include <iostream>
+
+struct Color{
+    Uint8 RGB[3];
+    size_t indexToChange=1;
+
+    Color(int R, int G, int B){
+        RGB[0] = R;
+        RGB[1] = G;
+        RGB[2] = B;
+    }
+
+    void changeColor(int value){
+        RGB[indexToChange] += value;
+        indexToChange = (indexToChange+1) % 3;
+    }
+
+    void print(){
+        std::cout << "R: " << (int)RGB[0] << " G: " << (int)RGB[1] << " B: " << (int)RGB[2] << "\n";
+    }
+};
 
 struct Point{
     int x, y;
@@ -74,6 +95,17 @@ struct MBB{
             return;
         const int &lx = topLeft.x, &ty = topLeft.y, &rx = bottomRight.x, &by = bottomRight.y;
         SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+        SDL_RenderDrawLine(renderer, lx, ty, rx , ty);
+        SDL_RenderDrawLine(renderer, lx, ty, lx , by);
+        SDL_RenderDrawLine(renderer, lx, by, rx , by);
+        SDL_RenderDrawLine(renderer, rx, ty, rx , by);
+    }
+
+    void draw(SDL_Renderer* renderer, Color color) const {
+        if(topLeft.x == 40000 && topLeft.y == 40000)
+            return;
+        const int &lx = topLeft.x, &ty = topLeft.y, &rx = bottomRight.x, &by = bottomRight.y;
+        SDL_SetRenderDrawColor(renderer, color.RGB[0], color.RGB[1], color.RGB[2], 255);
         SDL_RenderDrawLine(renderer, lx, ty, rx , ty);
         SDL_RenderDrawLine(renderer, lx, ty, lx , by);
         SDL_RenderDrawLine(renderer, lx, by, rx , by);

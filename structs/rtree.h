@@ -48,15 +48,16 @@ struct RNode{
   RNode* search(Figure *){return nullptr;}
 
   
-  void draw(SDL_Renderer* renderer) const {
+  void draw(SDL_Renderer* renderer, Color color) const {
       if(isLeaf()&& !myFigures.empty()){
         for(const auto& figure: myFigures)
           figure->draw(renderer);
       }
-      bound.draw(renderer);
+      bound.draw(renderer, color);
+      color.changeColor(150);
       if(!regions.empty()){
         for(const auto& region: regions)
-          region->draw(renderer);
+          region->draw(renderer, color);
       }
     }
 
@@ -80,7 +81,8 @@ class Rtree{
     bool insert(Figure *);
 
     void draw(SDL_Renderer* renderer) const {
-      root->draw(renderer);
+      Color color(0,40,0);
+      root->draw(renderer, color);
     }
 
 };

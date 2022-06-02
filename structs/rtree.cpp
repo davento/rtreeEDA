@@ -171,7 +171,7 @@ RNode* insert(RNode* node, Figure* figure){
     else{
         RNode* v = chooseSubtree(node, figure);
         insert(v, figure);
-        node->bound = MBB::merge(node->bound, v->bound);
+        node->bound = MBB::merge(node->bound, figure->getBound());
     }
     if(node->father)
         return node->father;
