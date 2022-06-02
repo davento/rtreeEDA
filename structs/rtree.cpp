@@ -179,7 +179,7 @@ RNode* insert(RNode* node, Figure* figure){
 }
 
 template<class cnt>
-MBB RNode::regionsMbb( cnt c){
+MBB RNode::regionsMbb(cnt c){
 
     MBB res = c.front()->getBound();
     for(auto region: c){

@@ -28,6 +28,9 @@ struct RNode{
     this->myFigures = other->myFigures;
     this->regions = other->regions;
   }
+
+  template<class cnt>
+  static MBB regionsMbb( cnt c);
   
   inline bool isLeaf() const {return regions.empty();}    
 
