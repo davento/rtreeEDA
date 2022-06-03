@@ -27,12 +27,10 @@ void minimumPerimeter(cnt &u, RNode* v, RNode* p){
         s1 = {u.begin(), u.begin() + i};
         s2 = {u.begin()+i , u.end() };
         
-        std::cout <<"tamaño de divisiones: " << s1.size() << " "<< s2.size() <<"\n";
         //get mbb and choose minimum
         auto t1 = RNode::regionsMbb(s1);
         auto t2 = RNode::regionsMbb(s2);        
         
-        std::cout << t1.Perimeter() << " " << t2.Perimeter() << " < " << m1.Perimeter() << " " << m2.Perimeter() << "\n";
         if(t1.Perimeter() + t2.Perimeter() < m1.Perimeter() + m2.Perimeter()){
             m1 = t1; m2 = t2;
             v->update(s1,m1); p->update(s2,m2);
@@ -145,9 +143,7 @@ RNode* chooseSubtree(RNode* root, Figure* figure){
         MBB aux = MBB::merge(figure->getBound(), region->bound);
         
         int p = aux.Perimeter();
-        std::cout << minP << " vs. " << p << "\n";
         if(p <= minP) {
-            std::cout << "gana: "<< p << "\n";
             minP = p;
             result = region;
         }
@@ -225,8 +221,6 @@ RNode* Rtree::search(Point p) {
 bool Rtree::insert(Figure *f){
 
     root = ::insert(root, f);
-    std::cout << "root: \n";
-    root->print();
     return true;
 }
 

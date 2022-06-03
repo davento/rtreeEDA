@@ -62,7 +62,6 @@ struct Point{
 
     bool closeEnough(const Point& other){
         const int RADIO = 4;
-        std::cout << length(other)<< "\n";
         if(length(other) < RADIO*2)
             return true;
         return false;
