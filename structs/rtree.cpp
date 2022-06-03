@@ -154,7 +154,6 @@ RNode* chooseSubtree(RNode* root, Figure* figure){
         
     }
     return result;
- 
 }
 
 RNode* insert(RNode* node, Figure* figure){
@@ -217,7 +216,6 @@ RNode* Rtree::search(Point p) {
 
 bool Rtree::insert(Figure *f){
 
-    //insert
     root = ::insert(root, f);
     std::cout << "root: \n";
     root->print();
