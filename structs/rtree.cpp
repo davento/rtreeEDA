@@ -268,7 +268,7 @@ void Rtree::remove(Point p) {
     n->bound = RNode::regionsMbb(n->myFigures);
 
     // if there aren't orphans, we are done
-    if (n->myFigures.size() >= ceil(ORDER/2) || n->father == nullptr) return;
+    if (n->myFigures.size() >= ceil(ORDER/2.0) || n->father == nullptr) return;
 
     reinsert();
 }
