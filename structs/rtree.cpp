@@ -242,6 +242,7 @@ void Rtree::remove(Point p) {
     n->myFigures.erase(it);
     // destroy the object properly (TODO)
     // delete *it;
+    n->bound = RNode::regionsMbb(n->myFigures);
 
     // if there aren't orphans, we are done
     if (n->myFigures.size() >= ceil(ORDER/2)) return;
