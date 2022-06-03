@@ -267,5 +267,5 @@ void Rtree::remove(Point p) {
     if (parent->regions.size() >= ceil(ORDER/2))
         return;
     
-    // else 
+    // else rebuild the whole ass tree
 }
