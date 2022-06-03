@@ -55,7 +55,7 @@ void Display::processInputs(){
                        }
                     }
                     if(event.button.button == SDL_BUTTON_RIGHT){
-                        r->erase({x,y});
+                        r->remove({x,y});
                         fig.clear();
                     }
                 }

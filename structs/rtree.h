@@ -94,7 +94,7 @@ class Rtree{
 
     RNode* search(Point);    
     bool insert(Figure *);
-    void erase(Point p);
+    void remove(Point p);
 
     void draw(SDL_Renderer* renderer) const {
       Color color(0,40,0);

@@ -222,7 +222,11 @@ bool Rtree::insert(Figure *f){
     return true;
 }
 
-void Rtree::erase(Point p) {
+void adopt(RNode*n , Figure* orphan) {
+
+}
+
+void Rtree::remove(Point p) {
     // locate node with the figure
     RNode* n = search(p);
     
@@ -236,14 +240,28 @@ void Rtree::erase(Point p) {
     auto it = std::find_if(n->myFigures.begin(), n->myFigures.end(), fun);
 
     n->myFigures.erase(it);
-
+    // destroy the object properly (TODO)
+    // delete *it;
 
     // if there aren't orphans, we are done
     if (n->myFigures.size() >= ceil(ORDER/2)) return;
 
-    // else deal with orphans (recursively):
-    // - send to nearest node
-    // - split said node if necessary
-    // - resize tree accordingly
+    // deal with the orphans
+    auto orphans = n->myFigures;
+    auto parent = n->father;
 
+    auto itr = std::find(parent->regions.begin(), parent->regions.end(), n);
+    parent->regions.erase(itr);
+    // destroy the object properly (TODO)
+    // delete *it;
+
+    for(auto f: orphans){
+        ::insert(parent, f);
+    }
+    
+    // if inner node satisfies the minimum number of regions quota we are done
+    if (parent->regions.size() >= ceil(ORDER/2))
+        return;
+    
+    // else 
 }
