@@ -2,10 +2,31 @@
 #define _FIGURES_HPP_
 
 #include <SDL2/SDL_render.h>
+#include <SDL2/SDL_stdinc.h>
 #include <vector>
 #include <SDL2/SDL.h>
 #include <cmath>
 #include <iostream>
+
+struct Color{
+    Uint8 RGB[3];
+    size_t indexToChange=1;
+
+    Color(int R, int G, int B){
+        RGB[0] = R;
+        RGB[1] = G;
+        RGB[2] = B;
+    }
+
+    void changeColor(int value){
+        RGB[indexToChange] += value;
+        indexToChange = (indexToChange+1) % 3;
+    }
+
+    void print(){
+        std::cout << "R: " << (int)RGB[0] << " G: " << (int)RGB[1] << " B: " << (int)RGB[2] << "\n";
+    }
+};
 
 struct Point{
     int x, y;
@@ -47,8 +68,17 @@ struct Point{
 
     }
     void draw(SDL_Renderer* renderer) const {
+       // SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+       // SDL_RenderDrawPoint(renderer, x, y);
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        SDL_RenderDrawPoint(renderer, x, y);
+        int dim = 1;
+        SDL_Rect dot{
+            static_cast<int>(x - dim),
+            static_cast<int>(y - dim),
+            3*dim,
+            3*dim
+        };
+        SDL_RenderFillRect(renderer, &dot);
     }   
 };
 
@@ -60,7 +90,7 @@ struct MBB{
     MBB(): topLeft({40000,40000}), bottomRight({0,0}){}
 
 
-    int Perimeter(){
+    int Perimeter() const {
         
         int l = this->bottomRight.x-this->topLeft.x;
         int w = this->bottomRight.y-this->topLeft.y;
@@ -74,6 +104,17 @@ struct MBB{
             return;
         const int &lx = topLeft.x, &ty = topLeft.y, &rx = bottomRight.x, &by = bottomRight.y;
         SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+        SDL_RenderDrawLine(renderer, lx, ty, rx , ty);
+        SDL_RenderDrawLine(renderer, lx, ty, lx , by);
+        SDL_RenderDrawLine(renderer, lx, by, rx , by);
+        SDL_RenderDrawLine(renderer, rx, ty, rx , by);
+    }
+
+    void draw(SDL_Renderer* renderer, Color color) const {
+        if(topLeft.x == 40000 && topLeft.y == 40000)
+            return;
+        const int &lx = topLeft.x, &ty = topLeft.y, &rx = bottomRight.x, &by = bottomRight.y;
+        SDL_SetRenderDrawColor(renderer, color.RGB[0], color.RGB[1], color.RGB[2], 255);
         SDL_RenderDrawLine(renderer, lx, ty, rx , ty);
         SDL_RenderDrawLine(renderer, lx, ty, lx , by);
         SDL_RenderDrawLine(renderer, lx, by, rx , by);

@@ -50,13 +50,13 @@ void Display::processInputs(){
                     SDL_GetMouseState(&x, &y);
                     if(event.button.button == SDL_BUTTON_LEFT){
                        if(!fig.addPoint({x,y})){
-                           //figures.push_back(fig);
                            r->insert(&fig);
                            fig.clear();
                        }
                     }
                     if(event.button.button == SDL_BUTTON_RIGHT){
-
+                        r->remove({x,y});
+                        fig.clear();
                     }
                 }
 

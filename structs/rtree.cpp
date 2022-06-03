@@ -1,53 +1,25 @@
 #include "rtree.h"
 
 
-
-
-
-//gets the node that
-RNode* RNode::chooseSubtree(Figure* f){
-
-    std::cout << "choosing son \n";
-    //if node is a figure node
-    //return to region node (figure->father)
-    if(this->isLeaf()) return this;
-
-    MBB res;
-    int minP = INF;
-    int minpos = 0;
-    int pos = 0;
-    RNode* result = nullptr;
-    //choose region with minimum perimeter
-    for(auto region : regions) {
-        MBB aux = MBB::merge(f->getBound(), region->bound);
-        
-        int p = aux.Perimeter();
-
-        if(p <= minP) {
-            minP = p;
-            res = aux;
-            minpos = pos;
-            result = region;
-        }
-        ++pos;
-        
-    }
-    std::cout << "son choosed: " << pos << "\n"; 
-    return regions[minpos];
+void addChildrenToFather(RNode* root, RNode* nodeOverflowed, RNode* v){
+    root->bound = nodeOverflowed->bound;
+    nodeOverflowed->father = v->father = root;
+    root->regions.push_back(nodeOverflowed);
+    root->regions.push_back(v);
+    root->bound = RNode::regionsMbb(root->regions);
 }
 
 template<class cnt>
-void  RNode::minimumPerimeter(cnt &u, RNode* v, RNode* p){
-    
+void minimumPerimeter(cnt &u, RNode* v, RNode* p){
 
     int m = u.size();
-    using T = typename cnt::value_type;
+    //using T = typename cnt::value_type;
 
     cnt s1;
     cnt s2;
 
     MBB m1 = v->bound;
-    MBB m2 = p->bound;
+    MBB m2 = v->bound;
     
     for( int i = ceil(m * 0.4); i <= m - ceil(m * 0.4); i++){
         // s1 = first i regions (points)
@@ -59,7 +31,6 @@ void  RNode::minimumPerimeter(cnt &u, RNode* v, RNode* p){
         auto t1 = RNode::regionsMbb(s1);
         auto t2 = RNode::regionsMbb(s2);        
         
-        std::cout << t1.Perimeter() << " " << t2.Perimeter() << "\n";
         if(t1.Perimeter() + t2.Perimeter() < m1.Perimeter() + m2.Perimeter()){
             m1 = t1; m2 = t2;
             v->update(s1,m1); p->update(s2,m2);
@@ -67,49 +38,141 @@ void  RNode::minimumPerimeter(cnt &u, RNode* v, RNode* p){
     }
 }
 
-template<class cnt>
-std::pair<RNode*, RNode*> RNode::split(cnt &u){
+void splitLeaf(RNode* originalAndFirstHalf, RNode* secondHalf){
     
-
-    //u anb u' resulting of the split
-    RNode* v = new RNode;
-    RNode* p = new RNode;
-
-    using T = typename cnt::value_type;
-    
+    //u anb u' resulting of the split    
+    std::vector<Figure*> figures = originalAndFirstHalf->myFigures;
     //sort by x left
-    sort(u.begin(), u.end(),
-    [](const T m1, const T m2){
+    sort(figures.begin(), figures.end(),
+    [](const Figure* m1, const Figure* m2){
         return m1->getBound().topLeft.x < m2->getBound().topLeft.x;
     });
 
-    minimumPerimeter(u,v,p);
+    minimumPerimeter(figures,originalAndFirstHalf,secondHalf);
+    
     //sort by x right
-    sort(u.begin(), u.end(),
-    [](const T m1, const T m2){
+    sort(figures.begin(), figures.end(),
+    [](const Figure* m1, const Figure* m2){
         return m1->getBound().bottomRight.x < m2->getBound().bottomRight.x;
     });
-    minimumPerimeter(u,v,p);
+    minimumPerimeter(figures,originalAndFirstHalf,secondHalf);
 
     //same thing but with y left
-    sort(u.begin(), u.end(),
-    [](const T m1, const T m2){
+    sort(figures.begin(), figures.end(),
+    [](const Figure* m1, const Figure* m2){
         return m1->getBound().topLeft.y < m2->getBound().topLeft.y;
     });
-    minimumPerimeter(u,v,p);
+    minimumPerimeter(figures,originalAndFirstHalf,secondHalf);
 
     //same thing but with y right
-    sort(u.begin(), u.end(),
-    [](const T m1, const T m2){
+    sort(figures.begin(), figures.end(),
+    [](const Figure* m1, const Figure* m2){
         return m1->getBound().bottomRight.y < m2->getBound().bottomRight.y;
     });
-    minimumPerimeter(u,v,p);
+    minimumPerimeter(figures,originalAndFirstHalf,secondHalf);
 
-    return {v,p};
+}
+
+void splitInternal(RNode* originalAndFirstHalf, RNode* secondHalf){
+    
+    std::vector<RNode*> regions = originalAndFirstHalf->regions;
+
+    //sort by x left
+    sort(regions.begin(), regions.end(),
+    [](const RNode* m1, const RNode* m2){
+        return m1->getBound().topLeft.x < m2->getBound().topLeft.x;
+    });
+    minimumPerimeter(regions,originalAndFirstHalf,secondHalf);
+    
+    //sort by x right
+    sort(regions.begin(), regions.end(),
+    [](const RNode* m1, const RNode* m2){
+        return m1->getBound().bottomRight.x < m2->getBound().bottomRight.x;
+    });
+    minimumPerimeter(regions,originalAndFirstHalf,secondHalf);
+
+    //same thing but with y left
+    sort(regions.begin(), regions.end(),
+    [](const RNode* m1, const RNode* m2){
+        return m1->getBound().topLeft.y < m2->getBound().topLeft.y;
+    });
+    minimumPerimeter(regions,originalAndFirstHalf,secondHalf);
+
+    //same thing but with y right
+    sort(regions.begin(), regions.end(),
+    [](const RNode* m1, const RNode* m2){
+        return m1->getBound().bottomRight.y < m2->getBound().bottomRight.y;
+    });
+    minimumPerimeter(regions,originalAndFirstHalf,secondHalf);
+
+
+}
+
+void split(RNode* originalAndFirstHalf, RNode* secondHalf){
+    if(originalAndFirstHalf->isLeaf())
+        splitLeaf(originalAndFirstHalf, secondHalf);
+    else
+        splitInternal(originalAndFirstHalf, secondHalf);
+}
+
+void handleOverflow(RNode* nodeOverflowed){
+    RNode* v = new RNode;
+    split(nodeOverflowed, v);
+    if(!nodeOverflowed->father){
+        RNode* root = new RNode;
+        addChildrenToFather(root, nodeOverflowed, v);
+    }
+    else{
+        RNode* w = nodeOverflowed->father;
+        // update MBR(u) in w or whatever that means
+        v->father = w;
+        w->regions.push_back(v);
+        w->bound = RNode::regionsMbb(w->regions);
+        if(w->regions.size() == ORDER + 1)
+            handleOverflow(w);
+    }
+}
+
+RNode* chooseSubtree(RNode* root, Figure* figure){
+
+    int minP = INF;
+    RNode* result = root;
+    
+    //choose region with minimum perimeter
+    for(auto region : root->regions) {
+        MBB aux = MBB::merge(figure->getBound(), region->bound);
+        
+        int p = aux.Perimeter();
+        if(p <= minP) {
+            minP = p;
+            result = region;
+        }
+        
+    }
+    return result;
+}
+
+RNode* insert(RNode* node, Figure* figure){
+    if(node->isLeaf()){
+        node->myFigures.push_back(new Figure(*figure));
+        node->bound = MBB::merge(node->bound, figure->getBound());
+        if(node->myFigures.size() == ORDER + 1)
+            handleOverflow(node);
+    }
+    else{
+        RNode* v = chooseSubtree(node, figure);
+        insert(v, figure);
+        node->bound = RNode::regionsMbb(node->regions);
+    }
+    if(node->father)
+        return node->father;
+    return node;    
 }
 
 template<class cnt>
-MBB RNode::regionsMbb( cnt c){
+MBB RNode::regionsMbb(cnt c){
+
+    if (c.size() == 0) return {};
 
     MBB res = c.front()->getBound();
     for(auto region: c){
@@ -118,83 +181,96 @@ MBB RNode::regionsMbb( cnt c){
     return res;
 }
 
+bool inArea(MBB b, Point p) {
+    if(b.topLeft == b.bottomRight){
+        if(p.closeEnough(b.topLeft)){
+            return true;
+        }
+        return false;
+    }
+    if(
+        (p.x > b.topLeft.x && p.x < b.bottomRight.x) &&
+        (p.y > b.topLeft.y && p.y < b.bottomRight.y)
+    )
+        return true;
+    return false;
+}
 
-void RNode::handleOverflow(Figure *f){
+RNode* Rtree::search(RNode* n, Point p) {
+    if (n->isLeaf()) {
+        for(auto f : n->myFigures) {
+            if (inArea(f->bound, p))
+                return n;
+        }
+        return nullptr;
+    }
 
-    RNode* u, *v;
-    if(this->isLeaf()){
-        auto p = split(this->myFigures);
-        u = p.first;
-        v = p.second;
-    }
-    else{
-        auto p = split(this->regions);
-        u = p.first;
-        v = p.second;
-    }
-    
-    if(!u->father){
-        RNode* root = new RNode;
-        root->regions.push_back(u);
-        root->regions.push_back(v);
-        root->bound = MBB::merge(u->bound, v->bound);
-        father = root;
-    }
-    else{
-        RNode* w = u->father;
-        w->bound = MBB::merge(w->bound, v->bound);
-        w->regions.push_back(v);
-        if(w->regions.size() > ORDER){
-            w->handleOverflow(f);
+    for (auto r : n->regions) {
+        if (inArea(r->bound, p)){
+            auto res = search(r, p);
+            if(res != nullptr) return res;
         }
     }
+    return nullptr;
 }
 
-bool RNode::insert(Figure *f){
-    std::cout << "insertando... \n";
-    if(!this->isLeaf()){
-        std::cout << "no soy hoja \n";
-        RNode *node = this->chooseSubtree(f);
-        return node->insert(f);
-    }
-    std::cout << "soy hoja\n";
-    
-    //if overflow
-    if(myFigures.size() == ORDER){
-        
-        myFigures.push_back(new Figure(*f));
-        ++cur_figs;        
-        this->handleOverflow(f);
-        
-        return true;
-    }
-
-    //else insert
-    //this->regions.push_back(new Rtree{f})
-    myFigures.push_back(new Figure(*f));
-    ++cur_figs;
-    this->bound = MBB::merge(this->bound, f->getBound());
-    //this->myFigure = f;
-    return true;
-
-}
-
-
-
-
-
-
-RNode* Rtree::search(Figure* f){
-    //TODO: search
-    return root->search(f);
+RNode* Rtree::search(Point p) {
+    return search(root, p);
 }
 
 bool Rtree::insert(Figure *f){
 
-    //insert
-    root->insert(f);
-
-    if(root->father != nullptr) root = root->father;
-
+    root = ::insert(root, f);
     return true;
+}
+
+void dfs(std::vector<Figure*> &s, RNode* u){
+
+    if(u->isLeaf()){
+        auto x = u->myFigures;
+        s.insert(s.begin(),x.begin(), x.end());
+        return ;
+    }
+
+    for(auto r: u->regions){
+        dfs(s,r);
+    }
+}
+
+void Rtree::reinsert(){
+    
+    std::vector<Figure*> s;
+
+    dfs(s,this->root);
+
+    this->root = new RNode;
+
+    for(auto fig: s){
+        insert(fig);
+    }
+}
+
+void Rtree::remove(Point p) {
+    // locate node with the figure
+    RNode* n = search(p);
+    
+    // if not found, do nothing
+    if (n == nullptr) return;
+
+    // remove figure from figures list
+    auto fun = [&p](Figure* f){
+        return inArea(f->getBound(), p);
+    };
+    auto it = std::find_if(n->myFigures.begin(), n->myFigures.end(), fun);
+
+    n->myFigures.erase(it);
+    // destroy the object properly (TODO)
+    // delete *it;
+
+    n->bound = RNode::regionsMbb(n->myFigures);
+
+    // if there aren't orphans, we are done
+    if (n->myFigures.size() >= ceil(ORDER/2.0) || n->father == nullptr) return;
+
+    reinsert();
 }
