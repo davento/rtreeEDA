@@ -250,22 +250,30 @@ void Rtree::remove(Point p) {
     // if there aren't orphans, we are done
     if (n->myFigures.size() >= ceil(ORDER/2) || n->father == nullptr) return;
 
-    // deal with the orphans
-    auto orphans = n->myFigures;
-    auto parent = n->father;
+    reinsert();
+}
 
-    auto itr = std::find(parent->regions.begin(), parent->regions.end(), n);
-    parent->regions.erase(itr);
-    // destroy the object properly (TODO)
-    // delete *it;
 
-    for(auto f: orphans){
-        ::insert(parent, f);
+void Rtree::reinsert(){
+    
+    std::vector<Figure*> s;
+
+    dfs(s,this->root);
+
+    for(auto fig: s){
+        insert(fig);
     }
-    
-    // if inner node satisfies the minimum number of regions quota we are done
-    if (parent->regions.size() >= ceil(ORDER/2))
-        return;
-    
-    // else rebuild the whole ass tree
+}
+
+void dfs(std::vector<Figure*> &s, RNode* u){
+
+    if(u->isLeaf()){
+        auto x = u->myFigures;
+        s.insert(s.begin(),x.begin(), x.end());
+        return ;
+    }
+
+    for(auto r: u->regions){
+        dfs(s,r);
+    }
 }
