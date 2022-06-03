@@ -223,5 +223,26 @@ bool Rtree::insert(Figure *f){
 }
 
 void void erase(Point p) {
+    // locate node with the figure
     RNode* n = search(p);
+    
+    // if not found, do nothing
+    if (n == nullptr) return;
+
+    // remove figure from figures list
+    for(auto it = n->myFigures.begin(), it != n->myFigures.end(), it++) {
+        if (inArea((*it)->bound, p)) {
+            it = n->myFigures.erase(it);
+            break;
+        }
+    }
+
+    // if there aren't orphans, we are done
+    if (n->myFigures.size() < ceil(ORDER/2)) return;
+
+    // else deal with orphans (recursively):
+    // - send to nearest node
+    // - split said node if necessary
+    // - resize tree accordingly
+
 }
