@@ -186,6 +186,12 @@ MBB RNode::regionsMbb(cnt c){
 }
 
 bool inArea(MBB b, Point p) {
+    if(b.topLeft == b.bottomRight){
+        if(p.closeEnough(b.topLeft)){
+            return true;
+        }
+        return false;
+    }
     if(
         (p.x > b.topLeft.x && p.x < b.bottomRight.x) &&
         (p.y > b.topLeft.y && p.y < b.bottomRight.y)
@@ -204,8 +210,10 @@ RNode* Rtree::search(RNode* n, Point p) {
     }
 
     for (auto r : n->regions) {
-        if (inArea(r->bound, p))
-            return search(r, p);
+        if (inArea(r->bound, p)){
+            auto res = search(r, p);
+            if(res != nullptr) return res;
+        }
     }
     return nullptr;
 }

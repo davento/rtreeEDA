@@ -62,14 +62,24 @@ struct Point{
 
     bool closeEnough(const Point& other){
         const int RADIO = 4;
+        std::cout << length(other)<< "\n";
         if(length(other) < RADIO*2)
             return true;
         return false;
 
     }
     void draw(SDL_Renderer* renderer) const {
+       // SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+       // SDL_RenderDrawPoint(renderer, x, y);
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        SDL_RenderDrawPoint(renderer, x, y);
+        int dim = 1;
+        SDL_Rect dot{
+            static_cast<int>(x - dim),
+            static_cast<int>(y - dim),
+            3*dim,
+            3*dim
+        };
+        SDL_RenderFillRect(renderer, &dot);
     }   
 };
 
