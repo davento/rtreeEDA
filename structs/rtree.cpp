@@ -184,9 +184,33 @@ MBB RNode::regionsMbb(cnt c){
     return res;
 }
 
-RNode* Rtree::search(Figure* f){
-    //TODO: search
-    return root->search(f);
+bool inArea(MBB b, Point p) {
+    if(
+        (p.x > b.topLeft.x && p.x < b.bottomRight.x) &&
+        (p.y > b.topLeft.y && p.y < b.bottomRight.y)
+    )
+        return true;
+    return false;
+}
+
+RNode* Rtree::search(RNode* n, Point p) {
+    if (n->isLeaf()) {
+        for(auto f : n->myFigures) {
+            if (inArea(f->bound, p))
+                return n;
+        }
+        return nullptr;
+    }
+
+    for (auto r : n->regions) {
+        if (inArea(r->bound, p))
+            return search(r, p);
+    }
+    return nullptr;
+}
+
+RNode* Rtree::search(Point p) {
+    return search(root, p);
 }
 
 bool Rtree::insert(Figure *f){
@@ -196,4 +220,8 @@ bool Rtree::insert(Figure *f){
     std::cout << "root: \n";
     root->print();
     return true;
+}
+
+void void erase(Point p) {
+    RNode* n = search(p);
 }
