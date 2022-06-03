@@ -11,7 +11,7 @@ bool Display::initialize(double dim){
         SDL_Log("No se pudo inicializar SDL: %s", SDL_GetError());
         return false;
     }
-    window = SDL_CreateWindow("Quadtree", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, dim, dim,0);
+    window = SDL_CreateWindow("Rtree", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, dim, dim,0);
     if(!window){
         SDL_Log("Falla en la creación de la ventana: %s", SDL_GetError());
     }
