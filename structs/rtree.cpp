@@ -243,6 +243,8 @@ void Rtree::reinsert(){
 
     dfs(s,this->root);
 
+    this->root = new RNode;
+
     for(auto fig: s){
         insert(fig);
     }
