@@ -222,7 +222,7 @@ bool Rtree::insert(Figure *f){
     return true;
 }
 
-void void erase(Point p) {
+void Rtree::erase(Point p) {
     // locate node with the figure
     RNode* n = search(p);
     
@@ -230,15 +230,16 @@ void void erase(Point p) {
     if (n == nullptr) return;
 
     // remove figure from figures list
-    for(auto it = n->myFigures.begin(), it != n->myFigures.end(), it++) {
-        if (inArea((*it)->bound, p)) {
-            it = n->myFigures.erase(it);
-            break;
-        }
-    }
+    auto fun = [&p](Figure* f){
+        return inArea(f->getBound(), p);
+    };
+    auto it = std::find_if(n->myFigures.begin(), n->myFigures.end(), fun);
+
+    n->myFigures.erase(it);
+
 
     // if there aren't orphans, we are done
-    if (n->myFigures.size() < ceil(ORDER/2)) return;
+    if (n->myFigures.size() >= ceil(ORDER/2)) return;
 
     // else deal with orphans (recursively):
     // - send to nearest node
