@@ -224,8 +224,28 @@ bool Rtree::insert(Figure *f){
     return true;
 }
 
-void adopt(RNode*n , Figure* orphan) {
+void dfs(std::vector<Figure*> &s, RNode* u){
 
+    if(u->isLeaf()){
+        auto x = u->myFigures;
+        s.insert(s.begin(),x.begin(), x.end());
+        return ;
+    }
+
+    for(auto r: u->regions){
+        dfs(s,r);
+    }
+}
+
+void Rtree::reinsert(){
+    
+    std::vector<Figure*> s;
+
+    dfs(s,this->root);
+
+    for(auto fig: s){
+        insert(fig);
+    }
 }
 
 void Rtree::remove(Point p) {
@@ -251,29 +271,4 @@ void Rtree::remove(Point p) {
     if (n->myFigures.size() >= ceil(ORDER/2) || n->father == nullptr) return;
 
     reinsert();
-}
-
-
-void Rtree::reinsert(){
-    
-    std::vector<Figure*> s;
-
-    dfs(s,this->root);
-
-    for(auto fig: s){
-        insert(fig);
-    }
-}
-
-void dfs(std::vector<Figure*> &s, RNode* u){
-
-    if(u->isLeaf()){
-        auto x = u->myFigures;
-        s.insert(s.begin(),x.begin(), x.end());
-        return ;
-    }
-
-    for(auto r: u->regions){
-        dfs(s,r);
-    }
 }
