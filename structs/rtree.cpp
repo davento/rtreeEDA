@@ -177,6 +177,8 @@ RNode* insert(RNode* node, Figure* figure){
 template<class cnt>
 MBB RNode::regionsMbb(cnt c){
 
+    if (c.size() == 0) return {};
+
     MBB res = c.front()->getBound();
     for(auto region: c){
         res = MBB::merge(res, region->getBound());
@@ -242,10 +244,11 @@ void Rtree::remove(Point p) {
     n->myFigures.erase(it);
     // destroy the object properly (TODO)
     // delete *it;
+
     n->bound = RNode::regionsMbb(n->myFigures);
 
     // if there aren't orphans, we are done
-    if (n->myFigures.size() >= ceil(ORDER/2) || n->father == nullptr) return;
+    if (n->myFigures.size() >= ceil(ORDER/2)) return;
 
     // deal with the orphans
     auto orphans = n->myFigures;
