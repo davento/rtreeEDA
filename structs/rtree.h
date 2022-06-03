@@ -22,6 +22,20 @@ struct RNode{
   size_t cur_figs{};
   std::vector<RNode*> regions;
 
+  void print() const {
+    std::cout << "----------\n";
+    std::cout << "number of regions: "<< regions.size() << "\n";
+    std::cout << "number of figures: "<< myFigures.size() << "\n";
+    std::cout << "perimeter: " << bound.Perimeter() << "\n";
+    std::cout << "----------\n";
+    if(regions.size()){
+      std::cout << "children: {\n";
+      for(const auto &region: regions)
+        region->print();
+      std::cout << "}\n";
+    }
+  }
+
   template<class cnt>
   static MBB regionsMbb( cnt c);
   

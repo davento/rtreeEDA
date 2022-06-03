@@ -81,7 +81,7 @@ struct MBB{
     MBB(): topLeft({40000,40000}), bottomRight({0,0}){}
 
 
-    int Perimeter(){
+    int Perimeter() const {
         
         int l = this->bottomRight.x-this->topLeft.x;
         int w = this->bottomRight.y-this->topLeft.y;

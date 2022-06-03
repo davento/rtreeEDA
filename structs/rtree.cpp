@@ -3,10 +3,10 @@
 
 void addChildrenToFather(RNode* root, RNode* nodeOverflowed, RNode* v){
     root->bound = nodeOverflowed->bound;
-    root->bound = MBB::merge(root->bound, v->bound);
     nodeOverflowed->father = v->father = root;
     root->regions.push_back(nodeOverflowed);
     root->regions.push_back(v);
+    root->bound = RNode::regionsMbb(root->regions);
 }
 
 template<class cnt>
@@ -19,7 +19,7 @@ void minimumPerimeter(cnt &u, RNode* v, RNode* p){
     cnt s2;
 
     MBB m1 = v->bound;
-    MBB m2 = p->bound;
+    MBB m2 = v->bound;
     
     for( int i = ceil(m * 0.4); i <= m - ceil(m * 0.4); i++){
         // s1 = first i regions (points)
@@ -123,16 +123,13 @@ void handleOverflow(RNode* nodeOverflowed){
     if(!nodeOverflowed->father){
         RNode* root = new RNode;
         addChildrenToFather(root, nodeOverflowed, v);
-        if(nodeOverflowed->father)
-            std::cout << "i have a father\n";
-        std::cout << nodeOverflowed->myFigures.size() << " " << nodeOverflowed->regions.size() << "\n";
-        std::cout << v->myFigures.size() << " " << v->regions.size() << "\n";
     }
     else{
         RNode* w = nodeOverflowed->father;
         // update MBR(u) in w or whatever that means
         v->father = w;
         w->regions.push_back(v);
+        w->bound = RNode::regionsMbb(w->regions);
         if(w->regions.size() == ORDER + 1)
             handleOverflow(w);
     }
@@ -148,8 +145,9 @@ RNode* chooseSubtree(RNode* root, Figure* figure){
         MBB aux = MBB::merge(figure->getBound(), region->bound);
         
         int p = aux.Perimeter();
-
+        std::cout << minP << " vs. " << p << "\n";
         if(p <= minP) {
+            std::cout << "gana: "<< p << "\n";
             minP = p;
             result = region;
         }
@@ -165,13 +163,11 @@ RNode* insert(RNode* node, Figure* figure){
         node->bound = MBB::merge(node->bound, figure->getBound());
         if(node->myFigures.size() == ORDER + 1)
             handleOverflow(node);
-        if(node->father)
-            std::cout << "indeed\n";
     }
     else{
         RNode* v = chooseSubtree(node, figure);
         insert(v, figure);
-        node->bound = MBB::merge(node->bound, figure->getBound());
+        node->bound = RNode::regionsMbb(node->regions);
     }
     if(node->father)
         return node->father;
@@ -197,11 +193,7 @@ bool Rtree::insert(Figure *f){
 
     //insert
     root = ::insert(root, f);
-    std::cout << root->father <<std::endl;
-    std::cout << root->bound.Perimeter() <<std::endl;
-    std::cout << "hijos: "<< root->regions.size() << " \n a\n";
-    for(auto region: root->regions)
-        std::cout<< region->myFigures.size() <<" ";
-    std::cout << "a \n";
+    std::cout << "root: \n";
+    root->print();
     return true;
 }
