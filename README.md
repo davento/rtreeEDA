@@ -22,9 +22,9 @@ para hacerlo.
 
 Una vez cubiertos estos prerequisitos, podemos ejecutarlo.
 
-### Ejecución
+### Compilación
 
-Para poder hacer la ejecución, ofrecemos dos formas:
+Para poder hacer la compilación, ofrecemos dos formas:
 
 1. Usando el Makefile adjunto:
 ```
@@ -35,6 +35,16 @@ make build
 ```
 g++ main.cpp Display.cpp structs/rtree.cpp -lSDL2
 ```
+
+### Ejecución
+
+Correr el ejecutable que resulta de la compilación.
+
+Los comandos son sencillos:
+- **Click izquierdo:** añadir un punto (sea independiente o para formar una figura)
+- **Click derecho:** remover una figura
+
+El R-Tree se actualiza automáticamente tras recibir este input.
 
 ## Estructuras
 
