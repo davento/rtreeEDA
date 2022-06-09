@@ -47,7 +47,87 @@ Los comandos son sencillos:
 El R-Tree se actualiza automáticamente tras recibir este input.
 
 ## Estructuras
+Comencemos con la estructura Point la cual define a un punto en la pantalla.
+```cpp
+struct Point{
+    int x, y;
 
+    // min y max van a crear un nuevo punto con las componentes minimas 
+    // y maximas de cada par de puntos respectivamente
+    static inline Point max(const Point &m1, const Point &m2);
+    static inline Point min(const Point &m1, const Point &m2);
+
+    // constructor
+    Point(int pos_x, int pos_y);
+
+    // operadores 
+    friend bool operator==(const Point& left, const Point& other);
+    friend bool operator!=(const Point& left, const Point& other);
+
+    // distancia cartesiana entre 2 puntos (este y el otro)
+    double length(const Point& other);
+    // función booleana que te dice si el punto "other" esta lo suficientemente
+    // cerca de el punto que llama este metodo
+    bool closeEnough(const Point& other);
+    // dibuja el punto en la pantalla
+    void draw(SDL_Renderer* renderer) const;
+};
+```
+Seguimos con la estructura MBB que define el minimum bounding box de alguna figura 
+o punto.
+
+```cpp
+struct MBB{
+
+    //top left, bottom right
+    Point topLeft, bottomRight;
+
+    MBB();
+    // devuelve el perimetro del MBB
+    int Perimeter() const;
+    // dibuja el MBB con el color por defecto (azul oscuro)
+    void draw(SDL_Renderer* renderer) const;
+    // dibuja el MBB con un color especifico
+    void draw(SDL_Renderer* renderer, Color color) const;
+    // crea un nuevo MBB que encapsula m1 y m2
+    static MBB merge(const MBB& m1, const MBB& m2);
+    // regresa los valores  del MBB a sus valores por defecto
+    void clear();
+
+};
+```
+Finalmente tenemos la estructura Figure la cual es una serie de puntos y un MBB.
+
+```cpp
+struct Figure{
+
+    private:
+
+        std::vector<Point> points;
+        MBB bound;
+
+        friend class Rtree;
+
+        static inline Point max(const Point &m1, const Point &m2);
+
+        static inline Point min(const Point &m1, const Point &m2);
+        // actualiza el MBB con el nuevo punto agregado
+        void updateBound(const Point& newPoint);
+
+    public:
+
+        Figure();
+
+        MBB getBound() const;
+        // agrega un punto a la figura y retorna falso en caso la figura sea cerrada
+        bool addPoint(const Point& p);
+        // retorna la figura a sus valores por defecto
+        void clear();
+        // dibuja la figura
+        void draw(SDL_Renderer* renderer) const;
+
+};
+```
 
 ## Funciones
 
