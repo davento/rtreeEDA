@@ -188,10 +188,9 @@ void handleOverflow(RNode* nodeOverflowed){
 }
 ```
 
-
 ### Búsqueda
 
-El Rtree cuenta con el método `search`, el cual recibe un punto como argumento.
+El R-tree cuenta con el método `search`, el cual recibe un punto como argumento.
 
 ```cpp
 RNode* Rtree::search(Point p) {
@@ -242,3 +241,6 @@ Se muestra una ilustración del proceso a continuación:
 ![search](./images/search.png)
 
 ### Borrado
+
+Para hacer el borrado empleamos el método `remove`.
+
