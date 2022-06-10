@@ -47,7 +47,9 @@ Los comandos son sencillos:
 El R-Tree se actualiza automáticamente tras recibir este input.
 
 ## Estructuras
-Comencemos con la estructura Point la cual define a un punto en la pantalla.
+
+### Point 
+Comencemos con la estructura **Point**, la cual define a un punto en la pantalla. Esta cuenta con dos atributos que indican sus coordenadas. Sus métodos se explican en la misma estructura:
 ```cpp
 struct Point{
     int x, y;
@@ -73,9 +75,9 @@ struct Point{
     void draw(SDL_Renderer* renderer) const;
 };
 ```
-Seguimos con la estructura MBB que define el minimum bounding box de alguna figura 
-o punto.
 
+### Minimum Bounding Box
+Seguimos con la estructura MBB, que define el minimum bounding box de alguna figura o punto.
 ```cpp
 struct MBB{
 
@@ -96,8 +98,8 @@ struct MBB{
 
 };
 ```
-Finalmente tenemos la estructura Figure la cual es una serie de puntos y un MBB.
-
+### Figure
+Finalmente tenemos la estructura Figure, la cual es un conjunto de puntos rodeado por un MBB.
 ```cpp
 struct Figure{
 
@@ -128,15 +130,13 @@ struct Figure{
 
 };
 ```
+> Cabe mencionar de que consideramos un **punto** que va a insertarse en el R-Tree como una figura de un sólo punto, es decir una figura de 1x1, en vez de una instancia de la estructura punto, motivo por el cual las funciones a continuación funcionan para tanto "puntos" como "figuras".
 
 ## Funciones
 
 ### Inserción
 
-El Rtree cuenta con el metodo "insert" el cual recibe una figura como argumento
-y este va a llamar a la función insert que recibe un nodo y una figura.
-
-Metodo insert:
+El Rtree cuenta con el método `insert` el cual recibe una figura como argumento y este va a llamar a la función insert que recibe un nodo y una figura.
 ```cpp
 bool Rtree::insert(Figure *f){
 
@@ -144,13 +144,7 @@ bool Rtree::insert(Figure *f){
     return true;
 }
 ```
-La función insert es una función recursiva la cual tiene como caso de parada
-si el nodo que se pasa como argumento es un nodo hoja, en caso contrario se 
-buscará el sub-árbol al que puede pertenecer para así insertar la figura.
-En caso exista un desbordamiento se va llamar la función handleOverflow.
-Finalmente la función retorna la raíz del árbol.
-
-Función insert:
+La función `insert` es una función que busca el sub-árbol al que le corresponde ir la figura a insertar de manera recursiva apoyándose de la función `chooseSubtree`. Una vez que lo encuentre lo hará, y, en caso exista un desbordamiento, llamará a la función `handleOverflow`. Finalmente, la función retorna la raíz del árbol.
 ```cpp
 RNode* insert(RNode* node, Figure* figure){
     if(node->isLeaf()){
@@ -173,10 +167,7 @@ RNode* insert(RNode* node, Figure* figure){
 }
 ```
 
-La función handleOverflow va a repartir el nodo desbordado en 2 nodos y en caso 
-sea necesario va a crear un nodo padre para el par de nodos.
-
-Función handleOverflow:
+La función `handleOverflow` va a repartir el nodo desbordado en 2 nodos y, en caso sea necesario, va a crear un nodo padre para el par de nodos.
 ```cpp
 void handleOverflow(RNode* nodeOverflowed){
     RNode* v = new RNode;
@@ -200,5 +191,54 @@ void handleOverflow(RNode* nodeOverflowed){
 
 ### Búsqueda
 
+El Rtree cuenta con el método `search`, el cual recibe un punto como argumento.
+
+```cpp
+RNode* Rtree::search(Point p) {
+    return search(root, p);
+}
+```
+
+Este va a llamar a la función `search`, la cual recibe un punto y un nodo para retornar la primera figura que contenga al punto. Si no se encuentra ninguna figura candidata, se retornara nullptr.
+
+```cpp
+RNode*  Rtree::search(RNode*  n, Point  p) {
+
+	if (n->isLeaf()) {
+		for(auto  f : n->myFigures) {
+			if (inArea(f->bound, p))
+				return  n;
+		}
+		return  nullptr;
+	}
+	for (auto  r : n->regions) {
+		if (inArea(r->bound, p)){
+			auto  res  =  search(r, p);
+			if(res  !=  nullptr) return  res;
+		}
+	}
+	return  nullptr;
+}
+```
+Cabe mencionar de que **nuestra definición de que un punto este contenido en una región, o figura, es que esta se encuentre dentro del MBB definido por el nodo figura o nodo región.** Para corroborar esto se usa la funcion `inArea()`.
+```cpp
+bool inArea(MBB b, Point p) {
+    if(b.topLeft == b.bottomRight){
+        if(p.closeEnough(b.topLeft)){
+            return true;
+        }
+        return false;
+    }
+    if(
+        (p.x > b.topLeft.x && p.x < b.bottomRight.x) &&
+        (p.y > b.topLeft.y && p.y < b.bottomRight.y)
+    )
+        return true;
+    return false;
+}
+```
+
+Se muestra una ilustración del proceso a continuación:
+![search](./images/search.png)
 
 ### Borrado
