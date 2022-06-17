@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include "figures.hpp"
+#include <queue>
 
 #define ORDER 3
 
@@ -84,6 +85,7 @@ class Rtree{
 
     RNode* root;
     RNode* search(RNode*, Point);
+    std::vector<Figure*> df;
 
   public:
     
@@ -97,9 +99,14 @@ class Rtree{
     void remove(Point p);
     void reinsert();
 
+    void depthFirst(Point *p);
     void draw(SDL_Renderer* renderer) const {
       Color color(0,40,0);
       root->draw(renderer, color);
+    }
+    void drawDepthFirst(SDL_Renderer* renderer) const {
+      for(const auto& elem: df)
+        elem->draw(renderer, Color(0,255,0));
     }
 
 };

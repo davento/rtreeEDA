@@ -1,5 +1,7 @@
 #include "Display.h"
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_events.h>
+#include <SDL2/SDL_mouse.h>
 #include <iostream>
 
 Display::Display(): isRunning(false), window(nullptr), renderer(nullptr), r(nullptr){}
@@ -47,6 +49,7 @@ void Display::processInputs(){
             case SDL_MOUSEBUTTONDOWN:
                 {
                     int x, y;
+                    
                     SDL_GetMouseState(&x, &y);
                     if(event.button.button == SDL_BUTTON_LEFT){
                        if(!fig.addPoint({x,y})){
@@ -58,8 +61,17 @@ void Display::processInputs(){
                         r->remove({x,y});
                         fig.clear();
                     }
+                    break;
                 }
-
+            default:
+                {
+                    int x, y;
+                    
+                    SDL_GetMouseState(&x, &y);
+                    Point po(x,y);
+                    r->depthFirst(&po);
+                    break;
+                }
         }
     }
     const Uint8* state = SDL_GetKeyboardState(NULL);
@@ -78,5 +90,6 @@ void Display::generateOutput(){
     //for(const auto& figure: figures)
     //    figure.draw(renderer);
     r->draw(renderer);
+    r->drawDepthFirst(renderer);
     SDL_RenderPresent(renderer);
 }

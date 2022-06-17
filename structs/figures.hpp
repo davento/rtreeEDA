@@ -205,6 +205,20 @@ struct Figure{
             bound.draw(renderer);
         }
 
+        void draw(SDL_Renderer* renderer, Color color) const {
+            if(!points.size())
+                return;
+            for(const auto& point: points) 
+                point.draw(renderer);
+            if(points.size() <= 1)
+                return;
+            SDL_SetRenderDrawColor(renderer, color.RGB[0], color.RGB[1], color.RGB[2], 255);
+            for(size_t i = 0; i != points.size() - 1; i++)
+                SDL_RenderDrawLine(renderer, points[i].x, points[i].y, points[i+1].x, points[i+1].y);
+            bound.draw(renderer);
+        }
+
+
 };
 
 #endif

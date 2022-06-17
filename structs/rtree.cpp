@@ -1,4 +1,5 @@
 #include "rtree.h"
+#include <queue>
 
 
 void addChildrenToFather(RNode* root, RNode* nodeOverflowed, RNode* v){
@@ -198,6 +199,7 @@ bool inArea(MBB b, Point p) {
 
 RNode* Rtree::search(RNode* n, Point p) {
     if (n->isLeaf()) {
+
         for(auto f : n->myFigures) {
             if (inArea(f->bound, p))
                 return n;
@@ -274,3 +276,67 @@ void Rtree::remove(Point p) {
 
     reinsert();
 }
+
+double distMbbtoP(Point* p, MBB* mb){
+  
+  double dist_y;
+  double dist_x;
+  if(mb->topLeft.y >= p->y && p->y >= mb->bottomRight.y) dist_y = 0;
+  else{
+    //calcular
+    dist_y = std::min(
+      abs(p->y - mb->topLeft.y),
+      abs(p->y - mb->bottomRight.y)
+    );
+  }
+  if(mb->topLeft.x >= p->x && p->x >= mb->bottomRight.x) dist_x = 0;
+  else{
+    //calcular
+    dist_x = std::min(
+      abs(p->x - mb->topLeft.x),
+      abs(p->x - mb->bottomRight.x)
+    );
+  }
+
+  return sqrt( dist_x * dist_x + dist_y * dist_y);
+}
+
+template<typename TCmp>
+void k_depthFirst(std::priority_queue<Figure*, std::vector<Figure*>, TCmp> &p,
+                const int &k,RNode* u){
+
+    if(u->isLeaf()){
+        auto x = u->myFigures;
+
+        for(auto f: x){
+            p.push(f);
+            if(p.size() > static_cast<const unsigned int>(k)) p.pop();
+        }
+        return ;
+    }
+
+    for(auto r: u->regions){
+        k_depthFirst(p,k,r);
+    }
+}
+
+void Rtree::depthFirst(Point *p){
+    const int  k =5;
+    auto func  = [p](const Figure* f1, const Figure*f2){
+        MBB m1 = f1->getBound();
+        MBB m2 = f2->getBound();
+        return distMbbtoP(p, &m1) < distMbbtoP(p, &m2);
+    };
+
+
+    std::priority_queue<Figure*, std::vector<Figure*>, decltype(func) > s(func);
+    k_depthFirst(s,k,root);
+    df.clear();
+    while(!s.empty()){
+        df.push_back(s.top());
+        s.pop();
+    }
+}
+
+
+
