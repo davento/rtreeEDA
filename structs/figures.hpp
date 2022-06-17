@@ -98,7 +98,24 @@ struct MBB{
         return std::abs(2*(l+w));
     }
 
-    
+    Point centroid(){
+        double dx = abs(topLeft.x - bottomRight.x);
+        double dy = abs(topLeft.y - bottomRight.y);
+
+        return Point{
+            topLeft.x - dx/2,
+            bottomRight.y + dy/2
+        };
+    }
+
+    inline double radious(){
+
+        double dx = abs(topLeft.x - bottomRight.x);
+        double dy = abs(topLeft.y - bottomRight.y);
+
+        return sqrt(dx*dx + dy*dy);
+    }
+
     void draw(SDL_Renderer* renderer) const {
         if(topLeft.x == 40000 && topLeft.y == 40000)
             return;
