@@ -2,6 +2,8 @@
 #define POINT_H
 
 #include <SDL2/SDL.h>
+#include <math.h>
+
 
 struct Point final{
 
@@ -16,8 +18,8 @@ struct Point final{
     friend inline bool operator==(const Point& left, const Point& right);
     friend inline bool operator!=(const Point& left, const Point& right);
 
-    inline double length(const Point& other) const;
-    inline bool closeEnough(const Point& other, const int RADIUS) const;
+    inline double distance(const Point& other) const;
+    inline bool insideRadious(const Point& other, const int RADIUS) const;
     //TODO: AGREGAR PARAMETRO COLOR
     void draw(SDL_Renderer* renderer) const;
     
