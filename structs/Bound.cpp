@@ -49,3 +49,20 @@ void MBR::draw(SDL_Renderer* renderer) const {
     SDL_RenderDrawLine(renderer, lx, by, rx , by);
     SDL_RenderDrawLine(renderer, rx, ty, rx , by);
 }
+
+
+bool MBR::inArea(Point p){
+    
+    if(this->topLeft == this->bottomRight){
+        if(p.closeEnough(this->topLeft,3)){
+            return true;
+        }
+        return false;
+    }
+    if(
+        (p.x > this->topLeft.x && p.x < this->bottomRight.x) &&
+        (p.y > this->topLeft.y && p.y < this->bottomRight.y))
+        return true;
+        
+    return false;
+}

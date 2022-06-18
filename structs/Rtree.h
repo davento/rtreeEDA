@@ -5,7 +5,7 @@
 #include "Figure.h"
 #include "InternalNode.h"
 
-template<typename T, unsigned ORDER>
+template<typename T = MBR, unsigned ORDER>
 class Rtree{
     public:
         typedef T boundType;
@@ -15,12 +15,12 @@ class Rtree{
         InternalNode<T,ORDER>* search(const Point&);
         bool insert(Figure*);
         void remove(const Point&);
-        std::vector<Figure*> depthFirst(const Point&);
+        // std::vector<Figure*> depthFirst(const Point&);
         void draw(SDL_Renderer* renderer) const;
         
     private:
         InternalNode<T,ORDER>* root;
-        void reinsert();
+        // void reinsert();
         InternalNode<T,ORDER>* search(InternalNode<T,ORDER>*, const Point&);
         void split(InternalNode<T,ORDER>* original, InternalNode<T,ORDER>* secondHalf);
         void minimumPerimeter(std::vector<Node<T,ORDER>*>& u, InternalNode<T,ORDER>* v, InternalNode<T,ORDER>* p);

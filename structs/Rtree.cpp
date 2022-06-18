@@ -29,26 +29,51 @@ bool Rtree<T,ORDER>::insert(Figure* fig){
 template <typename T, unsigned ORDER>
 void Rtree<T,ORDER>::remove(const Point& p){
     InternalNode<T, ORDER>* n = search(p);
-    if(!n)
-        return ;
+    if(n == nullptr || !n->isLeaf() ) return ;
+    
     auto fun = [&p](FigureNode<T,ORDER>* node){
-        //TODO: CHECKEAR SI EXISTEN ESTOS METODOS Y LA FUNCION INAREA
-        return inArea((node->getFigure())->getBound(), p);   
+        return  (node->getFigure()->getBound())->inArea(p);
     };
     auto it = std::find_if(n->regions.begin(), n->regions.end(), fun);
     (n->regions).erase(it);
-    //TODO: CREAR REGIONSB QUE ES REGIONSMBB SOLO QUE RENOMBRADO XQ AHORA PUEDEN
-    //SER CIRCULOS
     n->myBound = Node<T,ORDER>::regionsB(n->regions);
     if(n->regions.size() >= std::ceil(ORDER/2) || n->father == nullptr) 
         return ;
-    reinsert();
+
+    //TODO: Reinsert
+    // reinsert();
 }
 
 template <typename T, unsigned ORDER>
-std::vector<Figure*> Rtree<T, ORDER>::depthFirst(const Point& p) const{
-    constexpr int k = 5;
-    auto func = [&p](Figure* f1, Figure* f2){
-        
-    }
+void Rtree<T,ORDER>::draw(SDL_Renderer* renderer) const{
+    Color color(0,40,0);
+    root->draw(renderer, color);
 }
+
+// template <typename T, unsigned ORDER>
+// void Rtree<T,ORDER>::reinsert(SDL_Renderer* renderer) const{
+//     Color color(0,40,0);
+//     root->draw(renderer, color);
+// }
+
+template <typename T, unsigned ORDER>
+InternalNode<T,ORDER>* search(InternalNode<T,ORDER>* node, const Point& p){
+
+    if(node->isLeaf()){
+        for(FigureNode<T,ORDER>* f: node->regions){
+            
+            if(f->getFigure()->getBound()->inArea(p)){
+                return node;
+            }
+        }
+    }
+
+    for(InternalNode<T,ORDER>* r: node->regions){
+        if(r->myBound->inArea(p)){
+            InternalNode<T,ORDER>* res = search(r,p);
+            if(res != nullptr) return res;
+        }
+    }
+    return nullptr;
+}
+

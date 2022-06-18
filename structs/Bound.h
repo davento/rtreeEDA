@@ -24,7 +24,9 @@ class Bound{
         virtual void merge(const Point&) = 0;
         //TODO: Agregar color luego
         virtual void draw(SDL_Renderer* renderer) const = 0;
-
+        //used un Rtree remove
+        virtual bool inArea(Point p) = 0;
+        
     protected:
         Point topLeft, bottomRight;
 
@@ -46,6 +48,7 @@ class MBR final: public Bound{
         //TODO: Agregar color luego
         virtual void draw(SDL_Renderer* renderer) const override;
 
+        virtual bool inArea(Point p) override;
 };
 
 #endif

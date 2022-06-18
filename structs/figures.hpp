@@ -1,6 +1,7 @@
 #ifndef _FIGURES_HPP_
 #define _FIGURES_HPP_
 
+
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_stdinc.h>
 #include <vector>
