@@ -13,16 +13,18 @@ Bound* Figure::getBound(){
 bool Figure::addPoint(const Point&p){
 
     if (points.size() == 0 or
-        !points.front().insideRadious(p,4))
+        !points.front().closeEnough(p,4))
     {
         points.push_back(p);
         myBound->merge(p);
         return true;
     }
-    else(points.front().insideRadious(p,4)){
+    else if(points.front().closeEnough(p,4))
+    {
         points.push_back(points.front());
         return false;
     }
+    return true;
 }
 
 void Figure::draw(SDL_Renderer* renderer) const{

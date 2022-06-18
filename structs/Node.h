@@ -3,10 +3,14 @@
 
 #include "Bound.h"
 
+template <typename, unsigned>
+class Rtree;
+
 template <typename T, unsigned ORDER>
 class Node{
     public:
         typedef T boundType;
+        friend class Rtree<T,ORDER>;
 
         Node();
         virtual ~Node();
@@ -16,7 +20,7 @@ class Node{
         virtual void draw(SDL_Renderer* renderer) const = 0;
     protected:
         Node* father;
-        Bound* myBound;
+        boundType* myBound;
         static constexpr unsigned order = ORDER;
 };
 

@@ -3,6 +3,7 @@
 
 #include "Node.h"
 #include "Figure.h"
+#include "InternalNode.h"
 
 template<typename T, unsigned ORDER>
 class Rtree{
@@ -11,16 +12,20 @@ class Rtree{
         Rtree();
         ~Rtree();
         //TODO: chequear si podemos agregar const al retorno
-        Node<T,ORDER>* search(const Point&);
+        InternalNode<T,ORDER>* search(const Point&);
         bool insert(Figure*);
         void remove(const Point&);
         std::vector<Figure*> depthFirst(const Point&);
         void draw(SDL_Renderer* renderer) const;
         
     private:
-        Node<T,ORDER>* root;
+        InternalNode<T,ORDER>* root;
         void reinsert();
-        Node<T,ORDER>* search(Node<T,ORDER>*, const Point&);
+        InternalNode<T,ORDER>* search(InternalNode<T,ORDER>*, const Point&);
+        void split(InternalNode<T,ORDER>* original, InternalNode<T,ORDER>* secondHalf);
+        void minimumPerimeter(std::vector<Node<T,ORDER>*>& u, InternalNode<T,ORDER>* v, InternalNode<T,ORDER>* p);
+        void handleOverflow(InternalNode<T,ORDER>* overFlowed);
+
 };
 
 #endif

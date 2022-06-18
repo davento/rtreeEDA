@@ -18,7 +18,7 @@ inline double Point::distance(const Point& other) const{
     return std::sqrt(std::pow(other.x - x, 2) + std::pow(other.y - y, 2));
 }
 
-inline bool Point::insideRadious(const Point& other, const int RADIUS) const{
+bool Point::closeEnough(const Point& other, const int RADIUS) const{
     return this->distance(other) < RADIUS * 2;
 }
 
@@ -37,8 +37,7 @@ void Point::draw(SDL_Renderer* renderer) const{
     SDL_RenderFillRect(renderer, &dot);    
 }
 
-
-inline static Point createMinPoint(const Point& p1, const Point& p2){
+Point Point::createMinPoint(const Point& p1, const Point& p2){
     return Point(
             std::min(p1.x, p2.x),
             std::min(p1.y, p2.y)
@@ -46,9 +45,10 @@ inline static Point createMinPoint(const Point& p1, const Point& p2){
 } 
 
 
-inline static Point createMaxPoint(const Point& p1, const Point& p2){
+Point Point::createMaxPoint(const Point& p1, const Point& p2){
     return Point(
             std::max(p1.x, p2.x),
             std::max(p1.y, p2.y)
     );
-} 
+}
+ 

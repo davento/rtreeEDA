@@ -30,7 +30,7 @@ class Bound{
 
 };
 
-class MBR: public Bound{
+class MBR final: public Bound{
 
     public:
         MBR();

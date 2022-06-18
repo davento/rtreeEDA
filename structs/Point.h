@@ -4,7 +4,6 @@
 #include <SDL2/SDL.h>
 #include <math.h>
 
-
 struct Point final{
 
     int x, y;  
@@ -19,12 +18,14 @@ struct Point final{
     friend inline bool operator!=(const Point& left, const Point& right);
 
     inline double distance(const Point& other) const;
-    inline bool insideRadious(const Point& other, const int RADIUS) const;
+    bool closeEnough(const Point& other, const int RADIUS) const;
     //TODO: AGREGAR PARAMETRO COLOR
     void draw(SDL_Renderer* renderer) const;
     
-    inline static Point createMinPoint(const Point&, const Point&);
-    inline static Point createMaxPoint(const Point&, const Point&);
+    static Point createMinPoint(const Point&, const Point&);
+    static Point createMaxPoint(const Point&, const Point&);
 };
+
+
 
 #endif
