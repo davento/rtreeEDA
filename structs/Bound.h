@@ -5,8 +5,10 @@
 
 class Bound{
 
+    constexpr int INF = 40000;
+
     public:
-        Bound() = default;
+        Bound();
         Bound(const Point&, const Point&);
         Bound(const Bound&) = default;
         virtual double perimeter() const = 0;
