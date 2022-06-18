@@ -5,7 +5,7 @@
 
 class Bound{
 
-    constexpr int INF = 40000;
+    static constexpr int INF = 40000;
 
     public:
         Bound();

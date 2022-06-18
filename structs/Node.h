@@ -8,7 +8,7 @@ class Node{
     public:
         typedef T boundType;
 
-        Node(Bound*);
+        Node();
         virtual ~Node();
 
         virtual inline bool isLeaf() const = 0;

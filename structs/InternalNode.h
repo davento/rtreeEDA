@@ -8,6 +8,7 @@ template <typename T, unsigned ORDER>
 class InternalNode final: public Node<T,ORDER>{
     public:
         InternalNode();
+        inline bool isLeaf() const override;
     private:
         std::vector<Node<T,ORDER>*> regions;
 };

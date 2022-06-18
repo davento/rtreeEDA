@@ -1,7 +1,7 @@
 #include "Point.h"
+#include <algorithm>
 
-
-explicit Point::Point(int posX, int posY): x(posX), y(posY){
+Point::Point(int posX, int posY): x(posX), y(posY){
 
 }
 
