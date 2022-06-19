@@ -77,3 +77,77 @@ InternalNode<T,ORDER>* search(InternalNode<T,ORDER>* node, const Point& p){
     return nullptr;
 }
 
+
+template<typename T, unsigned ORDER>
+T Rtree<T,ORDER>::mergeRegions(std::vector<Node<T,ORDER>*>& nodes){
+    
+    T res  = nodes.front()->myBound;
+    for(InternalNode<T,ORDER>* r: nodes){
+        res->merge(r->myBound);
+    }
+
+    return res;
+}
+
+template <typename T, unsigned ORDER>
+void Rtree<T,ORDER>::minimumPerimeter(std::vector<Node<T,ORDER>*>& u, InternalNode<T,ORDER>* v, InternalNode<T,ORDER>* p){
+    
+    int m = u.size();
+
+    std::vector<Node*> s1;
+    std::vector<Node*> s2;
+
+    boundType m1 = v->bound;
+    boundType m2 = v->bound;
+
+
+    for( int i = ceil(m * 0.4); i <= m - ceil(m * 0.4); i++){
+        // s1 = first i regions (points)
+        // s2 = the other i regions (points)
+        s1 = {u.begin(), u.begin() + i};
+        s2 = {u.begin()+i , u.end() };
+        
+        //get mbb and choose minimum
+        T t1 = mergeRegions(s1);
+        T t2 = mergeRegions(s2);        
+        
+        if(t1.metric() + t2.metric() < m1.metric() + m2.metric()){
+            m1 = t1; m2 = t2;
+
+            *(v->myBound) = m1; v->regions = s1;
+            *(p->myBound) = m2; p->regions = s2;
+        }
+    }
+}
+
+
+template <typename T, unsigned ORDER>
+void addChildrenToFather(
+    InternalNode<T,ORDER>* root, 
+    InternalNode<T,ORDER>* nodeOverflowed, InternalNode<T,ORDER>* v){
+
+    root->myBound = nodeOverflowed->myBound;
+    nodeOverflowed->father = v->father = root;
+    root->regions.push_back(nodeOverflowed);
+    root->regions.push_back(v);
+    root->myBound  = mergeRegions(root->regions);
+}
+
+template <typename T, unsigned ORDER>
+void Rtree<T,ORDER>::handleOverflow(InternalNode<T,ORDER>* overFlowed){
+    InternalNode<T,ORDER> * v= new InternalNode<T,ORDER> ();
+    split(overFlowed, v);
+    if(overFlowed->father){
+        InternalNode root = new InternalNode<T,ORDER>();
+        //addChildrenToFather(root, nodeOverflowed, v);
+    }
+    else{
+        InternalNode<T,ORDER> * w = overFlowed->father;
+        // update MBR(u) in w or whatever that means
+        v->father = w;
+        w->regions.push_back(v);
+        w->bound = mergeRegions(w->regions);
+        if(w->regions.size() == ORDER + 1)
+            handleOverflow(w);
+    }
+}

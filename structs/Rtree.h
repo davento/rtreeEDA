@@ -5,7 +5,7 @@
 #include "Figure.h"
 #include "InternalNode.h"
 
-template<typename T = MBR, unsigned ORDER>
+template<typename T , unsigned ORDER>
 class Rtree{
     public:
         typedef T boundType;
@@ -26,6 +26,11 @@ class Rtree{
         void minimumPerimeter(std::vector<Node<T,ORDER>*>& u, InternalNode<T,ORDER>* v, InternalNode<T,ORDER>* p);
         void handleOverflow(InternalNode<T,ORDER>* overFlowed);
 
+        //maybe some error with  declaration
+        T mergeRegions(std::vector<Node<T,ORDER>*>&);
+        void addChildrenToFather(
+            InternalNode<T,ORDER>* root, InternalNode<T,ORDER>* nodeOverflowed, InternalNode<T,ORDER>* v
+        );
 };
 
 #endif

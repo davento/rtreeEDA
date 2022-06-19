@@ -18,6 +18,8 @@ class Node{
         virtual inline bool isLeaf() const = 0;
         //TODO: Agregar el color
         virtual void draw(SDL_Renderer* renderer) const = 0;
+        //added for minimumPerimiter
+        
     protected:
         Node* father;
         boundType* myBound;
