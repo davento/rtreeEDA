@@ -19,7 +19,7 @@ class Bound{
         virtual double perimeter() const = 0;
         virtual double area() const = 0;
         virtual double metric() const = 0;
-        // virtual void merge(Bound*) = 0;
+        virtual void merge(Bound*) = 0;
 
         virtual void merge(const Point&) = 0;
         //TODO: Agregar color luego
@@ -45,9 +45,10 @@ class MBR final: public Bound{
         virtual double perimeter() const override;
         virtual double area() const override;
         virtual double metric() const override;
-        //virtual
-        void merge(MBR*);
+        virtual void merge(Bound*)  override;
+
         virtual void merge(const Point&) override;
+    
         //TODO: Agregar color luego
         virtual void draw(SDL_Renderer* renderer) const override;
 

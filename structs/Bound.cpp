@@ -23,12 +23,12 @@ double MBR::metric() const{
     return this->perimeter();
 }
 
-void MBR::merge(MBR* m){
+void MBR::merge(Bound* m){
 
     this->topLeft = Point::createMinPoint(this->topLeft,
-    m->topLeft );
+    dynamic_cast<MBR*>(m)->topLeft );
     this->bottomRight = Point::createMaxPoint(this->bottomRight, 
-    m->bottomRight );   
+    dynamic_cast<MBR*>(m)->bottomRight );   
 }
 
 void  MBR::merge(const Point& p){
