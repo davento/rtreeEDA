@@ -27,6 +27,9 @@ class Bound{
         //used un Rtree remove
         virtual bool inArea(Point p) = 0;
         
+        Point getTopLeft() const { return topLeft; }
+        Point getBottomRight() const { return bottomRight; }
+
     protected:
         Point topLeft, bottomRight;
 
