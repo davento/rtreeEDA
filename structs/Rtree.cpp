@@ -46,8 +46,8 @@ void Rtree<T,ORDER>::remove(const Point& p){
 
 template <typename T, unsigned ORDER>
 void Rtree<T,ORDER>::draw(SDL_Renderer* renderer) const{
-    Color color(0,40,0);
-    root->draw(renderer, color);
+//    Color color(0,40,0);
+//    root->draw(renderer, color);
 }
 
 // template <typename T, unsigned ORDER>
@@ -151,3 +151,37 @@ void Rtree<T,ORDER>::handleOverflow(InternalNode<T,ORDER>* overFlowed){
             handleOverflow(w);
     }
 }
+template <typename T, unsigned ORDER>
+void Rtree<T,ORDER>::split(InternalNode<T,ORDER>* original, InternalNode<T,ORDER>* secondHalf){
+        
+    std::vector<Node<T,ORDER>*> regions = original->regions;
+
+    //sort by x left
+    sort(regions.begin(), regions.end(),
+    [](const Node<T,ORDER>* m1, const Node<T,ORDER>* m2){
+        return m1->getBound()->getTopLeft().x < m2->getBound()->getTopLeft().x;
+    });
+    minimumPerimeter(regions,original,secondHalf);
+    
+    //sort by x right  
+    sort(regions.begin(), regions.end(),
+    [](const Node<T,ORDER>* m1, const Node<T,ORDER>* m2){
+        return m1->getBound()->getBottomRight().x < m2->getBound()->getBottomRight().x;
+    });
+    minimumPerimeter(regions,original,secondHalf);
+
+    //same thing but with y left
+    sort(regions.begin(), regions.end(),
+    [](const Node<T,ORDER>* m1, const Node<T,ORDER>* m2){
+        return m1->getBound()->getTopLeft().y < m2->getBound()->getTopLeft().y;
+    });
+    minimumPerimeter(regions,original,secondHalf);
+
+    //same thing but with y right
+    sort(regions.begin(), regions.end(),
+    [](const Node<T,ORDER>* m1, const Node<T,ORDER>* m2){
+        return m1->getBound()->getBottomRight().y < m2->getBound()->getBottomRight().y;
+    });
+    minimumPerimeter(regions,original,secondHalf);
+}
+
