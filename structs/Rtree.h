@@ -26,6 +26,7 @@ class Rtree{
         void minimumPerimeter(std::vector<Node<T,ORDER>*>& u, InternalNode<T,ORDER>* v, InternalNode<T,ORDER>* p);
         void handleOverflow(InternalNode<T,ORDER>* overFlowed);
 
+        InternalNode<T,ORDER>* insert(InternalNode<T,ORDER>* , Figure*);
         //maybe some error with  declaration
         T mergeRegions(std::vector<Node<T,ORDER>*>&);
         void addChildrenToFather(

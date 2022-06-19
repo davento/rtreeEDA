@@ -9,6 +9,7 @@ class FigureNode final: public Node<T,ORDER>{
     public:
 
         FigureNode();
+        FigureNode(Figure*);
         inline bool isLeaf() const override;
         void draw(SDL_Renderer* renderer) const override;
         Figure* getFigure(){return myFigure;}

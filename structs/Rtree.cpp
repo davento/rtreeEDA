@@ -94,8 +94,8 @@ void Rtree<T,ORDER>::minimumPerimeter(std::vector<Node<T,ORDER>*>& u, InternalNo
     
     int m = u.size();
 
-    std::vector<Node*> s1;
-    std::vector<Node*> s2;
+    std::vector<Node<T,ORDER>*> s1;
+    std::vector<Node<T,ORDER>*> s2;
 
     boundType m1 = v->bound;
     boundType m2 = v->bound;
@@ -138,7 +138,7 @@ void Rtree<T,ORDER>::handleOverflow(InternalNode<T,ORDER>* overFlowed){
     InternalNode<T,ORDER> * v= new InternalNode<T,ORDER> ();
     split(overFlowed, v);
     if(overFlowed->father){
-        InternalNode root = new InternalNode<T,ORDER>();
+        InternalNode<T,ORDER>* root = new InternalNode<T,ORDER>();
         //addChildrenToFather(root, nodeOverflowed, v);
     }
     else{
@@ -185,3 +185,20 @@ void Rtree<T,ORDER>::split(InternalNode<T,ORDER>* original, InternalNode<T,ORDER
     minimumPerimeter(regions,original,secondHalf);
 }
 
+template <typename T, unsigned ORDER>
+InternalNode<T,ORDER>* Rtree<T,ORDER>::insert(InternalNode<T,ORDER>* node, Figure* figure){
+    if(node->isLeaf()){
+        node->regions.push_back(new FigureNode(figure));
+        *(node->myBound) = mergeRegions(node->regions);
+        if(node->regions.size() == ORDER + 1)
+            handleOverflow(node);
+    }
+    else{
+        InternalNode<T,ORDER>* v = chooseSubtree(node, figure);
+        insert(v, figure);
+        *(node->myBound) = mergeRegions(node->regions);
+    }
+    if(node->father)
+        return node->father;
+    return node;
+}
