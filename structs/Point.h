@@ -14,8 +14,8 @@ struct Point final{
     Point& operator=(const Point&) = default;
     ~Point() = default;
 
-    friend inline bool operator==(const Point& left, const Point& right);
-    friend inline bool operator!=(const Point& left, const Point& right);
+    friend bool operator==(const Point& left, const Point& right);
+    friend bool operator!=(const Point& left, const Point& right);
 
     inline double distance(const Point& other) const;
     bool closeEnough(const Point& other, const int RADIUS) const;

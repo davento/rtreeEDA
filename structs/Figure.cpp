@@ -42,3 +42,8 @@ void Figure::draw(SDL_Renderer* renderer) const{
     }
     myBound->draw(renderer);
 }
+
+void Figure::clear(){
+    points.clear();
+    myBound->clear();
+}

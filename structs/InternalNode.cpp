@@ -13,3 +13,12 @@ inline bool InternalNode<T,ORDER>::isLeaf() const{
    else 
        return true;
 }
+
+template <typename T, unsigned ORDER>
+void InternalNode<T,ORDER>::draw(SDL_Renderer* renderer, Color color) const { 
+    Node<T,ORDER>::myBound->draw(renderer, color);
+    color.changeColor(150);
+    for(const auto& region: regions){
+        region->draw(renderer);
+    }
+}

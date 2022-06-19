@@ -1,6 +1,7 @@
 #include "Rtree.h"
 #include "InternalNode.h"
 #include "FigureNode.h"
+#include "Color.h"
 #include <algorithm>
 #include <cmath>
 
@@ -46,8 +47,8 @@ void Rtree<T,ORDER>::remove(const Point& p){
 
 template <typename T, unsigned ORDER>
 void Rtree<T,ORDER>::draw(SDL_Renderer* renderer) const{
-//    Color color(0,40,0);
-//    root->draw(renderer, color);
+    Color color(0,40,0);
+    root->draw(renderer, color);
 }
 
 // template <typename T, unsigned ORDER>
@@ -188,7 +189,7 @@ void Rtree<T,ORDER>::split(InternalNode<T,ORDER>* original, InternalNode<T,ORDER
 template <typename T, unsigned ORDER>
 InternalNode<T,ORDER>* Rtree<T,ORDER>::insert(InternalNode<T,ORDER>* node, Figure* figure){
     if(node->isLeaf()){
-        node->regions.push_back(new FigureNode(figure));
+        node->regions.push_back(new FigureNode<T,ORDER>(figure));
         *(node->myBound) = mergeRegions(node->regions);
         if(node->regions.size() == ORDER + 1)
             handleOverflow(node);

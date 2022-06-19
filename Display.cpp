@@ -3,8 +3,9 @@
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_mouse.h>
 #include <iostream>
+#include "structs/Figure.h"
 
-Display::Display(): isRunning(false), window(nullptr), renderer(nullptr), r(nullptr){}
+Display::Display(): isRunning(false), window(nullptr), renderer(nullptr), r(nullptr), fig(new MBR()){}
 
 bool Display::initialize(double dim){
 
@@ -20,7 +21,7 @@ bool Display::initialize(double dim){
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     isRunning = true;
     
-    r = new Rtree;
+    r = new Rtree<MBR,3>;
 
     return true;
 }
@@ -52,13 +53,13 @@ void Display::processInputs(){
                     
                     SDL_GetMouseState(&x, &y);
                     if(event.button.button == SDL_BUTTON_LEFT){
-                       if(!fig.addPoint({x,y})){
+                       if(!fig.addPoint(Point(x,y))){
                            r->insert(&fig);
                            fig.clear();
                        }
                     }
                     if(event.button.button == SDL_BUTTON_RIGHT){
-                        r->remove({x,y});
+                        r->remove(Point(x,y));
                         fig.clear();
                     }
                     break;
@@ -69,7 +70,7 @@ void Display::processInputs(){
                     
                     SDL_GetMouseState(&x, &y);
                     Point po(x,y);
-                    r->depthFirst(&po);
+                    //r->depthFirst(po);
                     break;
                 }
         }
@@ -90,6 +91,6 @@ void Display::generateOutput(){
     //for(const auto& figure: figures)
     //    figure.draw(renderer);
     r->draw(renderer);
-    r->drawDepthFirst(renderer);
+    //r->drawDepthFirst(renderer);
     SDL_RenderPresent(renderer);
 }

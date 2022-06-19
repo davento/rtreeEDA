@@ -5,11 +5,11 @@ Point::Point(int posX, int posY): x(posX), y(posY){
 
 }
 
-inline bool operator ==(const Point& Left, const Point& right){
+bool operator ==(const Point& Left, const Point& right){
     return (Left.x == right.x) && (Left.y == right.y);
 }
 
-inline bool operator !=(const Point& Left, const Point& right){
+bool operator !=(const Point& Left, const Point& right){
     return  (Left.x != right.x) || (Left.y != right.y);
 }
 

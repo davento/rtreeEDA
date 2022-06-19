@@ -12,6 +12,7 @@ class Figure{
         bool addPoint(const Point& p);
         //TODO: agregar color más tarde
         void draw(SDL_Renderer* renderer) const;
+        void clear();
     private:
         Bound* myBound;
         std::vector<Point> points;

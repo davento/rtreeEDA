@@ -14,3 +14,8 @@ template <typename T, unsigned ORDER>
 inline bool FigureNode<T,ORDER>::isLeaf() const {
     return true;
 }
+
+template <typename T, unsigned ORDER>
+void FigureNode<T,ORDER>::draw(SDL_Renderer* renderer, Color color) const {
+    myFigure->draw(renderer);
+}

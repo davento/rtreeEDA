@@ -14,7 +14,7 @@ class Bound{
         Bound();
         Bound(const Point&, const Point&);
         Bound(const Bound&) = default;
-
+        virtual ~Bound(){}
 
         virtual double perimeter() const = 0;
         virtual double area() const = 0;
@@ -29,6 +29,8 @@ class Bound{
         
         Point getTopLeft() const { return topLeft; }
         Point getBottomRight() const { return bottomRight; }
+
+        void clear();
 
     protected:
         Point topLeft, bottomRight;

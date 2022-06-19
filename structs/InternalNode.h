@@ -9,6 +9,7 @@ class InternalNode final: public Node<T,ORDER>{
     public:
         InternalNode();
         inline bool isLeaf() const override;
+        void draw(SDL_Renderer* renderer, Color color) const override;
     private:
         std::vector<Node<T,ORDER>*> regions;
 };
