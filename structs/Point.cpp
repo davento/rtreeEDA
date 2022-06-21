@@ -14,7 +14,7 @@ bool operator !=(const Point& Left, const Point& right){
 }
 
 
-inline double Point::distance(const Point& other) const{
+double Point::distance(const Point& other) const{
     return std::sqrt(std::pow(other.x - x, 2) + std::pow(other.y - y, 2));
 }
 

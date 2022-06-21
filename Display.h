@@ -4,6 +4,7 @@
 #include <SDL2/SDL.h>
 #include "structs/Rtree.h"
 #include "structs/Boundings/MBR.h"
+#include "structs/Boundings/MBC.h"
 
 class Display{
 
@@ -23,7 +24,7 @@ class Display{
         bool isRunning;
         SDL_Window* window;
         SDL_Renderer* renderer;
-        Rtree<MBR, 3>* r;
+        Rtree<MBC, 3>* r;
         std::vector<Figure> figures;
         Figure fig;
 };

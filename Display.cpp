@@ -5,7 +5,7 @@
 #include <iostream>
 #include "structs/Figure.h"
 
-Display::Display(): isRunning(false), window(nullptr), renderer(nullptr), r(nullptr), fig(new MBR()){}
+Display::Display(): isRunning(false), window(nullptr), renderer(nullptr), r(nullptr), fig(new MBC()){}
 
 bool Display::initialize(double dim){
 
@@ -21,7 +21,7 @@ bool Display::initialize(double dim){
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     isRunning = true;
     
-    r = new Rtree<MBR,3>;
+    r = new Rtree<MBC,3>;
 
     return true;
 }

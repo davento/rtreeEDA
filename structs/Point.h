@@ -18,7 +18,7 @@ struct Point final{
     friend bool operator==(const Point& left, const Point& right);
     friend bool operator!=(const Point& left, const Point& right);
 
-    inline double distance(const Point& other) const;
+    double distance(const Point& other) const;
     bool closeEnough(const Point& other, const int RADIUS) const;
     //TODO: AGREGAR PARAMETRO COLOR
     void draw(SDL_Renderer* renderer, Color color = Color(0,0,0)) const;

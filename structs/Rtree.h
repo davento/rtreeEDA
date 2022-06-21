@@ -2,6 +2,7 @@
 #define RTREE_H
 
 #include "Boundings/Bound.h"
+#include "Boundings/MBR.h"
 #include "Nodes/Node.h"
 #include "Nodes/InternalNode.h"
 #include "Nodes/FigureNode.h"
@@ -35,6 +36,7 @@ class Rtree{
         );
         Node<T,ORDER>* chooseSubtree(Node<T,ORDER>* root, Figure* figure);
         static boundType mergeRegions(std::vector<Node<T,ORDER>*>& vec);
+        static boundType mergeRegions(std::vector<Node<MBR,ORDER>*>& vec);
         static boundType makeNewCombineBound(boundType left, boundType right);
 };
 
@@ -52,8 +54,11 @@ Rtree<T, ORDER>::~Rtree(){
 template <typename T, unsigned ORDER>
 bool Rtree<T, ORDER>::insert(Figure* figure){
     root = insert(root, figure);
+    root->print();
+    std::cout << "--------------------------------------------------------\n";
     return true;
 }
+
 
 template <typename T, unsigned ORDER>
 Node<T,ORDER>* Rtree<T,ORDER>::insert(Node<T,ORDER>* root, Figure* figure){
@@ -61,14 +66,14 @@ Node<T,ORDER>* Rtree<T,ORDER>::insert(Node<T,ORDER>* root, Figure* figure){
         FigureNode<T,ORDER>* it = new FigureNode<T,ORDER>(figure);
         Node<T,ORDER>* item = it;
         (root->children).push_back(item);
-        root->mergeRegions();
+        root->myBound = mergeRegions(root->children);
         if((root->children).size() == ORDER + 1)
             handleOverflow(root);
     }
     else{
         Node<T,ORDER>* v = chooseSubtree(root, figure);
         insert(v, figure);
-        root->mergeRegions();
+        root->myBound = mergeRegions(root->children);
     }
     if(root->father)
         return root->father;
@@ -86,13 +91,13 @@ void Rtree<T,ORDER>::handleOverflow(Node<T,ORDER>* overFlowed){
         overFlowed->father = v->father = overFather;
         (overFather->children).push_back(overFlowed);
         (overFather->children).push_back(v);
-        overFather->mergeRegions();
+        overFather->myBound = mergeRegions(overFather->children);
     }
     else{
         Node<T,ORDER>* w = overFlowed->father;
         v->father = w;
         (w->children).push_back(v);
-        w->mergeRegions();
+        w->myBound = mergeRegions(w->children);
         if((w->children).size() == ORDER + 1)
             handleOverflow(w);
     }
@@ -159,38 +164,48 @@ void Rtree<T,ORDER>::minimumPerimeter(std::vector<Node<T,ORDER>*>& u, Node<T,ORD
             p->children = s2;
         }
     }
-    v->mergeRegions();
-    p->mergeRegions();
+    v->myBound = mergeRegions(v->children);
+    p->myBound = mergeRegions(p->children);
 
 }
 
 template <typename T, unsigned ORDER>
+typename Rtree<T,ORDER>::boundType  Rtree<T, ORDER>::mergeRegions(std::vector<Node<MBR,ORDER>*>& vec){
+    boundType res = (vec.front())->myBound;
+    for(const auto& node: vec){
+        res.merge(node->myBound);
+    }
+    return res;
+}
+
+template <typename T, unsigned ORDER>
 typename Rtree<T,ORDER>::boundType Rtree<T,ORDER>::mergeRegions(std::vector<Node<T,ORDER>*>& vec){
-    // boundType res = (vec.front())->myBound;
-    // for(const auto& node: vec){
-    //     res.merge(node->myBound);
-    // }
-    // return res;
     boundType res(Point(0,0), Point(0,0));
     
     //get area & numerator
-    double nume.x = {};
     double area = {};
     for(const auto& node : vec){
-        area += node->area();
-        res.ce.x +=  node->ce.x * node->area();
-        res.ce.y +=  node->ce.y * node->area();
+        auto otherB = node->myBound;
+        area += node->myBound.area();
+        res.getCentroid().x +=  otherB.getCentroid().x * otherB.area();
+        res.getCentroid().y +=  otherB.getCentroid().y * otherB.area();
     }
-    res.ce.x /= area;
-    res.ce.y /= area;
+    res.getCentroid().x /= area;
+    res.getCentroid().y /= area;
 
     //get radious
+    auto r = res.getRadious();
     for(const auto& node: vec){
-        res.rad = max(
-            res.rad,
-            res.ce.distance(node->ce) + node->ce.rad/2
-        )
+        auto otherB = node->myBound;
+
+        r = std::max(
+            r,
+            res.getCentroid().distance(otherB.getCentroid()) + otherB.getRadious()/2
+        );
     }
+    res.getRadious() = r;
+
+    return res;
 }
 
 

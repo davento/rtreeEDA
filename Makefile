@@ -1,4 +1,4 @@
-objects = main.o Display.o structs/Boundings/Bound.o structs/Boundings/MBR.o structs/Figure.o structs/Point.o 
+objects = main.o Display.o structs/Boundings/Bound.o structs/Boundings/MBR.o structs/Boundings/MBC.o structs/Figure.o structs/Point.o 
  
 CFLAGS = -Wall -O2 
 LINKERFLAGS = -lSDL2

@@ -22,9 +22,12 @@ class MBC final: public Bound{
         virtual double metric() const override;
         virtual void merge(Bound*)  override;
         virtual void merge(const Point&) override;
-        void merge(const MBC&);
         virtual void draw(SDL_Renderer* renderer, Color color = Color(0,0,255)) const override;
         virtual bool inArea(Point p) override;
+        void merge(const MBC&);
+        Point& getCentroid();
+        double& getRadious();
+
 };
 
 

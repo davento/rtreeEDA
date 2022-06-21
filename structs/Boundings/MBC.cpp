@@ -1,4 +1,6 @@
 #include "MBC.h"
+#include <SDL2/SDL_render.h>
+#include <cmath>
 
 
 
@@ -48,11 +50,11 @@ void MBC::merge(Bound* m){
     temp.y = (this->ce.y * this->area() +  aux->area() *
                 aux->ce.y) / (this->area() + aux->area());
 
-    double rtemp = 0;
+    //double rtemp = 0;
     
-    rtemp = std::max(
-        temp.distance(this->ce) + this->rad,
-        temp.distance(aux->ce) + aux->rad);
+   // rtemp = std::max(
+   //     temp.distance(this->ce) + this->rad,
+   //     temp.distance(aux->ce) + aux->rad);
 }
 
 //this merge is only use to expand the MB
@@ -64,10 +66,41 @@ void MBC::merge(const Point &p){
     updateCircle();
 }
 
-void MBC::draw(SDL_Renderer* renderer, Color color = Color(0,0,255)) const {
+void MBC::merge(const MBC& other){
+
+}
+
+void MBC::draw(SDL_Renderer* renderer, Color color) const {
     //draw circle
+    double perim = perimeter();
+    // el angulo va en radianes
+    double changeRatio = 2*M_PI/perim;
+    SDL_SetRenderDrawColor(renderer , color.RGB[0], color.RGB[1], color.RGB[2], 255);
+    for(double angle = 0; angle*rad < perim && angle < 2*M_PI; angle += changeRatio){
+        SDL_RenderDrawPoint(renderer, ce.x + rad*std::cos(angle),ce.y + rad*std::sin(angle));
+    }
+    ce.draw(renderer);
+    
+    if(topLeft.x == INF && topLeft.y == INF)
+        return;
+    const int &lx = topLeft.x, &ty = topLeft.y, &rx = bottomRight.x, &by = bottomRight.y;
+
+    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+    SDL_RenderDrawLine(renderer, lx, ty, rx , ty);
+    SDL_RenderDrawLine(renderer, lx, ty, lx , by);
+    SDL_RenderDrawLine(renderer, lx, by, rx , by);
+    SDL_RenderDrawLine(renderer, rx, ty, rx , by);
+
 }
 
 bool MBC::inArea(Point p) {
     return this->ce.distance(p) < rad;
+}
+
+Point& MBC::getCentroid(){
+    return this->ce;
+}
+
+double& MBC::getRadious(){
+    return this->rad;
 }
