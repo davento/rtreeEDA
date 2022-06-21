@@ -1,15 +1,17 @@
 #ifndef COLOR_H
 #define COLOR_H
+
+#include <cstdint>
 #include <iostream>
-#include <SDL2/SDL_stdinc.h>
-struct Color{
-    Uint8 RGB[3];
+
+struct Color final{
+    std::uint8_t RGB[3];
     size_t indexToChange=1;
 
-    Color(int R, int G, int B){
-        RGB[0] = R;
+    Color(unsigned char R, unsigned char G, unsigned char B): RGB{R,G,B}{
+       /* RGB[0] = R;
         RGB[1] = G;
-        RGB[2] = B;
+        RGB[2] = B;*/
     }
 
     void changeColor(int value){
@@ -17,11 +19,10 @@ struct Color{
         indexToChange = (indexToChange+1) % 3;
     }
 
-    void print(){
+    void print() const {
         std::cout << "R: " << (int)RGB[0] << " G: " << (int)RGB[1] << " B: " << (int)RGB[2] << "\n";
     }
 };
-
 
 #endif
 

@@ -8,8 +8,6 @@ Bound* Figure::getBound(){
     return myBound;
 }
 
-
-//wtf does this supposed to do?
 bool Figure::addPoint(const Point&p){
 
     if (points.size() == 0 or
@@ -27,7 +25,7 @@ bool Figure::addPoint(const Point&p){
     return true;
 }
 
-void Figure::draw(SDL_Renderer* renderer) const{
+void Figure::draw(SDL_Renderer* renderer, Color color) const{
 
     if(points.size() == 0)
         return;
@@ -35,7 +33,7 @@ void Figure::draw(SDL_Renderer* renderer) const{
         point.draw(renderer);
     if(points.size() <= 1)
             return;
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+    SDL_SetRenderDrawColor(renderer, color.RGB[0], color.RGB[1], color.RGB[2], 255);
     
     for(size_t i = 0; i != points.size() - 1; i++){
         SDL_RenderDrawLine(renderer, points[i].x, points[i].y, points[i+1].x, points[i+1].y);
@@ -47,3 +45,4 @@ void Figure::clear(){
     points.clear();
     myBound->clear();
 }
+

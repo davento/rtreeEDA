@@ -58,13 +58,13 @@ void Display::processInputs(){
                            fig.clear();
                        }
                     }
-                    if(event.button.button == SDL_BUTTON_RIGHT){
+/*                    if(event.button.button == SDL_BUTTON_RIGHT){
                         r->remove(Point(x,y));
                         fig.clear();
                     }
-                    break;
+                    break;*/
                 }
-            default:
+/*            default:
                 {
                     int x, y;
                     
@@ -72,7 +72,7 @@ void Display::processInputs(){
                     Point po(x,y);
                     //r->depthFirst(po);
                     break;
-                }
+                }*/
         }
     }
     const Uint8* state = SDL_GetKeyboardState(NULL);

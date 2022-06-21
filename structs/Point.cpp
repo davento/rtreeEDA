@@ -23,10 +23,8 @@ bool Point::closeEnough(const Point& other, const int RADIUS) const{
 }
 
 
-void Point::draw(SDL_Renderer* renderer) const{
-    // SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    // SDL_RenderDrawPoint(renderer, x, y);
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+void Point::draw(SDL_Renderer* renderer, Color color) const{
+    SDL_SetRenderDrawColor(renderer, color.RGB[0], color.RGB[1], color.RGB[2], 255);
     int dim = 1;
     SDL_Rect dot{
         static_cast<int>(x - dim),
@@ -51,4 +49,4 @@ Point Point::createMaxPoint(const Point& p1, const Point& p2){
             std::max(p1.y, p2.y)
     );
 }
- 
+

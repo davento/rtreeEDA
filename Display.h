@@ -3,6 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include "structs/Rtree.h"
+#include "structs/Boundings/MBR.h"
 
 class Display{
 

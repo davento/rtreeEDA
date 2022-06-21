@@ -1,6 +1,7 @@
 #ifndef POINT_H
 #define POINT_H
 
+#include "Color.h"
 #include <SDL2/SDL.h>
 #include <math.h>
 
@@ -20,12 +21,11 @@ struct Point final{
     inline double distance(const Point& other) const;
     bool closeEnough(const Point& other, const int RADIUS) const;
     //TODO: AGREGAR PARAMETRO COLOR
-    void draw(SDL_Renderer* renderer) const;
+    void draw(SDL_Renderer* renderer, Color color = Color(0,0,0)) const;
     
     static Point createMinPoint(const Point&, const Point&);
     static Point createMaxPoint(const Point&, const Point&);
 };
 
-
-
 #endif
+
