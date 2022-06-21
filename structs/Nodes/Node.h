@@ -2,6 +2,8 @@
 #define NODE_H
 
 #include "../Boundings/Bound.h"
+#include "../Boundings/MBC.h"
+
 #include "../Color.h"
 #include <vector>
 #include <iostream>

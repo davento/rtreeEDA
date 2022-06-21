@@ -166,12 +166,33 @@ void Rtree<T,ORDER>::minimumPerimeter(std::vector<Node<T,ORDER>*>& u, Node<T,ORD
 
 template <typename T, unsigned ORDER>
 typename Rtree<T,ORDER>::boundType Rtree<T,ORDER>::mergeRegions(std::vector<Node<T,ORDER>*>& vec){
-    boundType res = (vec.front())->myBound;
-    for(const auto& node: vec){
-        res.merge(node->myBound);
+    // boundType res = (vec.front())->myBound;
+    // for(const auto& node: vec){
+    //     res.merge(node->myBound);
+    // }
+    // return res;
+    boundType res(Point(0,0), Point(0,0));
+    
+    //get area & numerator
+    double nume.x = {};
+    double area = {};
+    for(const auto& node : vec){
+        area += node->area();
+        res.ce.x +=  node->ce.x * node->area();
+        res.ce.y +=  node->ce.y * node->area();
     }
-    return res;
+    res.ce.x /= area;
+    res.ce.y /= area;
+
+    //get radious
+    for(const auto& node: vec){
+        res.rad = max(
+            res.rad,
+            res.ce.distance(node->ce) + node->ce.rad/2
+        )
+    }
 }
+
 
 template <typename T, unsigned ORDER>
 Node<T,ORDER>* Rtree<T,ORDER>::chooseSubtree(Node<T,ORDER>* node, Figure* figure){
@@ -186,7 +207,6 @@ Node<T,ORDER>* Rtree<T,ORDER>::chooseSubtree(Node<T,ORDER>* node, Figure* figure
         }
     }
     return result;
-   
 }
 
 template <typename T, unsigned ORDER>
