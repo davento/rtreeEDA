@@ -25,7 +25,7 @@ class Display{
         SDL_Window* window;
         SDL_Renderer* renderer;
         Rtree<MBC, 3>* r;
-        std::vector<Figure> figures;
+        std::vector<FigureNode<MBC,3>*> figures;
         Figure fig;
 };
 

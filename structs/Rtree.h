@@ -20,9 +20,13 @@ class Rtree{
         Node<T,ORDER>* search(const Point&);
         bool insert(Figure*);
         void remove(const Point&);
-        void depthFirst(const Point&);
+        std::vector<FigureNode<T,ORDER>*> depthFirst(const Point&);
         void draw(SDL_Renderer* renderer) const;
 
+        static void drawDepthFirst(SDL_Renderer* renderer, std::vector<FigureNode<T,ORDER>*>& vec){
+            for(auto elem: vec)
+                elem->draw(renderer, Color(0,255,0) );
+        }
     private:
         Node<T,ORDER>* root;
         // void reinsert();
@@ -249,39 +253,42 @@ template<typename T, typename B, unsigned O>
 void k_depthFirst(T &p, const int &k, Node<B,O>* u){
 
     if(u->isLeaf()){
-        for(FigureNode<B,O>* f: u->children){
-            p.push(f);
+        for(auto f: u->children){
+            p.push(static_cast<FigureNode<B,O>*>(f));
             if(p.size() > static_cast<const unsigned int>(k)) p.pop();
         }
         return ;
     }
 
-    for(InternalNode<B,O>* r: u->children){
+    for(auto r: u->children){
         k_depthFirst(p,k,r);
     }
 }
 
 template <typename T, unsigned ORDER>
-void  Rtree<T,ORDER>::depthFirst(const Point& p){
+std::vector<FigureNode<T,ORDER>*>  Rtree<T,ORDER>::depthFirst(const Point& p){
 
     const int  k =5;
 
     typedef FigureNode<T,ORDER> FN;
 
     auto func  = [p](const FN* f1, const FN*f2){
-        T m1 = f1->mybound;
-        T m2 = f2->mybound;
+        T m1 = f1->myBound;
+        T m2 = f2->myBound;
         return m1.getCentroid().distance(p) < m2.getCentroid().distance(p);
     };
 
 
     std::priority_queue<FN*, std::vector<FN*>, decltype(func) > s(func);
     k_depthFirst(s,k,root);
-    // df.clear();
-    // while(!s.empty()){
-    //     df.push_back(s.top());
-    //     s.pop();
-    // }
+
+    std::vector<FN*> result;
+
+     while(!s.empty()){
+         result.push_back(s.top());
+         s.pop();
+     }
+     return result;
     
 }
 

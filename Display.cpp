@@ -64,15 +64,15 @@ void Display::processInputs(){
                     }
                     break;*/
                 }
-/*            default:
+            default:
                 {
                     int x, y;
                     
                     SDL_GetMouseState(&x, &y);
                     Point po(x,y);
-                    //r->depthFirst(po);
+                    figures = r->depthFirst(po);
                     break;
-                }*/
+                }
         }
     }
     const Uint8* state = SDL_GetKeyboardState(NULL);
@@ -91,6 +91,6 @@ void Display::generateOutput(){
     //for(const auto& figure: figures)
     //    figure.draw(renderer);
     r->draw(renderer);
-    //r->drawDepthFirst(renderer);
+    r->drawDepthFirst(renderer, figures);
     SDL_RenderPresent(renderer);
 }

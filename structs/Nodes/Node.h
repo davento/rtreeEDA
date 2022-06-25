@@ -17,6 +17,10 @@ class Node{
         typedef T boundType;
         friend class Rtree<T,ORDER>;
 
+        template <typename A, typename B, unsigned C>
+        friend void k_depthFirst(A &p, const int &k, Node<B,C>* u);
+
+
         Node();
         virtual ~Node() = default;
 

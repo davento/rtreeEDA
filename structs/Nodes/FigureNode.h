@@ -40,8 +40,8 @@ bool FigureNode<T,ORDER>::isLeaf() const {
 
 template <typename T, unsigned ORDER>
 void FigureNode<T,ORDER>::draw(SDL_Renderer* renderer, Color color) const {
-    this->myBound.draw(renderer);
-    myFigure->draw(renderer);
+    this->myBound.draw(renderer, color);
+    myFigure->draw(renderer, color);
 }
 
 
