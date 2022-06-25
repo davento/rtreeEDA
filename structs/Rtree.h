@@ -8,6 +8,7 @@
 #include "Nodes/FigureNode.h"
 #include "Figure.h"
 #include <algorithm>
+#include <queue>
 
 template<typename T , unsigned ORDER>
 class Rtree{
@@ -19,7 +20,7 @@ class Rtree{
         Node<T,ORDER>* search(const Point&);
         bool insert(Figure*);
         void remove(const Point&);
-        std::vector<Figure*> depthFirst(const Point&);
+        void depthFirst(const Point&);
         void draw(SDL_Renderer* renderer) const;
 
     private:
@@ -243,8 +244,44 @@ void Rtree<T,ORDER>::draw(SDL_Renderer *renderer) const{
     root->draw(renderer, Color(0,40,0));
 }
 
+
+template<typename T, typename B, unsigned O>
+void k_depthFirst(T &p, const int &k, Node<B,O>* u){
+
+    if(u->isLeaf()){
+        for(FigureNode<B,O>* f: u->children){
+            p.push(f);
+            if(p.size() > static_cast<const unsigned int>(k)) p.pop();
+        }
+        return ;
+    }
+
+    for(InternalNode<B,O>* r: u->children){
+        k_depthFirst(p,k,r);
+    }
+}
+
 template <typename T, unsigned ORDER>
-std::vector<Figure*> Rtree<T,ORDER>::depthFirst(const Point& p){
+void  Rtree<T,ORDER>::depthFirst(const Point& p){
+
+    const int  k =5;
+
+    typedef FigureNode<T,ORDER> FN;
+
+    auto func  = [p](const FN* f1, const FN*f2){
+        T m1 = f1->mybound;
+        T m2 = f2->mybound;
+        return m1.getCentroid().distance(p) < m2.getCentroid().distance(p);
+    };
+
+
+    std::priority_queue<FN*, std::vector<FN*>, decltype(func) > s(func);
+    k_depthFirst(s,k,root);
+    // df.clear();
+    // while(!s.empty()){
+    //     df.push_back(s.top());
+    //     s.pop();
+    // }
     
 }
 
