@@ -19,7 +19,7 @@ class Rtree{
         Node<T,ORDER>* search(const Point&);
         bool insert(Figure*);
         void remove(const Point&);
-        // std::vector<Figure*> depthFirst(const Point&);
+        std::vector<Figure*> depthFirst(const Point&);
         void draw(SDL_Renderer* renderer) const;
 
     private:
@@ -198,9 +198,16 @@ typename Rtree<T,ORDER>::boundType Rtree<T,ORDER>::mergeRegions(std::vector<Node
     for(const auto& node: vec){
         auto otherB = node->myBound;
 
+        double centDist = res.getCentroid().distance(otherB.getCentroid());
+        if(centDist < r){
+            centDist += (centDist + otherB.getRadious() >= r)? otherB.getRadious(): 0;
+        }
+        else{
+            centDist += otherB.getRadious();
+        }
         r = std::max(
             r,
-            res.getCentroid().distance(otherB.getCentroid()) + otherB.getRadious()/2
+            centDist
         );
     }
     res.getRadious() = r;
@@ -234,6 +241,11 @@ T Rtree<T,ORDER>::makeNewCombineBound(boundType left, boundType right){
 template <typename T, unsigned ORDER>
 void Rtree<T,ORDER>::draw(SDL_Renderer *renderer) const{
     root->draw(renderer, Color(0,40,0));
+}
+
+template <typename T, unsigned ORDER>
+std::vector<Figure*> Rtree<T,ORDER>::depthFirst(const Point& p){
+    
 }
 
 #endif
