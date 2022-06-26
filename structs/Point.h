@@ -5,6 +5,13 @@
 #include <SDL2/SDL.h>
 #include <math.h>
 
+
+enum axis{
+    X,
+    Y
+};
+
+
 struct Point final{
 
     int x, y;  
@@ -17,6 +24,9 @@ struct Point final{
 
     friend bool operator==(const Point& left, const Point& right);
     friend bool operator!=(const Point& left, const Point& right);
+    int operator[] (int axis){
+        return (axis == X) ? x : y; 
+    }
 
     double distance(const Point& other) const;
     bool closeEnough(const Point& other, const int RADIUS) const;

@@ -110,37 +110,25 @@ void Rtree<T,ORDER>::handleOverflow(Node<T,ORDER>* overFlowed){
     }
 }
 
+
+
 template <typename T, unsigned ORDER>
 void Rtree<T,ORDER>::split(Node<T,ORDER>* original, Node<T,ORDER>* secondHalf){
+
+ 
+    int axis = var(original, X) < var(original,Y) ? X : Y;
+
+      
     std::vector<Node<T,ORDER>*> regions = original->children;
 
-    //sort by x left
+    // //sort by x left
     sort(regions.begin(), regions.end(),
-    [](const Node<T,ORDER>* m1, const Node<T,ORDER>* m2){
-        return m1->myBound.getTopLeft().x < m2->myBound.getTopLeft().x;
+    [&](const Node<T,ORDER>* m1, const Node<T,ORDER>* m2){
+        return m1->myBound.getCentroid().x < m2->myBound.getCentroid().x;
     });
-    minimumPerimeter(regions,original,secondHalf);
+    // // minimumPerimeter(regions,original,secondHalf);
     
-    //sort by x right  
-    sort(regions.begin(), regions.end(),
-    [](const Node<T,ORDER>* m1, const Node<T,ORDER>* m2){
-        return m1->myBound.getBottomRight().x < m2->myBound.getBottomRight().x;
-    });
-    minimumPerimeter(regions,original,secondHalf);
-
-    //same thing but with y left
-    sort(regions.begin(), regions.end(),
-    [](const Node<T,ORDER>* m1, const Node<T,ORDER>* m2){
-        return m1->myBound.getTopLeft().y < m2->myBound.getTopLeft().y;
-    });
-    minimumPerimeter(regions,original,secondHalf);
-
-    //same thing but with y right
-    sort(regions.begin(), regions.end(),
-    [](const Node<T,ORDER>* m1, const Node<T,ORDER>* m2){
-        return m1->myBound.getBottomRight().y < m2->myBound.getBottomRight().y;
-    });
-    minimumPerimeter(regions,original,secondHalf);
+    // minimumPerimeter(regions,original,secondHalf);
 }
 
 template <typename T, unsigned ORDER>

@@ -20,6 +20,9 @@ class Node{
         template<typename A, typename B, unsigned O>
         friend void k_depthFirst(A &s, const size_t k, Node<B,O>* u, const Point &p);
 
+        template<unsigned O>
+        friend double var(Node<T,O> *node, int axis);
+
 
 
         Node();
@@ -68,6 +71,23 @@ void Node<T,ORDER>::mergeRegions(){
     for(const auto& child : children){
         myBound.merge(child->myBound);
     }
+}
+
+template<unsigned ORDER>
+double var(Node<MBC,ORDER> *node, int axis){
+    
+    int u = (axis == X) ? node->myBound.getCentroid().x : node->myBound.getCentroid().y;
+    double res = 0;
+
+    for(auto f: node->children){
+        int x = (axis == X) ? f->myBound.getCentroid().x
+                            : f->myBound.getCentroid().y;
+        
+        res += (x-u) * (x-u);
+    }
+    
+    res/= node->children.size();
+    return res;
 }
 
 
