@@ -24,9 +24,9 @@ struct Point final{
 
     friend bool operator==(const Point& left, const Point& right);
     friend bool operator!=(const Point& left, const Point& right);
-    int operator[] (int axis){
-        return (axis == X) ? x : y; 
-    }
+    int operator[] (int axis) {return (axis == X) ? x : y; }
+    const int operator[] (int axis) const {return (axis == X) ? x : y; }
+    
 
     double distance(const Point& other) const;
     bool closeEnough(const Point& other, const int RADIUS) const;

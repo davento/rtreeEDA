@@ -26,6 +26,8 @@ class MBC final: public Bound{
         virtual bool inArea(Point p) override;
         void merge(const MBC&);
         Point& getCentroid();
+        const Point& getCentroid() const{return ce;};
+
         double& getRadious();
 
 };

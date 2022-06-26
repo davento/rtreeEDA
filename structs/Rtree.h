@@ -124,12 +124,14 @@ void Rtree<T,ORDER>::split(Node<T,ORDER>* original, Node<T,ORDER>* secondHalf){
     // //sort by x left
     sort(regions.begin(), regions.end(),
     [&](const Node<T,ORDER>* m1, const Node<T,ORDER>* m2){
-        return m1->myBound.getCentroid().x < m2->myBound.getCentroid().x;
+        return m1->myBound.getCentroid()[axis] < m2->myBound.getCentroid()[axis];
     });
-    // // minimumPerimeter(regions,original,secondHalf);
+
     
-    // minimumPerimeter(regions,original,secondHalf);
+    minimumPerimeter(regions,original,secondHalf);
 }
+
+
 
 template <typename T, unsigned ORDER>
 void Rtree<T,ORDER>::minimumPerimeter(std::vector<Node<T,ORDER>*>& u, Node<T,ORDER>* v, Node<T,ORDER>* p){
