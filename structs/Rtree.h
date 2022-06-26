@@ -312,13 +312,15 @@ std::vector<FigureNode<T,ORDER>*>  Rtree<T,ORDER>::depthFirst(const Point& p){
         T m2 = f2->myBound;
         return m1.getCentroid().distance(p) < m2.getCentroid().distance(p);
     };
-
+    
+    std::vector<FN*> result;
 
     std::priority_queue<FN*, std::vector<FN*>, decltype(func) > s(func);
-    if(root->children.size() == 0) return {};
-    k_depthFirst(s,k,root,p);
 
-    std::vector<FN*> result;
+    if(root->children.empty()) 
+        return result;
+    
+    k_depthFirst(s,k,root,p);
 
      while(!s.empty()){
          result.push_back(s.top());
