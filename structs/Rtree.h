@@ -32,7 +32,7 @@ class Rtree{
         // void reinsert();
         Node<T,ORDER>* search(Node<T,ORDER>*, const Point&);
         void split(Node<T,ORDER>* original, Node<T,ORDER>* secondHalf);
-        void minimumPerimeter(std::vector<Node<T,ORDER>*>& u, Node<T,ORDER>* v, Node<T,ORDER>* p);
+        void minimumPerimeter(std::vector<Node<T,ORDER>*>& u, Node<T,ORDER>* v, Node<T,ORDER>* p, int axis);
         void handleOverflow(Node<T,ORDER>* overFlowed);
 
         Node<T,ORDER>* insert(Node<T,ORDER>* , Figure*);
@@ -116,7 +116,8 @@ template <typename T, unsigned ORDER>
 void Rtree<T,ORDER>::split(Node<T,ORDER>* original, Node<T,ORDER>* secondHalf){
 
  
-    int axis = var(original, X) < var(original,Y) ? X : Y;
+    int axis = variance(original->children, original->myBound, X) < 
+                variance(original->children, original->myBound, Y) ? X : Y;
 
       
     std::vector<Node<T,ORDER>*> regions = original->children;
@@ -128,13 +129,14 @@ void Rtree<T,ORDER>::split(Node<T,ORDER>* original, Node<T,ORDER>* secondHalf){
     });
 
     
-    minimumPerimeter(regions,original,secondHalf);
+    minimumPerimeter(regions,original,secondHalf,axis);
 }
 
 
 
 template <typename T, unsigned ORDER>
-void Rtree<T,ORDER>::minimumPerimeter(std::vector<Node<T,ORDER>*>& u, Node<T,ORDER>* v, Node<T,ORDER>* p){
+void Rtree<T,ORDER>::minimumPerimeter(std::vector<Node<T,ORDER>*>& u, Node<T,ORDER>* v, Node<T,ORDER>* p, int axis){
+
     int m = u.size();
 
     std::vector<Node<T,ORDER>*> s1;
@@ -151,9 +153,12 @@ void Rtree<T,ORDER>::minimumPerimeter(std::vector<Node<T,ORDER>*>& u, Node<T,ORD
         s2 = {u.begin()+i , u.end() };
         //get mbb and choose minimum
         boundType t1 = Rtree<T,ORDER>::mergeRegions(s1);
-        boundType t2 = Rtree<T,ORDER>::mergeRegions(s2);        
+        boundType t2 = Rtree<T,ORDER>::mergeRegions(s2);
+
+
+
         
-        if(t1.metric() + t2.metric() < m1.metric() + m2.metric()){
+        if(variance(s1,t1,axis) + variance(s2,t2,axis) < variance(v->children, m1, axis) + variance(p->children, m2, axis)){
             m1 = t1; m2 = t2;
             v->myBound = m1;
             p->myBound = m2;

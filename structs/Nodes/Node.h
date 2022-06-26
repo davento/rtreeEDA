@@ -31,6 +31,8 @@ class Node{
         virtual bool isLeaf() const;
         virtual void draw(SDL_Renderer* renderer, Color color = Color(0,0,255)) const = 0;
         void mergeRegions();
+        T getBound() {return myBound;};
+
   void print() const {
     std::cout << "----------\n";
     std::cout << "number of regions: "<< children.size() << "\n";
@@ -73,20 +75,21 @@ void Node<T,ORDER>::mergeRegions(){
     }
 }
 
-template<unsigned ORDER>
-double var(Node<MBC,ORDER> *node, int axis){
+template <unsigned O>
+double variance(std::vector<Node<MBC,O> *> s, const MBC& m, int axis){
+
+    if(s.empty()) return 2e5;
     
-    int u = (axis == X) ? node->myBound.getCentroid().x : node->myBound.getCentroid().y;
+    int u = m.getCentroid()[axis];
     double res = 0;
 
-    for(auto f: node->children){
-        int x = (axis == X) ? f->myBound.getCentroid().x
-                            : f->myBound.getCentroid().y;
+    for(auto f: s){
+        int x = f->getBound().getCentroid()[axis];
         
         res += (x-u) * (x-u);
     }
     
-    res/= node->children.size();
+    res/= s.size();
     return res;
 }
 
