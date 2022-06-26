@@ -251,19 +251,52 @@ void Rtree<T,ORDER>::draw(SDL_Renderer *renderer) const{
 }
 
 
-template<typename T, typename B, unsigned O>
-void k_depthFirst(T &p, const int &k, Node<B,O>* u){
+template<typename A, typename B, unsigned O>
+void k_depthFirst(A &s, const size_t k, Node<B,O>* u, const Point &p){
 
+
+    auto ep = u->myBound;
+    
+    Point mp = ep.getCentroid();
+    double rp_max = ep.getRadious();
+    //definig it as the minimum distance from u centroid to its children centroid
+    double rp_min  = rp_max;
+    for(auto f: u->children){
+        rp_min = std::min(rp_min,
+        f->myBound.getCentroid().distance(mp)) + f->myBound.getRadious();
+    }
+    // std::cout<<1<<'\n';
+    Point pe = (s.size() == 0) ? Point() : s.top()->myBound.getCentroid();
+    // std::cout<<2<<'\n'; 
+    double dk = (s.size() < k)  ?  2e5 : p.distance(pe);
+    
+    // std::cout<<"a\n";
     if(u->isLeaf()){
         for(auto f: u->children){
-            p.push(static_cast<FigureNode<B,O>*>(f));
-            if(p.size() > static_cast<const unsigned int>(k)) p.pop();
+            if(s.size() < k){
+                s.push(static_cast<FigureNode<B,O>*>(f));
+                continue;
+            }
+
+            Point& o = f->myBound.getCentroid();
+
+            if(dk + rp_max < p.distance(mp) or
+                dk + p.distance(mp) <  o.distance(mp)) continue;
+            
+            s.push(static_cast<FigureNode<B,O>*>(f));
+            s.pop();
         }
         return ;
     }
-
+    // std::cout<<"b\n";
     for(auto r: u->children){
-        k_depthFirst(p,k,r);
+        Point& o = r->myBound.getCentroid();
+        if(dk + o.distance(mp) < p.distance(mp) or
+            dk + p.distance(mp) < rp_min or
+            (p.distance(mp) + rp_max < dk and k == 1) ){
+            continue;   
+        }
+        k_depthFirst(s,k,r,p);
     }
 }
 
@@ -282,7 +315,8 @@ std::vector<FigureNode<T,ORDER>*>  Rtree<T,ORDER>::depthFirst(const Point& p){
 
 
     std::priority_queue<FN*, std::vector<FN*>, decltype(func) > s(func);
-    k_depthFirst(s,k,root);
+    if(root->children.size() == 0) return {};
+    k_depthFirst(s,k,root,p);
 
     std::vector<FN*> result;
 
