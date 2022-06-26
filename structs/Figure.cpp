@@ -38,7 +38,7 @@ void Figure::draw(SDL_Renderer* renderer, Color color) const{
     for(size_t i = 0; i != points.size() - 1; i++){
         SDL_RenderDrawLine(renderer, points[i].x, points[i].y, points[i+1].x, points[i+1].y);
     }
-    myBound->draw(renderer);
+    //myBound->draw(renderer, color);
 }
 
 void Figure::clear(){

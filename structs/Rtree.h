@@ -25,7 +25,7 @@ class Rtree{
 
         static void drawDepthFirst(SDL_Renderer* renderer, std::vector<FigureNode<T,ORDER>*>& vec){
             for(auto elem: vec)
-                elem->draw(renderer, Color(0,255,0) );
+                elem->draw(renderer, Color(255,0,255) );
         }
     private:
         Node<T,ORDER>* root;
@@ -58,8 +58,10 @@ Rtree<T, ORDER>::~Rtree(){
 
 template <typename T, unsigned ORDER>
 bool Rtree<T, ORDER>::insert(Figure* figure){
+    std::cout << figure->getBound()->getTopLeft().x << " " << figure->getBound()->getBottomRight().x << std::endl;
     root = insert(root, figure);
     root->print();
+    std::cout << root->myBound.getTopLeft().x << " " << root->myBound.getBottomRight().x << std::endl;
     std::cout << "--------------------------------------------------------\n";
     return true;
 }
@@ -245,7 +247,7 @@ T Rtree<T,ORDER>::makeNewCombineBound(boundType left, boundType right){
 
 template <typename T, unsigned ORDER>
 void Rtree<T,ORDER>::draw(SDL_Renderer *renderer) const{
-    root->draw(renderer, Color(0,40,0));
+    root->draw(renderer, Color(40,0,0));
 }
 
 
@@ -268,7 +270,7 @@ void k_depthFirst(T &p, const int &k, Node<B,O>* u){
 template <typename T, unsigned ORDER>
 std::vector<FigureNode<T,ORDER>*>  Rtree<T,ORDER>::depthFirst(const Point& p){
 
-    const int  k =5;
+    const int  k =3;
 
     typedef FigureNode<T,ORDER> FN;
 

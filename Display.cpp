@@ -67,10 +67,11 @@ void Display::processInputs(){
             default:
                 {
                     int x, y;
-                    
+                    //std::cout << "default" << std::endl; 
                     SDL_GetMouseState(&x, &y);
                     Point po(x,y);
                     figures = r->depthFirst(po);
+                    //std::cout << figures.size() << std::endl;
                     break;
                 }
         }
