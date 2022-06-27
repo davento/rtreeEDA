@@ -1,6 +1,7 @@
 #include "Figure.h"
+#include "Boundings/MBC.h"
 
-Figure::Figure(Bound* mb): myBound(mb){
+Figure::Figure(Bound* mb): myBound(new MBC(*static_cast<MBC*>(mb))){
 
 }
 

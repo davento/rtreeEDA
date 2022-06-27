@@ -382,6 +382,7 @@ void Rtree<T,ORDER>::remove(const Point& p){
         return ;
    }
    leaf->children.erase(it);
+   leaf->myBound = mergeRegions(leaf->children);
    if(leaf->children.size() <= ORDER/2){
 
        if(leaf->father){
@@ -394,6 +395,7 @@ void Rtree<T,ORDER>::remove(const Point& p){
                        minDist = sit;
                insert(S, static_cast<FigureNode<T,ORDER>*>(*minDist)->myFigure);
                S->children.erase(minDist);
+               S->myBound = mergeRegions(S->children);
            }
            else{
 
@@ -409,6 +411,7 @@ void Rtree<T,ORDER>::remove(const Point& p){
                     }
                }
                leaf->father->children.erase(it);
+               leaf->father->myBound = mergeRegions(leaf->father->children);
            }
        }
    }
