@@ -222,13 +222,9 @@ template <typename T, unsigned ORDER>
 void Rtree<T,ORDER>::mergeUp(Node<T,ORDER> *node){
 
 
-    while (node){
-        if(node->isLeaf()){
-            node = node->father;
-            continue;
-        }
-
+    while (node){ 
         node->myBound =  mergeRegions(node->children);
+        node = node->father;
     }
 }
 
