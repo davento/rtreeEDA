@@ -58,11 +58,11 @@ void Display::processInputs(){
                            fig.clear();
                        }
                     }
-/*                    if(event.button.button == SDL_BUTTON_RIGHT){
+                    if(event.button.button == SDL_BUTTON_RIGHT){
                         r->remove(Point(x,y));
                         fig.clear();
                     }
-                    break;*/
+                    break;
                 }
             default:
                 {

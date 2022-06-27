@@ -43,6 +43,8 @@ class Rtree{
         static boundType mergeRegions(std::vector<Node<T,ORDER>*>& vec);
         static boundType mergeRegions(std::vector<Node<MBR,ORDER>*>& vec);
         static boundType makeNewCombineBound(boundType left, boundType right);
+        Node<T,ORDER>* findClosestNodeM(Node<T,ORDER>* father, Node<T,ORDER>* node);
+        Node<T,ORDER>* closestNode(Node<T,ORDER>* father, Node<T,ORDER>* node);
 };
 
 template <typename T, unsigned ORDER>
@@ -58,11 +60,7 @@ Rtree<T, ORDER>::~Rtree(){
 
 template <typename T, unsigned ORDER>
 bool Rtree<T, ORDER>::insert(Figure* figure){
-    std::cout << figure->getBound()->getTopLeft().x << " " << figure->getBound()->getBottomRight().x << std::endl;
     root = insert(root, figure);
-    root->print();
-    std::cout << root->myBound.getTopLeft().x << " " << root->myBound.getBottomRight().x << std::endl;
-    std::cout << "--------------------------------------------------------\n";
     return true;
 }
 
@@ -221,10 +219,12 @@ typename Rtree<T,ORDER>::boundType Rtree<T,ORDER>::mergeRegions(std::vector<Node
 template <typename T, unsigned ORDER>
 Node<T,ORDER>* Rtree<T,ORDER>::chooseSubtree(Node<T,ORDER>* node, Figure* figure){
     double minMetric = 1e9+10;
-    Node<T,ORDER>* result = node;
+    Node<T,ORDER>* result = nullptr;
     for(const auto& child: node->children){
-        boundType aux = Rtree<T,ORDER>::makeNewCombineBound(*(figure->getBound()), node->myBound);
-        double p = aux.metric();
+        // boundType aux = Rtree<T,ORDER>::makeNewCombineBound(*(figure->getBound()), node->myBound);
+        // double p = aux.metric();
+        double p = static_cast<MBC*> (figure->getBound())->getCentroid().
+                    distance(child->myBound.getCentroid());
         if(p <= minMetric){
             minMetric = p;
             result = child;
@@ -232,6 +232,7 @@ Node<T,ORDER>* Rtree<T,ORDER>::chooseSubtree(Node<T,ORDER>* node, Figure* figure
     }
     return result;
 }
+
 
 template <typename T, unsigned ORDER>
 T Rtree<T,ORDER>::makeNewCombineBound(boundType left, boundType right){
@@ -323,6 +324,94 @@ std::vector<FigureNode<T,ORDER>*>  Rtree<T,ORDER>::depthFirst(const Point& p){
      }
      return result;
     
+}
+
+template <typename T, unsigned ORDER>
+Node<T, ORDER>* Rtree<T,ORDER>::search(const Point& p){
+    Node<T,ORDER>* result = root;
+    if(result->isLeaf()){
+        return result;
+    }
+    else{
+        while(!result->isLeaf()){
+            Node<T,ORDER>* temp = result->children[0];
+            for(const auto& node: result->children){
+                    if(node->myBound.getCentroid().distance(p) < temp->myBound.getCentroid().distance(p))
+                        temp = node;
+            }
+            result = temp;
+        }
+        return result;
+    }
+}
+
+template <typename T, unsigned ORDER>
+Node<T,ORDER>* Rtree<T,ORDER>::findClosestNodeM(Node<T,ORDER>* father, Node<T,ORDER>* node){
+    Node<T,ORDER>* result = nullptr;
+    for(const auto& child: father->children){
+        if(!result && child->children.size() > ORDER/2)
+            result = child;
+        else if(result && result->myBound.getCentroid().distance(node->myBound.getCentroid()) > child->myBound.getCentroid().distance(node->myBound.getCentroid()) && child->children.size() > ORDER/2)
+            result = child;
+    }
+    return result;
+}
+
+template <typename T, unsigned ORDER>
+Node<T,ORDER>* Rtree<T,ORDER>::closestNode(Node<T,ORDER>* father, Node<T,ORDER>* node){
+    Node<T,ORDER>* result = nullptr;
+    for(const auto & child: father->children){
+        if(!result)
+            result = child;
+        else if(result->myBound.getCentroid().distance(node->myBound.getCentroid()) > child->myBound.getCentroid().distance(node->myBound.getCentroid()))
+            result = child;
+    }
+    return result;
+}
+
+template <typename T, unsigned ORDER>
+void Rtree<T,ORDER>::remove(const Point& p){
+   Node<T,ORDER>* leaf = search(p);
+   
+   auto it = leaf->children.begin(); 
+   for(; it != leaf->children.end(); ++it)
+       if((*it)->myBound.inArea(p))
+           break;
+
+   if(it == leaf->children.end()){
+        return ;
+   }
+   leaf->children.erase(it);
+   if(leaf->children.size() <= ORDER/2){
+
+       if(leaf->father){
+           Node<T,ORDER>* S = findClosestNodeM(leaf->father, leaf);
+           if(S){
+               auto sit = S->children.begin();
+               decltype(sit) minDist = sit;
+               for(; sit != S->children.end(); ++sit)
+                   if((*sit)->myBound.getCentroid().distance(p) < (*minDist)->myBound.getCentroid().distance(p))
+                       minDist = sit;
+               insert(S, static_cast<FigureNode<T,ORDER>*>(*minDist)->myFigure);
+               S->children.erase(minDist);
+           }
+           else{
+
+               S = closestNode(leaf->father, leaf);
+               for(auto figure: leaf->children){
+                   insert(S, static_cast<FigureNode<T,ORDER>*>(figure)->myFigure);
+               }
+               leaf->children.clear();
+               auto it = leaf->father->children.begin();
+               for(; it != leaf->father->children.end(); ++it){
+                    if(*it == leaf){
+                        break;
+                    }
+               }
+               leaf->father->children.erase(it);
+           }
+       }
+   }
 }
 
 #endif
