@@ -43,6 +43,8 @@ class Rtree{
         static boundType mergeRegions(std::vector<Node<T,ORDER>*>& vec);
         static boundType mergeRegions(std::vector<Node<MBR,ORDER>*>& vec);
         static boundType makeNewCombineBound(boundType left, boundType right);
+        static void mergeUp(Node<T,ORDER> *node);
+
         Node<T,ORDER>* findClosestNodeM(Node<T,ORDER>* father, Node<T,ORDER>* node);
         Node<T,ORDER>* closestNode(Node<T,ORDER>* father, Node<T,ORDER>* node);
 };
@@ -217,6 +219,21 @@ typename Rtree<T,ORDER>::boundType Rtree<T,ORDER>::mergeRegions(std::vector<Node
 
 
 template <typename T, unsigned ORDER>
+void Rtree<T,ORDER>::mergeUp(Node<T,ORDER> *node){
+
+
+    while (node){
+        if(node->isLeaf()){
+            node = node->father;
+            continue;
+        }
+
+        node->myBound =  mergeRegions(node->children);
+    }
+}
+
+
+template <typename T, unsigned ORDER>
 Node<T,ORDER>* Rtree<T,ORDER>::chooseSubtree(Node<T,ORDER>* node, Figure* figure){
     double minMetric = 1e9+10;
     Node<T,ORDER>* result = nullptr;
@@ -382,7 +399,8 @@ void Rtree<T,ORDER>::remove(const Point& p){
         return ;
    }
    leaf->children.erase(it);
-   leaf->myBound = mergeRegions(leaf->children);
+    mergeUp(leaf);
+
    if(leaf->children.size() <= ORDER/2){
 
        if(leaf->father){
@@ -395,7 +413,7 @@ void Rtree<T,ORDER>::remove(const Point& p){
                        minDist = sit;
                insert(S, static_cast<FigureNode<T,ORDER>*>(*minDist)->myFigure);
                S->children.erase(minDist);
-               S->myBound = mergeRegions(S->children);
+               mergeUp(S);
            }
            else{
 
@@ -411,7 +429,7 @@ void Rtree<T,ORDER>::remove(const Point& p){
                     }
                }
                leaf->father->children.erase(it);
-               leaf->father->myBound = mergeRegions(leaf->father->children);
+               mergeUp(leaf);
            }
        }
    }
