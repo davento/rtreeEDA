@@ -30,6 +30,7 @@ class SStreeNode{
         } 
         
         virtual void draw(SDL_Renderer* renderer, Color color = Color(0,0,255)) const;
+        virtual void print() const;
     protected:
         MBC bound;
         std::vector<SStreeNode*> children;
@@ -43,7 +44,8 @@ class PointsNode final : public SStreeNode{
         PointsNode();
         PointsNode(const Point&);
         void draw(SDL_Renderer* renderer, Color color = Color(0,0,255)) const override;
-        
+        void print() const override;
+
     private:
         std::vector<Point> points;
         virtual bool isLeaf(){return true;}

@@ -84,3 +84,17 @@ PointsNode::PointsNode(const Point& p):SStreeNode(){
     bound.getRadius() = 1;
 }
 
+void SStreeNode::print() const {
+    std::cout << "Node: " << bound.perimeter() << " " << bound.area() << std::endl;
+    std::cout << "Bound: "; bound.getCentroid().print(); std::cout << " " << bound.getRadius() << std::endl;
+    std::cout << "{" << std::endl; 
+    for(const auto& child: children){
+        child->print();
+    }
+    std::cout << "\n}" << std::endl;
+}
+
+void PointsNode::print() const {
+    for(const auto& point: points)
+        point.print();
+}

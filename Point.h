@@ -29,6 +29,7 @@ struct Point final{
     static Point createMaxPoint(const Point& left, const Point& right);
 
     void draw(SDL_Renderer* renderer) const;
+    void print() const;
 };
 
 #endif

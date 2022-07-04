@@ -2,6 +2,7 @@
 
 #include "Point.h"
 #include <algorithm>
+#include <iostream>
 
 Point::Point(double posX, double posY): x(posX), y(posY){
 
@@ -52,4 +53,6 @@ Point Point::createMaxPoint(const Point& p1, const Point& p2){
     );
 }
 
-
+void Point::print() const {
+    std::cout << "( " << x << " " << y <<" )" << std::endl;
+}

@@ -20,6 +20,7 @@ class MBC{
         double metric() const {return perimeter();}
         bool inArea(const Point& p) const {return Point::distance(p,centroid) < radius;}
         double& getRadius(){return radius;}
+        const double& getRadius() const {return radius;}
         Point& getCentroid(){return centroid;}
         const Point& getCentroid() const{return centroid;}
 

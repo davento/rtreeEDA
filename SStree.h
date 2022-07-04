@@ -16,6 +16,7 @@ class SStree final{
         void insert(const Point &);
         void remove(const Point &);
         void draw(SDL_Renderer* renderer) const;
+        void print() const;
     private:
 
         Node* root;

@@ -14,6 +14,7 @@ SStree::Node* SStree::search(const Point& p){
 
 void SStree::insert(const Point& p){
     root = insert(root, p);
+    print();
 }
 
 void SStree::remove(const Point& p){
@@ -138,7 +139,7 @@ void SStree::bestSplit(std::vector<Node*>& u, Node* v, Node* p, int axis){
 
     MBC m1 = v->bound;
     MBC m2 = v->bound;
-
+            double minVariance = 2e5;
     for( int i = ceil(m * 0.4); i <= m - ceil(m * 0.4); i++){
         // s1 = first i regions (points)
         // s2 = the other i regions (points)
@@ -148,12 +149,13 @@ void SStree::bestSplit(std::vector<Node*>& u, Node* v, Node* p, int axis){
         MBC t1 = SStreeNode::mergeBounds(s1);
         MBC t2 = SStreeNode::mergeBounds(s2);
         
-        if(variance(s1,t1,axis) + variance(s2,t2,axis) < variance(v->children, m1, axis) + variance(p->children, m2, axis)){
+        if(variance(s1,t1,axis) + variance(s2,t2,axis) < minVariance){
             m1 = t1; m2 = t2;
             v->bound = m1;
             p->bound = m2;
             v->children = s1;
             p->children = s2;
+            minVariance = variance(v->children, m1, axis) + variance(p->children, m2, axis);
         }
     }
     v->mergeBounds();
@@ -176,5 +178,9 @@ double SStree::variance(std::vector<Node*> s, const MBC& m, int axis){
     
     res/= s.size();
     return res;
+}
+
+void SStree::print() const{
+    root->print();
 }
 
