@@ -16,8 +16,10 @@ class SStreeNode{
         SStreeNode();
         SStreeNode(const SStreeNode&) = default;
         
-        MBC getBound() const {return bound;}
         void mergeBounds();
+        static MBC mergeBounds(std::vector<SStreeNode*> );
+        MBC getBound() const {return bound;}
+        
 
         virtual bool isLeaf(){return false;} 
         

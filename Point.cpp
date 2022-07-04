@@ -15,10 +15,6 @@ bool operator !=(const Point& left, const Point& right){
     return  !(left==right);
 }
 
-double Point::operetor [](const int axi){
-    
-}
-
 
 double Point::distance(const Point& from, const Point& to){
     return std::sqrt(std::pow(from.x - to.x, 2) + std::pow(from.y - to.y, 2));

@@ -31,7 +31,6 @@ void MBC::merge(const Point &p){
 }
 
 void MBC::merge(const MBC& other){
-
 }
 
 void MBC::draw(SDL_Renderer* renderer/*, Color color*/) const {

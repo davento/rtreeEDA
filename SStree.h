@@ -25,6 +25,7 @@ class SStree final{
         void handleOverflow(Node*);
         void split(Node* original, Node* secondHalf);
         void bestSplit(std::vector<Node*>& u, Node* v, Node* p, int axis);
+        double variance(std::vector<Node*> s, const MBC& m, int axis);
 
         
         void remove(Node*, const Point &);

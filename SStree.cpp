@@ -125,16 +125,14 @@ void SStree::bestSplit(std::vector<Node*>& u, Node* v, Node* p, int axis){
     MBC m1 = v->bound;
     MBC m2 = v->bound;
 
-
     for( int i = ceil(m * 0.4); i <= m - ceil(m * 0.4); i++){
         // s1 = first i regions (points)
         // s2 = the other i regions (points)
         s1 = {u.begin(), u.begin() + i};
         s2 = {u.begin()+i , u.end() };
         //get mbb and choose minimum
-        MBC t1 = mergeBounds(s1);
-        MBC t2 = mergeBounds(s2);
-
+        MBC t1 = SStreeNode::mergeBounds(s1);
+        MBC t2 = SStreeNode::mergeBounds(s2);
         
         if(variance(s1,t1,axis) + variance(s2,t2,axis) < variance(v->children, m1, axis) + variance(p->children, m2, axis)){
             m1 = t1; m2 = t2;
@@ -148,3 +146,20 @@ void SStree::bestSplit(std::vector<Node*>& u, Node* v, Node* p, int axis){
     p->mergeBounds();
 }
 
+
+double SStree::variance(std::vector<Node*> s, const MBC& m, int axis){
+    
+    if(s.empty()) return 0;
+    
+    int u = m.getCentroid()[axis];
+    double res = 0;
+
+    for(auto f: s){
+        int x = f->getBound().getCentroid()[axis];
+        
+        res += (x-u) * (x-u);
+    }
+    
+    res/= s.size();
+    return res;
+}

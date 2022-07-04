@@ -20,6 +20,8 @@ class MBC{
         bool inArea(const Point& p) const {return Point::distance(p,centroid) < radius;}
         double& getRadius(){return radius;}
         Point& getCentroid(){return centroid;}
+        const Point& getCentroid() const{return centroid;}
+
 
         void draw(SDL_Renderer* renderer) const;
         void merge(const Point&);
