@@ -17,8 +17,6 @@ class SStree final{
         void draw(SDL_Renderer* renderer) const;
     private:
 
-        int ORDER;        
-
         Node* root;
         Node* search(Node*,const Point &);
         Node* chooseSubtree(Node*, const Point &);

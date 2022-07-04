@@ -30,7 +30,7 @@ SStree::Node* SStree::search(Node* node, const Point &p){
     while(!result->isLeaf()){
         Node* temp = result->children[0];
         for(const auto& node: result->children){
-                if(distance(node->bound.getCentroid(), p)< distance(temp->bound, p)  )
+                if(Point::distance(node->bound.getCentroid(), p)< Point::distance(temp->bound.getCentroid(), p)  )
                     temp = node;
         }
         result = temp;
@@ -45,9 +45,9 @@ SStree::Node* SStree::chooseSubtree(Node* node, const Point &p){
     for(const auto& child: node->children){
         // boundType aux = Rtree<T,ORDER>::makeNewCombineBound(*(figure->getBound()), node->myBound);
         // double p = aux.metric();
-        double p = distance(p, child->bound.getCentroid());
-        if(p <= minMetric){
-            minMetric = p;
+        double temp = Point::distance(p, child->bound.getCentroid());
+        if(temp <= minMetric){
+            minMetric = temp;
             result = child;
         }
     }
@@ -108,10 +108,9 @@ void SStree::split(Node* original, Node* secondHalf){
 
     // //sort by x left
     std::sort(regions.begin(), regions.end(),
-    [&](const Node* m1, const Node* m2){
+    [&](Node* m1,  Node* m2){
         return m1->bound.getCentroid()[axis] < m2->bound.getCentroid()[axis];
     });
-
     
     bestSplit(regions,original,secondHalf,axis);
 }
