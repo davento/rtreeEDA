@@ -1,7 +1,11 @@
 #include "SStree.h"
+#include "SStreeNode.h"
 
 SStree::SStree(){
-    root = nullptr;
+    root = new SStreeNode();
+}
+SStree::SStree(int dim){
+    root = new SStreeNode(MBC(Point(0,0), Point(dim, dim)));
 }
 
 SStree::Node* SStree::search(const Point& p){
@@ -13,12 +17,13 @@ void SStree::insert(const Point& p){
 }
 
 void SStree::remove(const Point& p){
-    remove(root, p);
+    //remove(root, p);
 }
 
 void SStree::draw(SDL_Renderer* renderer) const{
-    root->draw(renderer);
+    root->draw(renderer, Color(40,0,0));
 }
+
 
 SStree::Node* SStree::search(Node* node, const Point &p){
     
@@ -163,3 +168,4 @@ double SStree::variance(std::vector<Node*> s, const MBC& m, int axis){
     res/= s.size();
     return res;
 }
+

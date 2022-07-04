@@ -1,6 +1,9 @@
 #include "MBC.h"
 #define INF 20000000000
 
+MBC::MBC(): topLeft(INF,INF), bottomRight(-INF,-INF){
+    updateCircle();
+}
 MBC::MBC(const Point& inCentroid, double inRadius): centroid(inCentroid), radius(inRadius){
 
 }
@@ -33,12 +36,12 @@ void MBC::merge(const Point &p){
 void MBC::merge(const MBC& other){
 }
 
-void MBC::draw(SDL_Renderer* renderer/*, Color color*/) const {
+void MBC::draw(SDL_Renderer* renderer, Color color) const {
     //draw circle
     double perim = perimeter();
     // el angulo va en radianes
     double changeRatio = 2*M_PI/perim;
-    /*SDL_SetRenderDrawColor(renderer , color.RGB[0], color.RGB[1], color.RGB[2], 255);*/
+    SDL_SetRenderDrawColor(renderer , color.RGB[0], color.RGB[1], color.RGB[2], 255);
     for(double angle = 0; angle*radius < perim && angle < 2*M_PI; angle += changeRatio){
         SDL_RenderDrawPoint(renderer, centroid.x + radius*std::cos(angle),centroid.y + radius*std::sin(angle));
     }

@@ -2,9 +2,7 @@
 #define DISPLAY_H
 
 #include <SDL2/SDL.h>
-#include "structs/Rtree.h"
-#include "structs/Boundings/MBR.h"
-#include "structs/Boundings/MBC.h"
+#include "SStree.h"
 
 class Display{
 
@@ -24,9 +22,7 @@ class Display{
         bool isRunning;
         SDL_Window* window;
         SDL_Renderer* renderer;
-        Rtree<MBC, 3>* r;
-        std::vector<FigureNode<MBC,3>*> figures;
-        Figure fig;
+        SStree* ss;
 };
 
 #endif

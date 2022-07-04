@@ -4,7 +4,6 @@
 #define ORDER 3
 
 #include "Point.h"
-#include "SStree.h"
 #include "MBC.h"
 
 #include <vector>
@@ -14,7 +13,8 @@ class SStreeNode{
     public:
 
         SStreeNode();
-        SStreeNode(const SStreeNode&) = default;
+        SStreeNode(const MBC&);
+        SStreeNode(const SStreeNode&);
         
         void mergeBounds();
         static MBC mergeBounds(std::vector<SStreeNode*> );
@@ -23,7 +23,7 @@ class SStreeNode{
 
         virtual bool isLeaf(){return false;} 
         
-        void draw(SDL_Renderer* renderer);
+        virtual void draw(SDL_Renderer* renderer, Color color = Color(0,0,255)) const;
     protected:
         MBC bound;
         std::vector<SStreeNode*> children;
@@ -36,6 +36,7 @@ class PointsNode final : public SStreeNode{
     public:
         PointsNode();
         PointsNode(const Point&);
+        void draw(SDL_Renderer* renderer, Color color = Color(0,0,255)) const override;
         
     private:
         std::vector<Point> points;

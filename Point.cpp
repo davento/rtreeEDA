@@ -26,8 +26,6 @@ bool Point::closeEnough(const Point& p1, const Point& p2, const int RADIUS){
 
 
 void Point::draw(SDL_Renderer* renderer) const{
-    // SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    // SDL_RenderDrawPoint(renderer, x, y);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     int dim = 1;
     SDL_Rect dot{

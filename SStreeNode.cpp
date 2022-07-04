@@ -1,7 +1,11 @@
 #include "SStreeNode.h"
+#include "SStree.h"
 
+SStreeNode::SStreeNode(const MBC& other): bound(other), father(nullptr){
 
-SStreeNode::SStreeNode(): father(nullptr), bound(){
+}
+
+SStreeNode::SStreeNode(): bound(), father(nullptr){
     children.reserve(ORDER + 1);
 }
 
@@ -14,7 +18,7 @@ SStreeNode::SStreeNode(const SStreeNode& other){
 }
 
 
-MBC mergeBounds(std::vector<SStreeNode*> bounds){
+MBC SStreeNode::mergeBounds(std::vector<SStreeNode*> bounds){
     
     double area = {};
     MBC res(Point(0,0), Point(0,0));
@@ -47,9 +51,20 @@ void SStreeNode::mergeBounds(){
     bound  = mergeBounds(this->children);
 }
 
-void SStreeNode::draw(SDL_Renderer* renderer){
-    //TODO
+void SStreeNode::draw(SDL_Renderer* renderer, Color color) const {
+    bound.draw(renderer, color);
+    color.changeColor(150);
+    for(const auto& child: children){
+        child->draw(renderer, color);
+    }
 }
+
+void PointsNode::draw(SDL_Renderer* renderer, Color color) const {
+    SStreeNode::draw(renderer, color);
+    for(const auto& point: points)
+        point.draw(renderer);
+}
+
 
 PointsNode::PointsNode():SStreeNode(){
     points.reserve(ORDER+1);

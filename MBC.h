@@ -3,13 +3,14 @@
 
 #define _USE_MATH_DEFINES
 #include "Point.h"
+#include "Color.h"
 #include <cmath>
 #include <SDL2/SDL.h>
 
 class MBC{
     //TODO: MBC
     public:
-        MBC() = default;
+        MBC();
         MBC(const MBC&) = default;
         MBC(const Point& inCentroid, double inRadius);
         MBC(const Point&, const Point&);
@@ -23,7 +24,7 @@ class MBC{
         const Point& getCentroid() const{return centroid;}
 
 
-        void draw(SDL_Renderer* renderer) const;
+        void draw(SDL_Renderer* renderer, Color color = Color(0,0,255)) const;
         void merge(const Point&);
         void merge(const MBC&);
 

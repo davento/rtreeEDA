@@ -11,6 +11,7 @@ class SStree final{
         typedef PointsNode LeafNode;
         
         SStree();
+        SStree(int dim);
         Node* search(const Point &);
         void insert(const Point &);
         void remove(const Point &);

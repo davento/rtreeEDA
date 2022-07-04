@@ -1,11 +1,11 @@
 #include "Display.h"
+#include "SStree.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_mouse.h>
 #include <iostream>
-#include "structs/Figure.h"
 
-Display::Display(): isRunning(false), window(nullptr), renderer(nullptr), r(nullptr), fig(new MBC()){}
+Display::Display(): isRunning(false), window(nullptr), renderer(nullptr), ss(nullptr){}
 
 bool Display::initialize(double dim){
 
@@ -21,7 +21,7 @@ bool Display::initialize(double dim){
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     isRunning = true;
     
-    r = new Rtree<MBC,3>;
+    ss = new SStree();
 
     return true;
 }
@@ -53,14 +53,10 @@ void Display::processInputs(){
                     
                     SDL_GetMouseState(&x, &y);
                     if(event.button.button == SDL_BUTTON_LEFT){
-                       if(!fig.addPoint(Point(x,y))){
-                           r->insert(&fig);
-                           fig.clear();
-                       }
+                       ss->insert(Point(x,y));
                     }
                     if(event.button.button == SDL_BUTTON_RIGHT){
-                        r->remove(Point(x,y));
-                        fig.clear();
+//                        ss->remove(Point(x,y));
                     }
                     break;
                 }
@@ -70,7 +66,7 @@ void Display::processInputs(){
                     //std::cout << "default" << std::endl; 
                     SDL_GetMouseState(&x, &y);
                     Point po(x,y);
-                    figures = r->depthFirst(po);
+                    //figures = r->depthFirst(po);
                     //std::cout << figures.size() << std::endl;
                     break;
                 }
@@ -88,10 +84,6 @@ void Display::updateDisplay(){
 void Display::generateOutput(){
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
-    fig.draw(renderer);
-    //for(const auto& figure: figures)
-    //    figure.draw(renderer);
-    r->draw(renderer);
-    r->drawDepthFirst(renderer, figures);
+    ss->draw(renderer);
     SDL_RenderPresent(renderer);
 }
