@@ -31,6 +31,10 @@ class SStree final{
 
         
         void remove(Node*, const Point &);
+        Node* findClosestNodeM(Node* father, Node* node);
+        Node* closestNode(Node* father, Node* node);
+
+        void mergeUp(Node*node);
 };
 
 #endif

@@ -14,11 +14,12 @@ SStree::Node* SStree::search(const Point& p){
 
 void SStree::insert(const Point& p){
     root = insert(root, p);
+    std::cout<<"----------------------------------------------\n";
     print();
 }
 
 void SStree::remove(const Point& p){
-    //remove(root, p);
+    remove(root, p);
 }
 
 void SStree::draw(SDL_Renderer* renderer) const{
@@ -63,19 +64,19 @@ SStree::Node* SStree::chooseSubtree(Node* node, const Point &p){
 
 SStree::Node* SStree::insert(Node* node, const Point &p){
     
-    std::cout<<"entering insert\n";
-    printf("inserting Point(%f,%f)\n", p.x,p.y);
+    // std::cout<<"entering insert\n";
+    // printf("inserting Point(%f,%f)\n", p.x,p.y);
     // std::cout<<node->getBound().getCentroid().x<<" "<<node->getBound().getCentroid().x<<'|';
     // std::cout<<node->getBound().getRadius()<<'\n';
     
     if(node->isLeaf()){
-        std::cout<<"inserting in leaf\n";
+        // std::cout<<"inserting in leaf\n";
         Node* it = new LeafNode(p);
         (node->children).push_back(it);
         node->mergeBounds();
 
         if((node->children).size() == ORDER + 1){
-            std::cout<<"overflow\n";
+            // std::cout<<"overflow\n";
             handleOverflow(node);
         }
     }
@@ -184,3 +185,91 @@ void SStree::print() const{
     root->print();
 }
 
+
+SStree::Node* SStree::findClosestNodeM(Node* father, Node* node){
+    Node* result = nullptr;
+    for(const auto& child: father->children){
+        if(child == node) continue;
+        if(!result && child->children.size() > std::ceil(ORDER/2.0))
+            result = child;
+        else if(result && Point::distance(result->bound.getCentroid(), node->bound.getCentroid()) > 
+                        Point::distance(child->bound.getCentroid(),node->bound.getCentroid()) && child->children.size() > std::ceil(ORDER/2.0))
+            result = child;
+    }
+    return result;
+}
+
+SStree::Node* SStree::closestNode(Node* father, Node* node){
+    Node* result = nullptr;
+    for(const auto & child: father->children){
+        if(child == node) continue;
+        if(!result)
+            result = child;
+        else if(Point::distance(result->bound.getCentroid(),node->bound.getCentroid()) > Point::distance(child->bound.getCentroid(), node->bound.getCentroid()))
+            result = child;
+    }
+    return result;
+}
+
+void SStree::mergeUp(Node*node){
+
+    while (node){ 
+        node->mergeBounds();
+        node = node->father;
+    }
+}
+
+
+void SStree::remove(Node* node,const Point& p){
+
+   Node* leaf = search(p);
+   auto it = leaf->children.begin(); 
+
+   for(; it != leaf->children.end(); ++it)
+       if(Point::closeEnough((*it)->bound.getCentroid(), p,5))
+           break;
+
+   if(it == leaf->children.end()){
+        return ;
+   }
+   leaf->children.erase(it);
+   mergeUp(leaf);
+
+   if(leaf->children.size() <= ORDER/2){
+        std::cout<<"entering\n";
+       if(leaf->father){
+           Node* S = findClosestNodeM(leaf->father, leaf);
+           if(S) printf("closes node Point(%d,%d)\n", S->bound.getCentroid()[X], S->bound.getCentroid()[Y]);
+           if(S){
+               auto sit = S->children.begin();
+               decltype(sit) minDist = sit;
+               for(; sit != S->children.end(); ++sit)
+                   if(Point::distance( (*sit)->bound.getCentroid(),p) < Point::distance( (*minDist)->bound.getCentroid(), p) )
+                       minDist = sit;
+               
+               insert(leaf, static_cast<LeafNode*>(*minDist)->getPoint());
+               S->children.erase(minDist);
+               mergeUp(leaf);
+               mergeUp(S);
+               
+           }
+           else{
+                std::cout<<"else\n";
+               S = closestNode(leaf->father, leaf);
+               for(auto point: leaf->children){
+                    insert(S, static_cast<LeafNode*>(point)->getPoint());
+               }
+               leaf->children.clear();
+               auto it = leaf->father->children.begin();
+               for(; it != leaf->father->children.end(); ++it){
+                    if(*it == leaf){
+                        break;
+                    }
+               }
+               leaf->father->children.erase(it);
+               
+               mergeUp(S);
+           }
+       }
+   }
+}

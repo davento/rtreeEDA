@@ -46,6 +46,8 @@ class PointsNode final : public SStreeNode{
         void draw(SDL_Renderer* renderer, Color color = Color(0,0,255)) const override;
         void print() const override;
 
+        Point getPoint(){return points.front();}
+
     private:
         std::vector<Point> points;
         virtual bool isLeaf(){return true;}

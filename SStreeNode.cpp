@@ -21,12 +21,12 @@ SStreeNode::SStreeNode(const SStreeNode& other){
 MBC SStreeNode::mergeBounds(std::vector<SStreeNode*> bounds){
     
     double area = {};
-    std::cout<<"merging\n";
+    // std::cout<<"merging\n";
     MBC res(Point(0,0), Point(0,0));
     for(const auto& node : bounds){
         auto otherB = node->getBound();
         area += node->getBound().area();
-        printf("Point: (%f,%f)\n",otherB.getCentroid().x,otherB.getCentroid().y);
+        // printf("Point: (%f,%f)\n",otherB.getCentroid().x,otherB.getCentroid().y);
         res.getCentroid().x +=  otherB.getCentroid().x * otherB.area();
         res.getCentroid().y +=  otherB.getCentroid().y * otherB.area();
     }

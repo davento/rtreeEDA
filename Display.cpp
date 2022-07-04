@@ -63,7 +63,7 @@ void Display::processInputs(){
                     ss->insert(Point(x,y));
                 }
                 if(event.button.button == SDL_BUTTON_RIGHT){
-                    // r->remove(Point(x,y));
+                    ss->remove(Point(x,y));
                   
                 }
             }
