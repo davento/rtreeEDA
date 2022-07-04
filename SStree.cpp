@@ -21,6 +21,7 @@ void SStree::remove(const Point& p){
 }
 
 void SStree::draw(SDL_Renderer* renderer) const{
+    // std::cout<<"A\n";
     root->draw(renderer, Color(40,0,0));
 }
 
@@ -61,22 +62,30 @@ SStree::Node* SStree::chooseSubtree(Node* node, const Point &p){
 
 SStree::Node* SStree::insert(Node* node, const Point &p){
     
-    if(root->isLeaf()){
+    std::cout<<"entering insert\n";
+    printf("inserting Point(%f,%f)\n", p.x,p.y);
+    // std::cout<<node->getBound().getCentroid().x<<" "<<node->getBound().getCentroid().x<<'|';
+    // std::cout<<node->getBound().getRadius()<<'\n';
+    
+    if(node->isLeaf()){
+        std::cout<<"inserting in leaf\n";
         Node* it = new LeafNode(p);
-        (root->children).push_back(it);
-        root->mergeBounds();
+        (node->children).push_back(it);
+        node->mergeBounds();
 
-        if((root->children).size() == ORDER + 1)
-            handleOverflow(root);
+        if((node->children).size() == ORDER + 1){
+            std::cout<<"overflow\n";
+            handleOverflow(node);
+        }
     }
     else{
-        Node* v = chooseSubtree(root, p);
+        Node* v = chooseSubtree(node, p);
         insert(v, p);
-        root->mergeBounds();
+        node->mergeBounds();
     }
-    if(root->father)
-        return root->father;
-    return root;
+    if(node->father)
+        return node->father;
+    return node;
 } 
 
 
@@ -105,7 +114,7 @@ void SStree::handleOverflow(Node* overFlowed){
 
 void SStree::split(Node* original, Node* secondHalf){
 
-    int axis = variance(original->children, original->bound, X) < 
+    int axis = variance(original->children, original->bound, X) > 
                 variance(original->children, original->bound, Y) ? X : Y;
 
       

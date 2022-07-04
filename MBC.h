@@ -16,7 +16,7 @@ class MBC{
         MBC(const Point&, const Point&);
 
         double perimeter() const {return 2*M_PI*radius;}
-        double area() const {return M_PI*radius*radius;}
+        double area() const {return (radius == 1) ? 1 : M_PI*radius*radius;}
         double metric() const {return perimeter();}
         bool inArea(const Point& p) const {return Point::distance(p,centroid) < radius;}
         double& getRadius(){return radius;}

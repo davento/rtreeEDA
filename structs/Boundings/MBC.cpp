@@ -73,6 +73,7 @@ void MBC::merge(const MBC& other){
 void MBC::draw(SDL_Renderer* renderer, Color color) const {
     //draw circle
     double perim = perimeter();
+    std::cout<<"mbc1\n";
     // el angulo va en radianes
     double changeRatio = 2*M_PI/perim;
     SDL_SetRenderDrawColor(renderer , color.RGB[0], color.RGB[1], color.RGB[2], 255);

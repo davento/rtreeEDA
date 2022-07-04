@@ -21,10 +21,12 @@ SStreeNode::SStreeNode(const SStreeNode& other){
 MBC SStreeNode::mergeBounds(std::vector<SStreeNode*> bounds){
     
     double area = {};
+    std::cout<<"merging\n";
     MBC res(Point(0,0), Point(0,0));
     for(const auto& node : bounds){
         auto otherB = node->getBound();
         area += node->getBound().area();
+        printf("Point: (%f,%f)\n",otherB.getCentroid().x,otherB.getCentroid().y);
         res.getCentroid().x +=  otherB.getCentroid().x * otherB.area();
         res.getCentroid().y +=  otherB.getCentroid().y * otherB.area();
     }
@@ -36,7 +38,7 @@ MBC SStreeNode::mergeBounds(std::vector<SStreeNode*> bounds){
     for(const auto& node: bounds){
         auto otherB = node->getBound();
 
-        double centDist = Point::distance(res.getCentroid(), otherB.getCentroid());
+        double centDist = Point::distance(res.getCentroid(), otherB.getCentroid()) + otherB.getRadius();
 
         r = std::max(
             r,
@@ -52,8 +54,13 @@ void SStreeNode::mergeBounds(){
 }
 
 void SStreeNode::draw(SDL_Renderer* renderer, Color color) const {
+    // std::cout<<"A1\n";
+
     bound.draw(renderer, color);
+    // std::cout<<"A1.4\n";
+
     color.changeColor(150);
+    // std::cout<<"A2\n";
     for(const auto& child: children){
         child->draw(renderer, color);
     }
@@ -73,5 +80,7 @@ PointsNode::PointsNode():SStreeNode(){
 PointsNode::PointsNode(const Point& p):SStreeNode(){
     points.reserve(ORDER+1);
     points.push_back(p);
+    bound.getCentroid() = p;
+    bound.getRadius() = 1;
 }
 

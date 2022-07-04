@@ -21,7 +21,13 @@ class SStreeNode{
         MBC getBound() const {return bound;}
         
 
-        virtual bool isLeaf(){return false;} 
+        virtual bool isLeaf(){
+            if(!children.empty() && children[0]->children.empty())
+                return true;
+            else if(children.empty())
+                return true;
+            return false;
+        } 
         
         virtual void draw(SDL_Renderer* renderer, Color color = Color(0,0,255)) const;
     protected:

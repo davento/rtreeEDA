@@ -40,11 +40,16 @@ void MBC::draw(SDL_Renderer* renderer, Color color) const {
     //draw circle
     double perim = perimeter();
     // el angulo va en radianes
-    double changeRatio = 2*M_PI/perim;
+    double changeRatio = 0.01;
+    // std::cout<<"a\n";
     SDL_SetRenderDrawColor(renderer , color.RGB[0], color.RGB[1], color.RGB[2], 255);
+    // std::cout<<"c\n";
     for(double angle = 0; angle*radius < perim && angle < 2*M_PI; angle += changeRatio){
         SDL_RenderDrawPoint(renderer, centroid.x + radius*std::cos(angle),centroid.y + radius*std::sin(angle));
+        // std::cout<<"c1\n";
     }
+    // std::cout<<"b\n";
+
     centroid.draw(renderer);
 
     if(topLeft.x == INF && topLeft.y == INF)

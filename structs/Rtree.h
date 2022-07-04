@@ -116,13 +116,13 @@ template <typename T, unsigned ORDER>
 void Rtree<T,ORDER>::split(Node<T,ORDER>* original, Node<T,ORDER>* secondHalf){
 
  
-    int axis = variance(original->children, original->myBound, X) < 
+    int axis = variance(original->children, original->myBound, X) > 
                 variance(original->children, original->myBound, Y) ? X : Y;
 
       
     std::vector<Node<T,ORDER>*> regions = original->children;
 
-    // //sort by x left
+    // sort by axis
     sort(regions.begin(), regions.end(),
     [&](const Node<T,ORDER>* m1, const Node<T,ORDER>* m2){
         return m1->myBound.getCentroid()[axis] < m2->myBound.getCentroid()[axis];
@@ -155,8 +155,6 @@ void Rtree<T,ORDER>::minimumPerimeter(std::vector<Node<T,ORDER>*>& u, Node<T,ORD
         boundType t1 = Rtree<T,ORDER>::mergeRegions(s1);
         boundType t2 = Rtree<T,ORDER>::mergeRegions(s2);
 
-
-
         
         if(variance(s1,t1,axis) + variance(s2,t2,axis) < variance(v->children, m1, axis) + variance(p->children, m2, axis)){
             m1 = t1; m2 = t2;
@@ -168,7 +166,6 @@ void Rtree<T,ORDER>::minimumPerimeter(std::vector<Node<T,ORDER>*>& u, Node<T,ORD
     }
     v->myBound = mergeRegions(v->children);
     p->myBound = mergeRegions(p->children);
-
 }
 
 template <typename T, unsigned ORDER>
@@ -189,24 +186,19 @@ typename Rtree<T,ORDER>::boundType Rtree<T,ORDER>::mergeRegions(std::vector<Node
     for(const auto& node : vec){
         auto otherB = node->myBound;
         area += node->myBound.area();
-        res.getCentroid().x +=  otherB.getCentroid().x * otherB.area();
-        res.getCentroid().y +=  otherB.getCentroid().y * otherB.area();
+        res.getCentroid().x +=  ( otherB.getCentroid().x * otherB.area() );
+        res.getCentroid().y +=  ( otherB.getCentroid().y * otherB.area() );
     }
     res.getCentroid().x /= area;
     res.getCentroid().y /= area;
 
     //get radious
-    auto r = res.getRadious();
+    double r = 0;
     for(const auto& node: vec){
         auto otherB = node->myBound;
 
-        double centDist = res.getCentroid().distance(otherB.getCentroid());
-        if(centDist < r){
-            centDist += (centDist + otherB.getRadious() >= r)? otherB.getRadious(): 0;
-        }
-        else{
-            centDist += otherB.getRadious();
-        }
+        double centDist = res.getCentroid().distance(otherB.getCentroid()) + otherB.getRadious();
+
         r = std::max(
             r,
             centDist
