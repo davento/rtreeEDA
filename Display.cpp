@@ -41,43 +41,49 @@ void Display::shutdown(){
 
 void Display::processInputs(){
     SDL_Event event;
-    while(SDL_PollEvent(&event)){
-        switch(event.type){
-            case SDL_QUIT:
+    bool quit = false;
+    // std::cout<<"A\n";
+
+
+    while (!quit){
+        while(SDL_PollEvent(&event)){
+            if(event.type == SDL_QUIT){
+                quit = true;
                 isRunning = false;
-                break;
-            case SDL_MOUSEBUTTONDOWN:
-                {
-                    int x, y;
-                    
-                    SDL_GetMouseState(&x, &y);
-                    if(event.button.button == SDL_BUTTON_LEFT){
-                       if(!fig.addPoint({x,y})){
-                           r->insert(&fig);
-                           fig.clear();
-                       }
+            }
+            
+            else if(event.type == SDL_MOUSEBUTTONDOWN){
+                int x, y;
+            
+                SDL_GetMouseState(&x, &y);
+                if(event.button.button == SDL_BUTTON_LEFT){
+                    if(!fig.addPoint(Point(x,y))){
+                       r->insert(&fig);
+                       fig.clear();
                     }
-                    if(event.button.button == SDL_BUTTON_RIGHT){
-                        r->remove({x,y});
-                        fig.clear();
-                    }
-                    break;
                 }
-            default:
-                {
-                    int x, y;
-                    
-                    SDL_GetMouseState(&x, &y);
-                    Point po(x,y);
-                    r->depthFirst(&po);
-                    break;
+                if(event.button.button == SDL_BUTTON_RIGHT){
+                    r->remove(Point(x,y));
+                    fig.clear();
                 }
+            }
+            else{
+                int x, y;
+                // std::cout << "default" << std::endl; 
+                SDL_GetMouseState(&x, &y);
+                // Point po(x,y);
+                // figures = r->depthFirst(po);
+                //std::cout << figures.size() << std::endl;
+                quit = true;
+            }
         }
     }
+    
     const Uint8* state = SDL_GetKeyboardState(NULL);
     if(state[SDL_SCANCODE_ESCAPE])
         isRunning = false;
 }
+
 
 void Display::updateDisplay(){
 
