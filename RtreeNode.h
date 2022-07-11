@@ -47,6 +47,8 @@ class FigureNode final : public RtreeNode{
         void draw(SDL_Renderer* renderer, Color color = Color(0,0,255)) const override;
         void print() const override;
 
+        Figure getFigure(){return f;}
+
     private:
         Figure f;
         virtual bool isLeaf(){return true;}

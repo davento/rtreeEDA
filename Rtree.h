@@ -35,7 +35,9 @@ class Rtree final{
         void bestSplit(std::vector<Node*>& u, Node* v, Node* p);
 
         
-        // void remove(Node*, const Point &);
+        void remove(Node*, const Point &);
+        void reinsert();
+        void dfs(std::vector<Figure> &s, Rtree::Node* u);
 };
 
 #endif

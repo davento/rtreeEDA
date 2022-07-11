@@ -20,7 +20,7 @@ void Rtree::insert(const Figure& f){
 }
 
 void Rtree::remove(const Point& p){
-    // remove(root, p);
+    remove(root, p);
 }
 
 void Rtree::draw(SDL_Renderer* renderer) const{
@@ -157,7 +157,7 @@ void Rtree::bestSplit(std::vector<Node*>& u, Node* v, Node* p){
 
     MBC m1 = v->bound;
     MBC m2 = v->bound;
-    double minVariance = 2e5;
+    // double minVariance = 2e5;
     for( int i = ceil(m * 0.4); i <= m - ceil(m * 0.4); i++){
         // s1 = first i regions (points)
         // s2 = the other i regions (points)
@@ -173,7 +173,6 @@ void Rtree::bestSplit(std::vector<Node*>& u, Node* v, Node* p){
             p->bound = m2;
             v->children = s1;
             p->children = s2;
-            minVariance = t1.metric() + t2.metric();
         }
     }
     v->mergeBounds();
@@ -185,56 +184,55 @@ void Rtree::print() const{
     root->print();
 }
 
-// void Rtree::remove(Node* node,const Point& p){
+void Rtree::remove(Node* node,const Point& p){
+    
+    Node* n = search(p);
+    if(n == nullptr || !n->isLeaf() ) return ;
+    
+    auto fun = [&p](Node* node){
+        return  (static_cast<LeafNode*>(node)->getBound().inArea(p));
+    };
+    
+    auto it = std::find_if(n->children.begin(), n->children.end(), fun);
+    (n->children).erase(it);
 
-//    Node* leaf = search(p);
-//    auto it = leaf->children.begin(); 
+    if(n->father == nullptr && n->children.size() == 0){
+        n->bound   = Bound();
+        return ;
+    }
 
-//    for(; it != leaf->children.end(); ++it)
-//        if(Point::closeEnough((*it)->bound.getCentroid(), p,5))
-//            break;
+    n->mergeBounds();
+    if(n->children.size() >= std::ceil(ORDER/2.0) || n->father == nullptr) 
+        return ;
+    
+    reinsert();
+}
 
-//    if(it == leaf->children.end()){
-//         return ;
-//    }
-//    leaf->children.erase(it);
-//    mergeUp(leaf);
 
-//    if(leaf->children.size() <= ORDER/2){
-//         std::cout<<"entering\n";
-//        if(leaf->father){
-//            Node* S = findClosestNodeM(leaf->father, leaf);
-//            if(S) printf("closes node Point(%d,%d)\n", S->bound.getCentroid()[X], S->bound.getCentroid()[Y]);
-//            if(S){
-//                auto sit = S->children.begin();
-//                decltype(sit) minDist = sit;
-//                for(; sit != S->children.end(); ++sit)
-//                    if(Point::distance( (*sit)->bound.getCentroid(),p) < Point::distance( (*minDist)->bound.getCentroid(), p) )
-//                        minDist = sit;
-               
-//                insert(leaf, static_cast<LeafNode*>(*minDist)->getPoint());
-//                S->children.erase(minDist);
-//                mergeUp(leaf);
-//                mergeUp(S);
-               
-//            }
-//            else{
-//                 std::cout<<"else\n";
-//                S = closestNode(leaf->father, leaf);
-//                for(auto point: leaf->children){
-//                     insert(S, static_cast<LeafNode*>(point)->getPoint());
-//                }
-//                leaf->children.clear();
-//                auto it = leaf->father->children.begin();
-//                for(; it != leaf->father->children.end(); ++it){
-//                     if(*it == leaf){
-//                         break;
-//                     }
-//                }
-//                leaf->father->children.erase(it);
-               
-//                mergeUp(S);
-//            }
-//        }
-//    }
-// }
+void Rtree::dfs(std::vector<Figure> &s, Rtree::Node* u){
+
+    if(u->isLeaf()){
+        for(auto f: u->children){
+            s.push_back(static_cast<LeafNode*>(f)->getFigure());
+        }
+        return ;
+    }
+
+    for(auto r: u->children){
+        dfs(s,r);
+    }
+}
+
+void Rtree::reinsert(){
+
+    std::vector<Figure> s;
+
+    dfs(s,this->root);
+    
+    this->root = new Node;
+
+    for(auto fig: s){
+        insert(fig);
+    }
+    
+}

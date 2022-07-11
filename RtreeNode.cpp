@@ -75,5 +75,5 @@ void RtreeNode::print() const {
 }
 
 void FigureNode::print() const {
-    
+    std::cout<<"Figure Node\n";
 }
