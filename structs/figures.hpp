@@ -29,7 +29,7 @@ struct Color{
 };
 
 struct Point{
-    int x, y;
+    double x, y;
 
     static inline Point max(const Point &m1, const Point &m2){
         return{
@@ -45,7 +45,7 @@ struct Point{
         };
     }
 
-    Point(int pos_x, int pos_y): x(pos_x), y(pos_y){
+    Point(double pos_x, double pos_y): x(pos_x), y(pos_y){
         
     }
 
@@ -55,7 +55,13 @@ struct Point{
     friend bool operator!=(const Point& left, const Point& other){
         return !(left == other);
     }
+    friend Point operator-(const Point& left, const Point& right){
+        return Point(left.x-right.x, left.y-right.y);
+    }
 
+    double length(){
+        return std::sqrt(x*x + y*y);
+    }
     double length(const Point& other){
         return std::sqrt(std::pow(other.x - x, 2) + std::pow(other.y - y, 2));
     }
@@ -89,6 +95,9 @@ struct MBB{
     
     MBB(): topLeft({40000,40000}), bottomRight({0,0}){}
 
+    MBB(Point p, int length): topLeft(p), bottomRight(p.x+length, p.y+length){
+
+    }
 
     int Perimeter() const {
         

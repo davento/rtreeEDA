@@ -18,6 +18,8 @@ class Display{
         void processInputs();
         void updateDisplay();
         void generateOutput(); 
+        
+        Figure generateRandomFigure();
 
         bool isRunning;
         SDL_Window* window;
@@ -25,6 +27,7 @@ class Display{
         Rtree* r;
         std::vector<Figure> figures;
         Figure fig;
+        int screenSize;
 };
 
 #endif
