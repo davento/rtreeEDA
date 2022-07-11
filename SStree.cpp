@@ -2,24 +2,24 @@
 #include "SStreeNode.h"
 
 SStree::SStree(){
-    root = new SStreeNode();
+    root = new Node();
 }
 SStree::SStree(int dim){
-    root = new SStreeNode(MBC(Point(0,0), Point(dim, dim)));
+    root = new Node(MBC(Point(0,0), Point(dim, dim)));
 }
 
 SStree::Node* SStree::search(const Point& p){
     return search(root, p);
 }
 
-void SStree::insert(const Point& p){
-    root = insert(root, p);
+void SStree::insert(const Figure& f){
+    root = insert(root, f);
     std::cout<<"----------------------------------------------\n";
     print();
 }
 
 void SStree::remove(const Point& p){
-    remove(root, p);
+    // remove(root, p);
 }
 
 void SStree::draw(SDL_Renderer* renderer) const{
@@ -30,39 +30,41 @@ void SStree::draw(SDL_Renderer* renderer) const{
 
 SStree::Node* SStree::search(Node* node, const Point &p){
     
+    if (node->isLeaf()) {
+
+        return node;
+    }
+
+    for (auto r : node->children) {
+        if (r->bound.inArea(p)){
+            auto res = search(r, p);
+            if(res != nullptr) return res;
+        }
+    }
+    return nullptr;
+}
+
+SStree::Node* SStree::chooseSubtree(Node* node, const Figure &f){
+        
+    int minP = INF;
     Node* result = root;
-    if(result->isLeaf()){
-        return result;
-    }
     
-    while(!result->isLeaf()){
-        Node* temp = result->children[0];
-        for(const auto& node: result->children){
-                if(Point::distance(node->bound.getCentroid(), p)< Point::distance(temp->bound.getCentroid(), p)  )
-                    temp = node;
+    //choose region with minimum perimeter
+    for(auto region : root->children) {
+        Bound aux = f.getBound();
+        aux.merge(region->bound);
+        
+        int p = aux.perimeter();
+        if(p <= minP) {
+            minP = p;
+            result = region;
         }
-        result = temp;
+        
     }
     return result;
 }
 
-SStree::Node* SStree::chooseSubtree(Node* node, const Point &p){
-    
-    double minMetric = 1e9+10;
-    Node* result = nullptr;
-    for(const auto& child: node->children){
-        // boundType aux = Rtree<T,ORDER>::makeNewCombineBound(*(figure->getBound()), node->myBound);
-        // double p = aux.metric();
-        double temp = Point::distance(p, child->bound.getCentroid());
-        if(temp <= minMetric){
-            minMetric = temp;
-            result = child;
-        }
-    }
-    return result;
-}
-
-SStree::Node* SStree::insert(Node* node, const Point &p){
+SStree::Node* SStree::insert(Node* node, const Figure &f){
     
     // std::cout<<"entering insert\n";
     // printf("inserting Point(%f,%f)\n", p.x,p.y);
@@ -70,10 +72,12 @@ SStree::Node* SStree::insert(Node* node, const Point &p){
     // std::cout<<node->getBound().getRadius()<<'\n';
     
     if(node->isLeaf()){
-        // std::cout<<"inserting in leaf\n";
-        Node* it = new LeafNode(p);
+        std::cout<<"inserting in leaf\n";
+        
+        Node* it = new LeafNode(f);
         (node->children).push_back(it);
         node->mergeBounds();
+        std::cout<<node->children.size()<<'\n';
 
         if((node->children).size() == ORDER + 1){
             // std::cout<<"overflow\n";
@@ -81,8 +85,8 @@ SStree::Node* SStree::insert(Node* node, const Point &p){
         }
     }
     else{
-        Node* v = chooseSubtree(node, p);
-        insert(v, p);
+        Node* v = chooseSubtree(node, f);
+        insert(v, f);
         node->mergeBounds();
     }
     if(node->father)
@@ -93,11 +97,11 @@ SStree::Node* SStree::insert(Node* node, const Point &p){
 
 void SStree::handleOverflow(Node* overFlowed){
     
-    Node* v = new SStreeNode();
+    Node* v = new Node();
     split(overFlowed, v);
     if(!overFlowed->father){
         //Create new father
-        Node* overFather = new SStreeNode();
+        Node* overFather = new Node();
         //Add children to father
         overFlowed->father = v->father = overFather;
         (overFather->children).push_back(overFlowed);
@@ -116,22 +120,17 @@ void SStree::handleOverflow(Node* overFlowed){
 
 void SStree::split(Node* original, Node* secondHalf){
 
-    int axis = variance(original->children, original->bound, X) > 
-                variance(original->children, original->bound, Y) ? X : Y;
-
-      
     std::vector<Node*> regions = original->children;
 
-    // //sort by x left
-    std::sort(regions.begin(), regions.end(),
-    [&](Node* m1,  Node* m2){
-        return m1->bound.getCentroid()[axis] < m2->bound.getCentroid()[axis];
+    //sort by x left
+    sort(regions.begin(), regions.end(),
+    [](const Node* m1, const Node* m2){
+        return m1->getBound().topLeft.x < m2->getBound().topLeft.x;
     });
-    
-    bestSplit(regions,original,secondHalf,axis);
+    bestSplit(regions,original,secondHalf);
 }
 
-void SStree::bestSplit(std::vector<Node*>& u, Node* v, Node* p, int axis){
+void SStree::bestSplit(std::vector<Node*>& u, Node* v, Node* p){
 
     int m = u.size();
 
@@ -147,16 +146,16 @@ void SStree::bestSplit(std::vector<Node*>& u, Node* v, Node* p, int axis){
         s1 = {u.begin(), u.begin() + i};
         s2 = {u.begin()+i , u.end() };
         //get mbb and choose minimum
-        MBC t1 = SStreeNode::mergeBounds(s1);
-        MBC t2 = SStreeNode::mergeBounds(s2);
+        MBC t1 = Node::mergeBounds(s1);
+        MBC t2 = Node::mergeBounds(s2);
         
-        if(variance(s1,t1,axis) + variance(s2,t2,axis) < minVariance){
+        if(t1.metric() + t2.metric() <  minVariance){
             m1 = t1; m2 = t2;
             v->bound = m1;
             p->bound = m2;
             v->children = s1;
             p->children = s2;
-            minVariance = variance(v->children, m1, axis) + variance(p->children, m2, axis);
+            minVariance = t1.metric() + t2.metric();
         }
     }
     v->mergeBounds();
@@ -164,112 +163,60 @@ void SStree::bestSplit(std::vector<Node*>& u, Node* v, Node* p, int axis){
 }
 
 
-double SStree::variance(std::vector<Node*> s, const MBC& m, int axis){
-    
-    if(s.empty()) return 0;
-    
-    int u = m.getCentroid()[axis];
-    double res = 0;
-
-    for(auto f: s){
-        int x = f->getBound().getCentroid()[axis];
-        
-        res += (x-u) * (x-u);
-    }
-    
-    res/= s.size();
-    return res;
-}
-
 void SStree::print() const{
     root->print();
 }
 
+// void SStree::remove(Node* node,const Point& p){
 
-SStree::Node* SStree::findClosestNodeM(Node* father, Node* node){
-    Node* result = nullptr;
-    for(const auto& child: father->children){
-        if(child == node) continue;
-        if(!result && child->children.size() > std::ceil(ORDER/2.0))
-            result = child;
-        else if(result && Point::distance(result->bound.getCentroid(), node->bound.getCentroid()) > 
-                        Point::distance(child->bound.getCentroid(),node->bound.getCentroid()) && child->children.size() > std::ceil(ORDER/2.0))
-            result = child;
-    }
-    return result;
-}
+//    Node* leaf = search(p);
+//    auto it = leaf->children.begin(); 
 
-SStree::Node* SStree::closestNode(Node* father, Node* node){
-    Node* result = nullptr;
-    for(const auto & child: father->children){
-        if(child == node) continue;
-        if(!result)
-            result = child;
-        else if(Point::distance(result->bound.getCentroid(),node->bound.getCentroid()) > Point::distance(child->bound.getCentroid(), node->bound.getCentroid()))
-            result = child;
-    }
-    return result;
-}
+//    for(; it != leaf->children.end(); ++it)
+//        if(Point::closeEnough((*it)->bound.getCentroid(), p,5))
+//            break;
 
-void SStree::mergeUp(Node*node){
+//    if(it == leaf->children.end()){
+//         return ;
+//    }
+//    leaf->children.erase(it);
+//    mergeUp(leaf);
 
-    while (node){ 
-        node->mergeBounds();
-        node = node->father;
-    }
-}
-
-
-void SStree::remove(Node* node,const Point& p){
-
-   Node* leaf = search(p);
-   auto it = leaf->children.begin(); 
-
-   for(; it != leaf->children.end(); ++it)
-       if(Point::closeEnough((*it)->bound.getCentroid(), p,5))
-           break;
-
-   if(it == leaf->children.end()){
-        return ;
-   }
-   leaf->children.erase(it);
-   mergeUp(leaf);
-
-   if(leaf->children.size() <= ORDER/2){
-        std::cout<<"entering\n";
-       if(leaf->father){
-           Node* S = findClosestNodeM(leaf->father, leaf);
-           if(S) printf("closes node Point(%d,%d)\n", S->bound.getCentroid()[X], S->bound.getCentroid()[Y]);
-           if(S){
-               auto sit = S->children.begin();
-               decltype(sit) minDist = sit;
-               for(; sit != S->children.end(); ++sit)
-                   if(Point::distance( (*sit)->bound.getCentroid(),p) < Point::distance( (*minDist)->bound.getCentroid(), p) )
-                       minDist = sit;
+//    if(leaf->children.size() <= ORDER/2){
+//         std::cout<<"entering\n";
+//        if(leaf->father){
+//            Node* S = findClosestNodeM(leaf->father, leaf);
+//            if(S) printf("closes node Point(%d,%d)\n", S->bound.getCentroid()[X], S->bound.getCentroid()[Y]);
+//            if(S){
+//                auto sit = S->children.begin();
+//                decltype(sit) minDist = sit;
+//                for(; sit != S->children.end(); ++sit)
+//                    if(Point::distance( (*sit)->bound.getCentroid(),p) < Point::distance( (*minDist)->bound.getCentroid(), p) )
+//                        minDist = sit;
                
-               insert(leaf, static_cast<LeafNode*>(*minDist)->getPoint());
-               S->children.erase(minDist);
-               mergeUp(leaf);
-               mergeUp(S);
+//                insert(leaf, static_cast<LeafNode*>(*minDist)->getPoint());
+//                S->children.erase(minDist);
+//                mergeUp(leaf);
+//                mergeUp(S);
                
-           }
-           else{
-                std::cout<<"else\n";
-               S = closestNode(leaf->father, leaf);
-               for(auto point: leaf->children){
-                    insert(S, static_cast<LeafNode*>(point)->getPoint());
-               }
-               leaf->children.clear();
-               auto it = leaf->father->children.begin();
-               for(; it != leaf->father->children.end(); ++it){
-                    if(*it == leaf){
-                        break;
-                    }
-               }
-               leaf->father->children.erase(it);
+//            }
+//            else{
+//                 std::cout<<"else\n";
+//                S = closestNode(leaf->father, leaf);
+//                for(auto point: leaf->children){
+//                     insert(S, static_cast<LeafNode*>(point)->getPoint());
+//                }
+//                leaf->children.clear();
+//                auto it = leaf->father->children.begin();
+//                for(; it != leaf->father->children.end(); ++it){
+//                     if(*it == leaf){
+//                         break;
+//                     }
+//                }
+//                leaf->father->children.erase(it);
                
-               mergeUp(S);
-           }
-       }
-   }
-}
+//                mergeUp(S);
+//            }
+//        }
+//    }
+// }

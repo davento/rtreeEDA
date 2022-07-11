@@ -5,19 +5,20 @@
 
 #include "Point.h"
 #include "MBC.h"
+#include "Figure.h"
 
 #include <vector>
 #include <algorithm>
 
-class SStreeNode{
+class RtreeNode{
     public:
 
-        SStreeNode();
-        SStreeNode(const MBC&);
-        SStreeNode(const SStreeNode&);
+        RtreeNode();
+        RtreeNode(const MBC&);
+        RtreeNode(const RtreeNode&);
         
         void mergeBounds();
-        static MBC mergeBounds(std::vector<SStreeNode*> );
+        static MBC mergeBounds(std::vector<RtreeNode*> );
         MBC getBound() const {return bound;}
         
 
@@ -33,23 +34,21 @@ class SStreeNode{
         virtual void print() const;
     protected:
         MBC bound;
-        std::vector<SStreeNode*> children;
-        SStreeNode* father;
+        std::vector<RtreeNode*> children;
+        RtreeNode* father;
 
         friend class SStree;
 };
 
-class PointsNode final : public SStreeNode{
+class FigureNode final : public RtreeNode{
     public:
-        PointsNode();
-        PointsNode(const Point&);
+        FigureNode();
+        FigureNode(const Figure&);
         void draw(SDL_Renderer* renderer, Color color = Color(0,0,255)) const override;
         void print() const override;
 
-        Point getPoint(){return points.front();}
-
     private:
-        std::vector<Point> points;
+        Figure f;
         virtual bool isLeaf(){return true;}
 };
 

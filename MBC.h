@@ -15,10 +15,11 @@ class MBC{
         MBC(const Point& inCentroid, double inRadius);
         MBC(const Point&, const Point&);
 
-        double perimeter() const {return 2*M_PI*radius;}
-        double area() const {return (radius == 1) ? 1 : M_PI*radius*radius;}
-        double metric() const {return perimeter();}
-        bool inArea(const Point& p) const {return Point::distance(p,centroid) < radius;}
+        double perimeter() const;
+        double area() const;
+        double metric() const;
+        bool inArea(const Point& p) const;
+        
         double& getRadius(){return radius;}
         const double& getRadius() const {return radius;}
         Point& getCentroid(){return centroid;}
@@ -29,7 +30,7 @@ class MBC{
         void merge(const Point&);
         void merge(const MBC&);
 
-    private:
+    public:
         Point centroid;
         double radius;
         Point topLeft, bottomRight;

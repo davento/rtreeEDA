@@ -1,15 +1,15 @@
 #include "SStreeNode.h"
 #include "SStree.h"
 
-SStreeNode::SStreeNode(const MBC& other): bound(other), father(nullptr){
+RtreeNode::RtreeNode(const MBC& other): bound(other), father(nullptr){
 
 }
 
-SStreeNode::SStreeNode(): bound(), father(nullptr){
+RtreeNode::RtreeNode(): bound(), father(nullptr){
     children.reserve(ORDER + 1);
 }
 
-SStreeNode::SStreeNode(const SStreeNode& other){
+RtreeNode::RtreeNode(const RtreeNode& other){
     
     children.reserve(ORDER + 1);
     father = other.father;
@@ -18,42 +18,21 @@ SStreeNode::SStreeNode(const SStreeNode& other){
 }
 
 
-MBC SStreeNode::mergeBounds(std::vector<SStreeNode*> bounds){
+MBC RtreeNode::mergeBounds(std::vector<RtreeNode*> bounds){
     
-    double area = {};
-    // std::cout<<"merging\n";
-    MBC res(Point(0,0), Point(0,0));
-    for(const auto& node : bounds){
-        auto otherB = node->getBound();
-        area += node->getBound().area();
-        // printf("Point: (%f,%f)\n",otherB.getCentroid().x,otherB.getCentroid().y);
-        res.getCentroid().x +=  otherB.getCentroid().x * otherB.area();
-        res.getCentroid().y +=  otherB.getCentroid().y * otherB.area();
+    MBC res = bounds.front()->getBound();
+    for(auto region: bounds){
+        res.merge(region->getBound());
     }
-    res.getCentroid().x /= area;
-    res.getCentroid().y /= area;
-
-    //get radious
-    double r = 0;
-    for(const auto& node: bounds){
-        auto otherB = node->getBound();
-
-        double centDist = Point::distance(res.getCentroid(), otherB.getCentroid()) + otherB.getRadius();
-
-        r = std::max(
-            r,
-            centDist
-        );
-    }
-    res.getRadius() = r;
+ 
     return res;
 }
 
-void SStreeNode::mergeBounds(){
+void RtreeNode::mergeBounds(){
     bound  = mergeBounds(this->children);
 }
 
-void SStreeNode::draw(SDL_Renderer* renderer, Color color) const {
+void RtreeNode::draw(SDL_Renderer* renderer, Color color) const {
     // std::cout<<"A1\n";
 
     bound.draw(renderer, color);
@@ -66,27 +45,29 @@ void SStreeNode::draw(SDL_Renderer* renderer, Color color) const {
     }
 }
 
-void PointsNode::draw(SDL_Renderer* renderer, Color color) const {
-    SStreeNode::draw(renderer, color);
-    for(const auto& point: points)
-        point.draw(renderer);
+void FigureNode::draw(SDL_Renderer* renderer, Color color) const {
+    
+    color.changeColor(150);
+
+    RtreeNode::draw(renderer, color);
+       f.draw(renderer);
 }
 
 
-PointsNode::PointsNode():SStreeNode(){
-    points.reserve(ORDER+1);
+FigureNode::FigureNode():RtreeNode(){
+    
 }
 
-PointsNode::PointsNode(const Point& p):SStreeNode(){
-    points.reserve(ORDER+1);
-    points.push_back(p);
-    bound.getCentroid() = p;
-    bound.getRadius() = 1;
+FigureNode::FigureNode(const Figure& p): f(p), RtreeNode(){
+    bound = f.getBound();
+
 }
 
-void SStreeNode::print() const {
-    std::cout << "Node: " << bound.perimeter() << " " << bound.area() << std::endl;
-    std::cout << "Bound: "; bound.getCentroid().print(); std::cout << " " << bound.getRadius() << std::endl;
+void RtreeNode::print() const {
+    std::cout << "Node: ";
+    bound.topLeft.print(); bound.bottomRight.print();
+    
+    // std::cout << "Bound: "; bound.getCentroid().print(); std::cout << " " << bound.getRadius() << std::endl;
     std::cout << "{" << std::endl; 
     for(const auto& child: children){
         child->print();
@@ -94,7 +75,6 @@ void SStreeNode::print() const {
     std::cout << "\n}" << std::endl;
 }
 
-void PointsNode::print() const {
-    for(const auto& point: points)
-        point.print();
+void FigureNode::print() const {
+    
 }

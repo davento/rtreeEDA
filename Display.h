@@ -3,6 +3,12 @@
 
 #include <SDL2/SDL.h>
 #include "SStree.h"
+#include "Figure.h"
+
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_events.h>
+#include <SDL2/SDL_mouse.h>
+#include <iostream>
 
 class Display{
 
@@ -23,6 +29,8 @@ class Display{
         SDL_Window* window;
         SDL_Renderer* renderer;
         SStree* ss;
+        Figure fig;
+
 };
 
 #endif

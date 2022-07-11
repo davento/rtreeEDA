@@ -1,9 +1,4 @@
 #include "Display.h"
-#include "SStree.h"
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_events.h>
-#include <SDL2/SDL_mouse.h>
-#include <iostream>
 
 Display::Display(): isRunning(false), window(nullptr), renderer(nullptr), ss(nullptr){}
 
@@ -60,7 +55,10 @@ void Display::processInputs(){
             
                 SDL_GetMouseState(&x, &y);
                 if(event.button.button == SDL_BUTTON_LEFT){
-                    ss->insert(Point(x,y));
+                    if(!fig.addPoint(Point(x,y)) ){
+                           ss->insert(fig);
+                           fig.clear();
+                    }
                 }
                 if(event.button.button == SDL_BUTTON_RIGHT){
                     ss->remove(Point(x,y));
@@ -92,6 +90,8 @@ void Display::generateOutput(){
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     // std::cout<<"out2\n";
     SDL_RenderClear(renderer);
+    fig.draw(renderer);
+
     // std::cout<<"out3\n";
     ss->draw(renderer);
     // std::cout<<"out4\n";

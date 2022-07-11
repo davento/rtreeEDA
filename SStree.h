@@ -3,17 +3,23 @@
 
 #include "SStreeNode.h"
 #include "Point.h"
+#include "Figure.h"
 #include <SDL2/SDL.h>
+
+
+const int INF = 2e5;
 
 class SStree final{
     public:
-        typedef SStreeNode Node;
-        typedef PointsNode LeafNode;
+        typedef RtreeNode Node;
+        typedef FigureNode LeafNode;
+        typedef MBC Bound;
+
         
         SStree();
         SStree(int dim);
         Node* search(const Point &);
-        void insert(const Point &);
+        void insert(const Figure &);
         void remove(const Point &);
         void draw(SDL_Renderer* renderer) const;
         void print() const;
@@ -21,20 +27,15 @@ class SStree final{
 
         Node* root;
         Node* search(Node*,const Point &);
-        Node* chooseSubtree(Node*, const Point &);
+        Node* chooseSubtree(Node*, const Figure &);
 
-        Node* insert(Node*, const Point &);
+        Node* insert(Node*, const Figure &);
         void handleOverflow(Node*);
         void split(Node* original, Node* secondHalf);
-        void bestSplit(std::vector<Node*>& u, Node* v, Node* p, int axis);
-        double variance(std::vector<Node*> s, const MBC& m, int axis);
+        void bestSplit(std::vector<Node*>& u, Node* v, Node* p);
 
         
-        void remove(Node*, const Point &);
-        Node* findClosestNodeM(Node* father, Node* node);
-        Node* closestNode(Node* father, Node* node);
-
-        void mergeUp(Node*node);
+        // void remove(Node*, const Point &);
 };
 
 #endif
