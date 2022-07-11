@@ -22,7 +22,7 @@ class Figure{
         const MBC& getCentroid() const{return myBound;}
         
         bool addPoint(const Point& p);
-        void draw(SDL_Renderer* renderer, Color color = Color(255,0,0)) const;
+        void draw(SDL_Renderer* renderer, Color color = Color(0,0,0)) const;
         void clear();
     private:
         MBC myBound;

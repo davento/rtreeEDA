@@ -1,5 +1,12 @@
-make --dry-run --keep-going --print-directory
+make --dry-run --always-make --keep-going --print-directory
 make: Entering directory '/home/jean/code/Utec/2022-1/eda/a'
+g++ -c -Wall -O2  -lSDL2 main.cpp -o main.o
+g++ -c -Wall -O2  -lSDL2 Display.cpp -o Display.o
+g++ -c -Wall -O2  -lSDL2 Point.cpp -o Point.o
+g++ -c -Wall -O2  -lSDL2 MBC.cpp -o MBC.o
+g++ -c -Wall -O2  -lSDL2 SStree.cpp -o SStree.o
+g++ -c -Wall -O2  -lSDL2 SStreeNode.cpp -o SStreeNode.o
+g++ -c -Wall -O2  -lSDL2 Figure.cpp -o Figure.o
 g++ -Wall -O2  -o a.out main.o Display.o Point.o MBC.o SStree.o SStreeNode.o Figure.o -lSDL2
 make: Leaving directory '/home/jean/code/Utec/2022-1/eda/a'
  

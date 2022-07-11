@@ -26,7 +26,7 @@ class MBC{
         const Point& getCentroid() const{return centroid;}
 
 
-        void draw(SDL_Renderer* renderer, Color color = Color(0,0,0)) const;
+        void draw(SDL_Renderer* renderer, Color color = Color(0,0,255)) const;
         void merge(const Point&);
         void merge(const MBC&);
 

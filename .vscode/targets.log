@@ -6,13 +6,12 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Sun Jul 10 21:04:36 2022
+# Make data base, printed on Sun Jul 10 21:52:44 2022
 
 # Variables
 
 # automatic
 <D = $(patsubst %/,%,$(dir $<))
- 
 # automatic
 ?F = $(notdir $?)
 # environment
@@ -54,7 +53,7 @@ PATH = /home/jean/.vscode-server/bin/92d25e35d9bf1a6b16f7d0758f25d48ace11e5b9/bi
 # environment
 ELECTRON_RUN_AS_NODE = 1
 # environment
-VSCODE_IPC_HOOK_CLI = /tmp/vscode-ipc-ed405c9f-d807-42c3-abf5-4142020b1b16.sock
+VSCODE_IPC_HOOK_CLI = /tmp/vscode-ipc-9f9cf075-a9e8-48bd-afff-4b522f13abb1.sock
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
 # environment
@@ -70,8 +69,7 @@ PWD = /home/jean/code/Utec/2022-1/eda/a
 # default
 .LOADED := 
 # environment
-WSL_INTEROP = /run/WSL/6616_interop
- 
+WSL_INTEROP = /run/WSL/20290_interop
 # environment
 VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
 # environment
@@ -83,7 +81,7 @@ LESSCLOSE = /usr/bin/lesspipe %s %s
 # environment
 LOGNAME = jean
 # environment
-APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
 # makefile (from 'Makefile', line 7)
 execname = a.out
 # environment
@@ -96,7 +94,6 @@ VSCODE_HANDLES_UNCAUGHT_ERRORS = true
 MAKELEVEL := 0
 # default
 MAKE = $(MAKE_COMMAND)
- 
 # default
 MAKECMDGOALS := all
 # environment
@@ -137,7 +134,6 @@ MFLAGS = -pqrR
 +D = $(patsubst %/,%,$(dir $+))
 # automatic
 +F = $(notdir $+)
- 
 # environment
 VSCODE_HANDLES_SIGPIPE = true
 # default
@@ -198,14 +194,14 @@ _CE_CONDA =
 # Not a target:
 Figure.cpp:
 #  Implicit rule search has been done.
-#  Last modified 2022-07-10 20:58:14.000851845
+#  Last modified 2022-07-10 21:34:18.04084359
 #  File has been updated.
 #  Successfully updated.
 
 SStreeNode.o: SStreeNode.cpp
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'SStreeNode'
-#  Last modified 2022-07-10 21:02:05.96085096
+#  Last modified 2022-07-10 21:44:32.540841246
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 21):
@@ -228,7 +224,7 @@ all: build
 SStree.o: SStree.cpp
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'SStree'
-#  Last modified 2022-07-10 21:02:04.950850964
+#  Last modified 2022-07-10 21:44:31.52084125
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 21):
@@ -255,19 +251,18 @@ debug: clean build
 # Not a target:
 Display.cpp:
 #  Implicit rule search has been done.
-#  Last modified 2022-07-10 21:04:14.47085047
+#  Last modified 2022-07-10 21:05:20.360850218
 #  File has been updated.
 #  Successfully updated.
 
 Point.o: Point.cpp
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'Point'
-#  Last modified 2022-07-10 21:02:03.020850971
+#  Last modified 2022-07-10 21:44:29.600841257
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 21):
 	$(CC) -c $(CFLAGS) $(LINKERFLAGS) $< -o $@
- 
 
 build: main.o Display.o Point.o MBC.o SStree.o SStreeNode.o Figure.o
 #  Implicit rule search has not been done.
@@ -281,6 +276,7 @@ build: main.o Display.o Point.o MBC.o SStree.o SStreeNode.o Figure.o
 # % := 
 # automatic
 # * := 
+ 
 # automatic
 # + := main.o Display.o Point.o MBC.o SStree.o SStreeNode.o Figure.o
 # automatic
@@ -306,7 +302,7 @@ main.cpp:
 Figure.o: Figure.cpp
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'Figure'
-#  Last modified 2022-07-10 21:04:28.220850417
+#  Last modified 2022-07-10 21:44:33.420841242
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 21):
@@ -315,7 +311,7 @@ Figure.o: Figure.cpp
 # Not a target:
 MBC.cpp:
 #  Implicit rule search has been done.
-#  Last modified 2022-07-10 18:30:25.702529742
+#  Last modified 2022-07-10 21:36:52.520843
 #  File has been updated.
 #  Successfully updated.
 
@@ -328,7 +324,7 @@ MBC.cpp:
 # Not a target:
 SStreeNode.cpp:
 #  Implicit rule search has been done.
-#  Last modified 2022-07-10 20:26:38.160859077
+#  Last modified 2022-07-10 21:42:33.4008417
 #  File has been updated.
 #  Successfully updated.
 
@@ -343,7 +339,7 @@ clean:
 Display.o: Display.cpp
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'Display'
-#  Last modified 2022-07-10 21:04:27.390850421
+#  Last modified 2022-07-10 21:44:28.74084126
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 21):
@@ -352,14 +348,14 @@ Display.o: Display.cpp
 # Not a target:
 SStree.cpp:
 #  Implicit rule search has been done.
-#  Last modified 2022-07-10 20:45:36.720854734
+#  Last modified 2022-07-10 21:41:30.740841939
 #  File has been updated.
 #  Successfully updated.
 
 main.o: main.cpp
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'main'
-#  Last modified 2022-07-10 21:02:01.300850978
+#  Last modified 2022-07-10 21:44:27.880841263
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 21):
@@ -383,7 +379,7 @@ Point.cpp:
 MBC.o: MBC.cpp
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'MBC'
-#  Last modified 2022-07-10 21:02:03.840850968
+#  Last modified 2022-07-10 21:44:30.400841254
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 21):
@@ -402,8 +398,7 @@ MBC.o: MBC.cpp
 
 # strcache performance: lookups = 88 / hit rate = 44%
 # hash-table stats:
- 
 # Load=49/8192=1%, Rehash=0, Collisions=1/88=1%
-# Finished Make data base on Sun Jul 10 21:04:36 2022
+# Finished Make data base on Sun Jul 10 21:52:44 2022
 
  
