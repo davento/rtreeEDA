@@ -14,8 +14,9 @@ SStree::Node* SStree::search(const Point& p){
 
 void SStree::insert(const Figure& f){
     root = insert(root, f);
-    std::cout<<"----------------------------------------------\n";
-    print();
+    // std::cout<<"Finish insert\n";
+    // std::cout<<"----------------------------------------------\n";
+    // print();
 }
 
 void SStree::remove(const Point& p){
@@ -50,7 +51,7 @@ SStree::Node* SStree::chooseSubtree(Node* node, const Figure &f){
     Node* result = root;
     
     //choose region with minimum perimeter
-    for(auto region : root->children) {
+    for(auto region : node->children) {
         Bound aux = f.getBound();
         aux.merge(region->bound);
         
@@ -68,17 +69,13 @@ SStree::Node* SStree::insert(Node* node, const Figure &f){
     
     // std::cout<<"entering insert\n";
     // printf("inserting Point(%f,%f)\n", p.x,p.y);
-    // std::cout<<node->getBound().getCentroid().x<<" "<<node->getBound().getCentroid().x<<'|';
-    // std::cout<<node->getBound().getRadius()<<'\n';
     
     if(node->isLeaf()){
-        std::cout<<"inserting in leaf\n";
+        // std::cout<<"inserting in leaf\n";
         
         Node* it = new LeafNode(f);
         (node->children).push_back(it);
         node->mergeBounds();
-        std::cout<<node->children.size()<<'\n';
-
         if((node->children).size() == ORDER + 1){
             // std::cout<<"overflow\n";
             handleOverflow(node);
@@ -139,7 +136,7 @@ void SStree::bestSplit(std::vector<Node*>& u, Node* v, Node* p){
 
     MBC m1 = v->bound;
     MBC m2 = v->bound;
-            double minVariance = 2e5;
+    double minVariance = 2e5;
     for( int i = ceil(m * 0.4); i <= m - ceil(m * 0.4); i++){
         // s1 = first i regions (points)
         // s2 = the other i regions (points)
