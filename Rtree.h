@@ -24,6 +24,9 @@ class Rtree final{
         void remove(const Point &);
         void draw(SDL_Renderer* renderer) const;
         void print() const;
+        
+        std::vector<Figure*> depthFirst(const Point& p);
+
     private:
 
         Node* root;
@@ -40,7 +43,12 @@ class Rtree final{
         void reinsert();
         void dfs(std::vector<Figure> &s, Rtree::Node* u);
 
-        void Rtree::depthFirst(const Point& p);
+        
+
+        template<typename TCmp>
+        void k_depthFirst(std::priority_queue<Figure* , std::vector<Figure*>, TCmp> &p,const int &k,Rtree::Node* u);
+        
+
 };
 
 #endif

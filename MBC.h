@@ -26,6 +26,8 @@ class MBC{
         const Point& getCentroid() const{return centroid;}
 
 
+        static double distance(const Point& from, const MBC& to);
+
         void draw(SDL_Renderer* renderer, Color color = Color(0,0,255)) const;
         void merge(const Point&);
         void merge(const MBC&);

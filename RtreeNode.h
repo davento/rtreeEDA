@@ -4,7 +4,6 @@
 #define ORDER 3
 
 #include "Point.h"
-#include "MBC.h"
 #include "Figure.h"
 
 #include <vector>
@@ -47,7 +46,7 @@ class FigureNode final : public RtreeNode{
         void draw(SDL_Renderer* renderer, Color color = Color(0,0,255)) const override;
         void print() const override;
 
-        Figure getFigure(){return f;}
+        Figure& getFigure() {return f;}
 
     private:
         Figure f;

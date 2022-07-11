@@ -30,6 +30,7 @@ class Display{
         SDL_Renderer* renderer;
         Rtree* ss;
         Figure fig;
+        std::vector<Figure*> figures;
 
 };
 

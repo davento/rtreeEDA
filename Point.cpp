@@ -21,28 +21,6 @@ double Point::distance(const Point& from, const Point& to){
     return std::sqrt(std::pow(from.x - to.x, 2) + std::pow(from.y - to.y, 2));
 }
 
-double Point::distance(const Point& p, const MBC& mb){
-    double dist_y;
-    double dist_x;
-    if(mb.topLeft.y >= p.y && p.y >= mb.bottomRight.y) dist_y = 0;
-    else{
-        //calcular
-        dist_y = std::min(
-        abs(p.y - mb.topLeft.y),
-        abs(p.y - mb.bottomRight.y)
-        );
-    }
-    if(mb.topLeft.x >= p.x && p.x >= mb.bottomRight.x) dist_x = 0;
-    else{
-        //calcular
-        dist_x = std::min(
-        abs(p.x - mb.topLeft.x),
-        abs(p.x - mb.bottomRight.x)
-        );
-    }
-
-    return sqrt( dist_x * dist_x + dist_y * dist_y);
-}
 
 
 bool Point::closeEnough(const Point& p1, const Point& p2, const int RADIUS){

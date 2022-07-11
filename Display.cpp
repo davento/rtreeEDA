@@ -69,7 +69,7 @@ void Display::processInputs(){
                 int x, y;
                 SDL_GetMouseState(&x, &y);
                 Point po(x,y);
-                // figures = r->depthFirst(po);
+                figures = ss->depthFirst(po);
                 //std::cout << figures.size() << std::endl;
                 quit = true;
             }
@@ -95,5 +95,12 @@ void Display::generateOutput(){
     // std::cout<<"out3\n";
     ss->draw(renderer);
     // std::cout<<"out4\n";
+    
+    // std::cout<<figures.size()<<'\n';
+    for(auto f: figures){
+        f->draw(renderer, Color(159,43,104));
+    }
+    figures.clear();
+
     SDL_RenderPresent(renderer);
 }
