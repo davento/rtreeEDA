@@ -1,5 +1,5 @@
-#ifndef SSTREENODE_H
-#define SSTREENODE_H
+#ifndef RTREENODE_H
+#define RTREENODE_H
 
 #define ORDER 3
 
@@ -37,7 +37,7 @@ class RtreeNode{
         std::vector<RtreeNode*> children;
         RtreeNode* father;
 
-        friend class SStree;
+        friend class Rtree;
 };
 
 class FigureNode final : public RtreeNode{

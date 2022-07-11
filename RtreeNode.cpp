@@ -1,5 +1,5 @@
-#include "SStreeNode.h"
-#include "SStree.h"
+#include "RtreeNode.h"
+#include "Rtree.h"
 
 RtreeNode::RtreeNode(const MBC& other): bound(other), father(nullptr){
 
@@ -35,7 +35,7 @@ void RtreeNode::mergeBounds(){
 void RtreeNode::draw(SDL_Renderer* renderer, Color color) const {
     // std::cout<<"A1\n";
 
-    color.print();
+    // color.print();
     bound.draw(renderer, color);
     // std::cout<<"A1.4\n";
     color.changeColor(150);

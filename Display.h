@@ -2,7 +2,7 @@
 #define DISPLAY_H
 
 #include <SDL2/SDL.h>
-#include "SStree.h"
+#include "Rtree.h"
 #include "Figure.h"
 
 #include <SDL2/SDL.h>
@@ -28,7 +28,7 @@ class Display{
         bool isRunning;
         SDL_Window* window;
         SDL_Renderer* renderer;
-        SStree* ss;
+        Rtree* ss;
         Figure fig;
 
 };

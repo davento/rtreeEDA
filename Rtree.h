@@ -1,7 +1,7 @@
-#ifndef SSTREE_H
-#define SSTREE_H
+#ifndef Rtree_H
+#define Rtree_H
 
-#include "SStreeNode.h"
+#include "RtreeNode.h"
 #include "Point.h"
 #include "Figure.h"
 #include <SDL2/SDL.h>
@@ -9,15 +9,15 @@
 
 const int INF = 2e5;
 
-class SStree final{
+class Rtree final{
     public:
         typedef RtreeNode Node;
         typedef FigureNode LeafNode;
         typedef MBC Bound;
 
         
-        SStree();
-        SStree(int dim);
+        Rtree();
+        Rtree(int dim);
         Node* search(const Point &);
         void insert(const Figure &);
         void remove(const Point &);

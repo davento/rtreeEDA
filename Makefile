@@ -1,4 +1,4 @@
-objects = main.o Display.o Point.o MBC.o SStree.o SStreeNode.o Figure.o
+objects = main.o Display.o Point.o MBC.o Rtree.o RtreeNode.o Figure.o
  
 CFLAGS = -Wall -O2 
 LINKERFLAGS = -lSDL2

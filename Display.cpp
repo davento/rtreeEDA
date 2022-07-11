@@ -16,7 +16,7 @@ bool Display::initialize(double dim){
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     isRunning = true;
     
-    ss = new SStree();
+    ss = new Rtree();
 
     return true;
 }

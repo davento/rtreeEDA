@@ -1,36 +1,36 @@
-#include "SStree.h"
-#include "SStreeNode.h"
+#include "Rtree.h"
+#include "RtreeNode.h"
 
-SStree::SStree(){
+Rtree::Rtree(){
     root = new Node();
 }
-SStree::SStree(int dim){
+Rtree::Rtree(int dim){
     root = new Node(MBC(Point(0,0), Point(dim, dim)));
 }
 
-SStree::Node* SStree::search(const Point& p){
+Rtree::Node* Rtree::search(const Point& p){
     return search(root, p);
 }
 
-void SStree::insert(const Figure& f){
+void Rtree::insert(const Figure& f){
     root = insert(root, f);
     // std::cout<<"Finish insert\n";
     // std::cout<<"----------------------------------------------\n";
     // print();
 }
 
-void SStree::remove(const Point& p){
+void Rtree::remove(const Point& p){
     // remove(root, p);
 }
 
-void SStree::draw(SDL_Renderer* renderer) const{
+void Rtree::draw(SDL_Renderer* renderer) const{
     // std::cout<<"A\n";
     //RGB -> BGR
-    root->draw(renderer, Color(0,255,0));
+    root->draw(renderer, Color(0,40,0));
 }
 
 
-SStree::Node* SStree::search(Node* node, const Point &p){
+Rtree::Node* Rtree::search(Node* node, const Point &p){
     
     if (node->isLeaf()) {
 
@@ -46,14 +46,13 @@ SStree::Node* SStree::search(Node* node, const Point &p){
     return nullptr;
 }
 
-SStree::Node* SStree::chooseSubtree(Node* node, const Figure &f){
+Rtree::Node* Rtree::chooseSubtree(Node* node, const Figure &f){
         
     int minP = INF;
-    Node* result = root;
-    
+    Node* result = node;
     //choose region with minimum perimeter
     for(auto region : node->children) {
-        Bound aux = f.getBound();
+        Bound aux( f.getBound() );
         aux.merge(region->bound);
         
         int p = aux.perimeter();
@@ -66,7 +65,7 @@ SStree::Node* SStree::chooseSubtree(Node* node, const Figure &f){
     return result;
 }
 
-SStree::Node* SStree::insert(Node* node, const Figure &f){
+Rtree::Node* Rtree::insert(Node* node, const Figure &f){
     
     // std::cout<<"entering insert\n";
     // printf("inserting Point(%f,%f)\n", p.x,p.y);
@@ -93,7 +92,7 @@ SStree::Node* SStree::insert(Node* node, const Figure &f){
 } 
 
 
-void SStree::handleOverflow(Node* overFlowed){
+void Rtree::handleOverflow(Node* overFlowed){
     
     Node* v = new Node();
     split(overFlowed, v);
@@ -116,7 +115,7 @@ void SStree::handleOverflow(Node* overFlowed){
     }
 }
 
-void SStree::split(Node* original, Node* secondHalf){
+void Rtree::split(Node* original, Node* secondHalf){
 
     std::vector<Node*> regions = original->children;
 
@@ -126,9 +125,30 @@ void SStree::split(Node* original, Node* secondHalf){
         return m1->getBound().topLeft.x < m2->getBound().topLeft.x;
     });
     bestSplit(regions,original,secondHalf);
+
+    //sort by x right
+    sort(regions.begin(), regions.end(),
+    [](const Node* m1, const Node* m2){
+        return m1->getBound().bottomRight.x < m2->getBound().bottomRight.x;
+    });
+    bestSplit(regions,original,secondHalf);
+
+    //sort by y left
+    sort(regions.begin(), regions.end(),
+    [](const Node* m1, const Node* m2){
+        return m1->getBound().topLeft.y < m2->getBound().topLeft.y;
+    });
+    bestSplit(regions,original,secondHalf);
+
+    //sort by y right
+    sort(regions.begin(), regions.end(),
+    [](const Node* m1, const Node* m2){
+        return m1->getBound().bottomRight.y < m2->getBound().bottomRight.y;
+    });
+    bestSplit(regions,original,secondHalf);
 }
 
-void SStree::bestSplit(std::vector<Node*>& u, Node* v, Node* p){
+void Rtree::bestSplit(std::vector<Node*>& u, Node* v, Node* p){
 
     int m = u.size();
 
@@ -147,7 +167,7 @@ void SStree::bestSplit(std::vector<Node*>& u, Node* v, Node* p){
         MBC t1 = Node::mergeBounds(s1);
         MBC t2 = Node::mergeBounds(s2);
         
-        if(t1.metric() + t2.metric() <  minVariance){
+        if(t1.metric() + t2.metric() <  m1.perimeter() + m2.perimeter()){
             m1 = t1; m2 = t2;
             v->bound = m1;
             p->bound = m2;
@@ -161,11 +181,11 @@ void SStree::bestSplit(std::vector<Node*>& u, Node* v, Node* p){
 }
 
 
-void SStree::print() const{
+void Rtree::print() const{
     root->print();
 }
 
-// void SStree::remove(Node* node,const Point& p){
+// void Rtree::remove(Node* node,const Point& p){
 
 //    Node* leaf = search(p);
 //    auto it = leaf->children.begin(); 
