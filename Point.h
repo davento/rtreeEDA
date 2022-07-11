@@ -2,6 +2,7 @@
 #define POINT_H
 
 #include <SDL2/SDL.h>
+#include "MBC.h"
 
 
 enum axis{
@@ -24,6 +25,8 @@ struct Point final{
     const int operator[] (int axis) const {return (axis == X) ? x : y; }
     
     static double distance(const Point& from, const Point& to);
+    static double distance(const Point& from, const MBC& to);
+
     static bool closeEnough(const Point& p1, const Point& p2, const int RADIUS);
     static Point createMinPoint(const Point& left, const Point& right);
     static Point createMaxPoint(const Point& left, const Point& right);

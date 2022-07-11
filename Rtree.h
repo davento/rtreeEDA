@@ -4,6 +4,7 @@
 #include "RtreeNode.h"
 #include "Point.h"
 #include "Figure.h"
+#include <queue>
 #include <SDL2/SDL.h>
 
 
@@ -38,6 +39,8 @@ class Rtree final{
         void remove(Node*, const Point &);
         void reinsert();
         void dfs(std::vector<Figure> &s, Rtree::Node* u);
+
+        void Rtree::depthFirst(const Point& p);
 };
 
 #endif

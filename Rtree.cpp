@@ -236,3 +236,24 @@ void Rtree::reinsert(){
     }
     
 }
+
+
+void Rtree::depthFirst(const Point& p){
+    const int  k =5;
+
+    auto func  = [p](const Node* f1, const Node*f2){
+        Bound m1 = f1->getBound();
+        Bound m2 = f2->getBound();
+        return Point::distance(p, m1) < Point::distance(p, m2);
+    };
+
+
+    std::priority_queue<Node* , std::vector<Node*>, decltype(func) > s(func);
+    k_depthFirst(s,k,root);
+    
+    df.clear();
+    while(!s.empty()){
+        df.push_back(s.top());
+        s.pop();
+    }
+}
