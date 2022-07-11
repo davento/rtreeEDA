@@ -25,7 +25,8 @@ void SStree::remove(const Point& p){
 
 void SStree::draw(SDL_Renderer* renderer) const{
     // std::cout<<"A\n";
-    root->draw(renderer, Color(40,0,0));
+    //RGB -> BGR
+    root->draw(renderer, Color(0,255,0));
 }
 
 

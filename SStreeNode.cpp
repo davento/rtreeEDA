@@ -35,10 +35,11 @@ void RtreeNode::mergeBounds(){
 void RtreeNode::draw(SDL_Renderer* renderer, Color color) const {
     // std::cout<<"A1\n";
 
+    color.print();
     bound.draw(renderer, color);
     // std::cout<<"A1.4\n";
-
     color.changeColor(150);
+    
     // std::cout<<"A2\n";
     for(const auto& child: children){
         child->draw(renderer, color);
@@ -46,11 +47,9 @@ void RtreeNode::draw(SDL_Renderer* renderer, Color color) const {
 }
 
 void FigureNode::draw(SDL_Renderer* renderer, Color color) const {
-    
-    color.changeColor(150);
-
-    RtreeNode::draw(renderer, color);
-       f.draw(renderer);
+    bound.draw(renderer);
+    // RtreeNode::draw(renderer, Color(0,0,255));
+    f.draw(renderer);
 }
 
 

@@ -93,7 +93,7 @@ void MBC::draw(SDL_Renderer* renderer, Color color) const {
         return;
     const int &lx = topLeft.x, &ty = topLeft.y, &rx = bottomRight.x, &by = bottomRight.y;
 
-    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+    // SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
     SDL_RenderDrawLine(renderer, lx, ty, rx , ty);
     SDL_RenderDrawLine(renderer, lx, ty, lx , by);
     SDL_RenderDrawLine(renderer, lx, by, rx , by);
