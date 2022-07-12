@@ -33,7 +33,6 @@ void Rtree::draw(SDL_Renderer* renderer) const{
 Rtree::Node* Rtree::search(Node* node, const Point &p){
     
     if (node->isLeaf()) {
-
         return node;
     }
 
@@ -194,6 +193,8 @@ void Rtree::remove(Node* node,const Point& p){
     };
     
     auto it = std::find_if(n->children.begin(), n->children.end(), fun);
+    if(it == n->children.end()) return ;
+
     (n->children).erase(it);
 
     if(n->father == nullptr && n->children.size() == 0){
