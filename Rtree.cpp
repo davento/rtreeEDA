@@ -45,11 +45,17 @@ Rtree::Node* Rtree::search(Node* node, const Point &p){
 
 Rtree::Node* Rtree::chooseSubtree(Node* node, const Figure &f){
         
-
+    //optimization made to lessen overlap
     auto it = get_first(node->children, f.getCentroid(), lessHilbert);
+    auto izq = (it == node->children.begin())  ? node->children.front() : *(it-1);
+    auto der = (it == node->children.end() ) ? node->children.back(): *it;
     // if there isn't a largest node, return the last one
-    if(it == node->children.end()) return node->children.back();
-    return *it;
+
+    if(abs( izq->lhv() - f.getCentroid()[Z]) <  abs( der->lhv() - f.getCentroid()[Z]) ){
+        return izq;
+    }else{
+        return der;
+    }
 }
 
 Rtree::Node* Rtree::insert(Node* node, const Figure &f){
