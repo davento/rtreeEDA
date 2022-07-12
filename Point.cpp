@@ -1,6 +1,6 @@
 #include "Point.h"
 
-#include "Point.h"
+#include "Gilbert.h"
 #include <algorithm>
 #include <iostream>
 
@@ -14,6 +14,18 @@ bool operator ==(const Point& Left, const Point& right){
 
 bool operator !=(const Point& left, const Point& right){
     return  !(left==right);
+}
+
+int Point::operator[] (int axis){
+    if(axis == X) return x;
+    else if(axis == Y) return y;
+    else return xy2d(*this);
+}
+
+int Point::operator[] (int axis) const{
+    if(axis == X) return x;
+    else if(axis == Y) return y;
+    else return xy2d(*this);
 }
 
 

@@ -4,10 +4,10 @@
 #include <SDL2/SDL.h>
 
 
-
 enum axis{
     X,
-    Y
+    Y,
+    Z
 };
 
 struct Point final{
@@ -21,8 +21,9 @@ struct Point final{
 
     friend bool operator==(const Point& left, const Point& right);
     friend bool operator!=(const Point& left, const Point& right);
-    int operator[] (int axis) {return (axis == X) ? x : y; }
-    const int operator[] (int axis) const {return (axis == X) ? x : y; }
+    
+    int operator[] (int axis) ;
+    int operator[] (int axis) const;
     
     static double distance(const Point& from, const Point& to);
 
@@ -33,6 +34,10 @@ struct Point final{
     void draw(SDL_Renderer* renderer) const;
     void print() const;
 };
+
+
+int xy2d ( const Point& p);
+
 
 #endif
 

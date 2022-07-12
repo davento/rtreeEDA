@@ -10,6 +10,9 @@
 #include <SDL2/SDL_mouse.h>
 #include <iostream>
 
+
+#define SIDEDIM 1024
+
 class Display{
 
     public:
