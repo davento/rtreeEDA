@@ -52,7 +52,7 @@ void RtreeNode::draw(SDL_Renderer* renderer, Color color) const {
 }
 
 int RtreeNode::lhv() const{
-    return children.back()->bound.centroid[Z];
+    return children.back()->lhv();
 }
 
 void FigureNode::draw(SDL_Renderer* renderer, Color color) const {
@@ -75,7 +75,7 @@ void RtreeNode::print() const {
     std::cout << "Node: ";
     bound.topLeft.print(); bound.bottomRight.print();
     
-    // std::cout << "Bound: "; bound.getCentroid().print(); std::cout << " " << bound.getRadius() << std::endl;
+    std::cout << "Bound: "; std::cout<<lhv()<<'\n';
     std::cout << "{" << std::endl; 
     for(const auto& child: children){
         child->print();
@@ -88,5 +88,5 @@ int FigureNode::lhv() const{
 }
 
 void FigureNode::print() const {
-    std::cout<<"Figure Node\n";
+    std::cout<<"Figure Node:"<<bound.getCentroid()[Z]<<'\n'; ;
 }

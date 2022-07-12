@@ -15,8 +15,8 @@ Rtree::Node* Rtree::search(const Point& p){
 void Rtree::insert(const Figure& f){
     root = insert(root, f);
     // std::cout<<"Finish insert\n";
-    // std::cout<<"----------------------------------------------\n";
-    // print();
+    std::cout<<"----------------------------------------------\n";
+    print();
 }
 
 void Rtree::remove(const Point& p){
@@ -36,32 +36,20 @@ Rtree::Node* Rtree::search(Node* node, const Point &p){
         return node;
     }
 
-    for (auto r : node->children) {
-        if (r->bound.inArea(p)){
-            auto res = search(r, p);
-            if(res != nullptr) return res;
-        }
-    }
-    return nullptr;
+    //find first largest element
+    auto it = get_first(node->children, p, lessHilbert);
+
+    if(it == node->children.end()) return nullptr;
+    return search(*it, p);
 }
 
 Rtree::Node* Rtree::chooseSubtree(Node* node, const Figure &f){
         
-    int minP = INF;
-    Node* result = node;
-    //choose region with minimum perimeter
-    for(auto region : node->children) {
-        Bound aux( f.getBound() );
-        aux.merge(region->bound);
-        
-        int p = aux.perimeter();
-        if(p <= minP) {
-            minP = p;
-            result = region;
-        }
-        
-    }
-    return result;
+
+    auto it = get_first(node->children, f.getCentroid(), lessHilbert);
+    // if there isn't a largest node, return the last one
+    if(it == node->children.end()) return node->children.back();
+    return *it;
 }
 
 Rtree::Node* Rtree::insert(Node* node, const Figure &f){
@@ -73,15 +61,16 @@ Rtree::Node* Rtree::insert(Node* node, const Figure &f){
         // std::cout<<"inserting in leaf\n";
         
         Node* it = new LeafNode(f);
-        (node->children).push_back(it);
+        auto s = insert_ordered(node->children, it, compare);
         node->mergeBounds();
         if((node->children).size() == ORDER + 1){
             // std::cout<<"overflow\n";
-            handleOverflow(node);
+            handleOverflow(s, node);
         }
     }
     else{
         Node* v = chooseSubtree(node, f);
+        printf("from [%d], Choose subtree: %d\n", f.getBound().centroid[Z], v->bound.centroid[Z]);
         insert(v, f);
         node->mergeBounds();
     }
@@ -91,59 +80,59 @@ Rtree::Node* Rtree::insert(Node* node, const Figure &f){
 } 
 
 
-void Rtree::handleOverflow(Node* overFlowed){
+void Rtree::handleOverflow(std::vector<Node*>::iterator s, Node* overFlowed){
     
-    Node* v = new Node();
-    split(overFlowed, v);
+    //find node where you inserted 
+    // auto rev_q = std::find_if(std::make_reverse_iterator(s), overFlowed->children.rend(), 
+    //                     [](const Node* n1){
+    //                         return n1->children.size()  < ORDER;
+    //                     });
+
+    // // if found a node
+    // if(rev_q != overFlowed->children.rend()){
+    //     //getting normal iterator
+    //     auto q =   overFlowed->children.begin() +  std::distance(overFlowed->children.rend() + 1, rev_q) ;
+    //     //distributing from  (q,s)
+    // }
+
+    //if root
     if(!overFlowed->father){
-        //Create new father
+        //make an split
+        Node* v = new Node();
+        split(overFlowed, v);
         Node* overFather = new Node();
         //Add children to father
         overFlowed->father = v->father = overFather;
-        (overFather->children).push_back(overFlowed);
-        (overFather->children).push_back(v);
+        
+        insert_ordered(overFather->children, overFlowed, compare);
+        insert_ordered(overFather->children, v, compare);
         overFather->mergeBounds();
     }
-    else{
-        Node* w = overFlowed->father;
-        v->father = w;
-        (w->children).push_back(v);
-        w->mergeBounds();
-        if((w->children).size() == ORDER + 1)
-            handleOverflow(w);
-    }
+    // Node* v = new Node();
+    // split(overFlowed, v);
+    // if(!overFlowed->father){
+    //     //Create new father
+    //     Node* overFather = new Node();
+    //     //Add children to father
+    //     overFlowed->father = v->father = overFather;
+    //     (overFather->children).push_back(overFlowed);
+    //     (overFather->children).push_back(v);
+    //     overFather->mergeBounds();
+    // }
+    // else{
+    //     Node* w = overFlowed->father;
+    //     v->father = w;
+    //     (w->children).push_back(v);
+    //     w->mergeBounds();
+    //     if((w->children).size() == ORDER + 1)
+    //         handleOverflow(w);
+    // }
 }
 
 void Rtree::split(Node* original, Node* secondHalf){
 
     std::vector<Node*> regions = original->children;
 
-    //sort by x left
-    sort(regions.begin(), regions.end(),
-    [](const Node* m1, const Node* m2){
-        return m1->getBound().topLeft.x < m2->getBound().topLeft.x;
-    });
-    bestSplit(regions,original,secondHalf);
-
-    //sort by x right
-    sort(regions.begin(), regions.end(),
-    [](const Node* m1, const Node* m2){
-        return m1->getBound().bottomRight.x < m2->getBound().bottomRight.x;
-    });
-    bestSplit(regions,original,secondHalf);
-
-    //sort by y left
-    sort(regions.begin(), regions.end(),
-    [](const Node* m1, const Node* m2){
-        return m1->getBound().topLeft.y < m2->getBound().topLeft.y;
-    });
-    bestSplit(regions,original,secondHalf);
-
-    //sort by y right
-    sort(regions.begin(), regions.end(),
-    [](const Node* m1, const Node* m2){
-        return m1->getBound().bottomRight.y < m2->getBound().bottomRight.y;
-    });
     bestSplit(regions,original,secondHalf);
 }
 
@@ -151,29 +140,18 @@ void Rtree::bestSplit(std::vector<Node*>& u, Node* v, Node* p){
 
     int m = u.size();
 
-    std::vector<Node*> s1;
-    std::vector<Node*> s2;
+    std::vector<Node*> s1 = {u.begin(), u.begin() + ceil(m/2) };
+    std::vector<Node*> s2 = {u.begin() + ceil(m/2) , u.end()};
 
-    MBC m1 = v->bound;
-    MBC m2 = v->bound;
-    // double minVariance = 2e5;
-    for( int i = ceil(m * 0.4); i <= m - ceil(m * 0.4); i++){
-        // s1 = first i regions (points)
-        // s2 = the other i regions (points)
-        s1 = {u.begin(), u.begin() + i};
-        s2 = {u.begin()+i , u.end() };
-        //get mbb and choose minimum
-        MBC t1 = Node::mergeBounds(s1);
-        MBC t2 = Node::mergeBounds(s2);
-        
-        if(t1.metric() + t2.metric() <  m1.perimeter() + m2.perimeter()){
-            m1 = t1; m2 = t2;
-            v->bound = m1;
-            p->bound = m2;
-            v->children = s1;
-            p->children = s2;
-        }
-    }
+    MBC m1 = Node::mergeBounds(s1);
+    MBC m2 = Node::mergeBounds(s2);
+
+    v->bound = m1;
+    p->bound = m2;
+
+    v->children = s1;
+    p->children = s2;
+
     v->mergeBounds();
     p->mergeBounds();
 }

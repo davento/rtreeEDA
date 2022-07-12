@@ -19,7 +19,7 @@ class Figure{
         //TODO: chequear si poner const aquí
         const MBC& getBound() const {return myBound;}
         
-        const MBC& getCentroid() const{return myBound;}
+        const Point& getCentroid() const{return myBound.centroid;}
         
         bool addPoint(const Point& p);
         void draw(SDL_Renderer* renderer, Color color = Color(0,250,0)) const;
