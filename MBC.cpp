@@ -1,6 +1,10 @@
 #include "MBC.h"
 #define INF 20000000000
 
+MBC::MBC(const Point& p, int length): topLeft(p), bottomRight(p.x+length, p.y+length){
+
+}
+
 MBC::MBC(): topLeft(INF,INF), bottomRight(-INF,-INF){
     updateCircle();
 }

@@ -24,13 +24,14 @@ class Display{
         void processInputs();
         void updateDisplay();
         void generateOutput(); 
-
+        Figure generateRandomFigure();
         bool isRunning;
         SDL_Window* window;
         SDL_Renderer* renderer;
         Rtree* ss;
         Figure fig;
         std::vector<Figure*> figures;
+        int screenSize;
 
 };
 

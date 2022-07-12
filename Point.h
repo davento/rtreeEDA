@@ -2,7 +2,7 @@
 #define POINT_H
 
 #include <SDL2/SDL.h>
-
+#include <cmath>
 
 
 enum axis{
@@ -21,9 +21,11 @@ struct Point final{
 
     friend bool operator==(const Point& left, const Point& right);
     friend bool operator!=(const Point& left, const Point& right);
+    friend Point operator-(const Point& left, const Point& right);
     int operator[] (int axis) {return (axis == X) ? x : y; }
     const int operator[] (int axis) const {return (axis == X) ? x : y; }
     
+    double length() {return std::sqrt(x*x + y*y);}
     static double distance(const Point& from, const Point& to);
 
     static bool closeEnough(const Point& p1, const Point& p2, const int RADIUS);

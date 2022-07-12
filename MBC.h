@@ -11,6 +11,7 @@ class MBC{
     //TODO: MBC
     public:
         MBC();
+        MBC(const Point& p, int length);
         MBC(const MBC&) = default;
         MBC(const Point& inCentroid, double inRadius);
         MBC(const Point&, const Point&);
