@@ -16,6 +16,7 @@ class Rtree final{
         typedef RtreeNode Node;
         typedef FigureNode LeafNode;
         typedef MBC Bound;
+        typedef std::vector<Node*>::iterator iterator;
 
         
         Rtree();
@@ -38,6 +39,7 @@ class Rtree final{
         void handleOverflow(Node*);
         void split(Node* original, Node* secondHalf);
         void bestSplit(std::vector<Node*>& u, Node* v, Node* p);
+        void distribute(std::vector<Node*>&, iterator, iterator);
 
         
         void remove(Node*, const Point &);

@@ -80,6 +80,39 @@ Rtree::Node* Rtree::insert(Node* node, const Figure &f){
 } 
 
 
+
+void Rtree::distribute(std::vector<Node*>& vec, iterator q, iterator s){
+    
+    std::vector<Node*> holder;
+    for(auto it = q; it != (s+1); ++it){
+        std::cout<<(*it)->children.size()<<'\n';
+        for(auto child: (*it)->children){
+            holder.push_back(child);    
+        }
+    }
+
+    std::sort(holder.begin(), holder.end(), compare);
+
+    int n = holder.size();
+    int m = std::distance(q, s) + 1;
+
+    auto it_h = holder.begin();
+    printf("num of nodes: %d| num of cont: %d\n", n,m);
+    for(auto it = q; it != s+1; it++){
+
+        int to_insert =  ceil(n/ (m * 1.0));
+        std::cout<<to_insert<<'\n';
+        (*it)->children.clear();
+        (*it)->children.insert((*it)->children.begin(), it_h , it_h + to_insert);
+        (*it)->mergeBounds();
+
+        it_h += to_insert;
+        n -= to_insert;
+        m--;
+    }
+    holder.clear();
+}
+
 void Rtree::handleOverflow(Node* overFlowed){
     
 
@@ -112,49 +145,28 @@ void Rtree::handleOverflow(Node* overFlowed){
     } 
         
     
-    // if found a node
-    auto q =rev_q.base();
-
-    std::vector<Node*> holder;
-    for(auto it = q; it != (s+1); ++it){
-        holder.push_back(*it);
+    // if found a node where you can lease to
+    if(rev_q != nodeFather->children.rend()){
+        //distribute among the nodes in (q,s)
+        auto q =rev_q.base() -1;
+        distribute(nodeFather->children, q, s);
     }
-    std::sort(holder.begin(), holder.end(), compare);
+    else{
+        //create a node s+1
+        auto node =  new Node();
 
-    int n = holder.size();
-    int m = nodeFather->children.size();
-    auto it_h = holder.begin();
-    printf("num of nodes: %d| num of cont: %d\n", n,m);
-    // for(auto it = q; it != s+1; it++){
+        node->father =  nodeFather;
+        s = nodeFather->children.insert(s+1, node);
+        
+        //distribute between ( begin() , s+1)
+        distribute(nodeFather->children, nodeFather->children.begin(), s);
 
-    //     int to_insert =  ceil(m/ (n * 1.0));
-    //     (*it)->children.clear();
-    //     (*it)->children.insert((*it)->children.begin(), it_h , it_h + to_insert);
+        if(nodeFather->children.size() == ORDER +1){
+            handleOverflow(nodeFather);
+            nodeFather->mergeBounds();
+        }
+    }
 
-    //     it_h += to_insert;
-    //     n -=1;
-    //     m-=1;
-    // }
-    // holder.clear();
-    // Node* v = new Node();
-    // split(overFlowed, v);
-    // if(!overFlowed->father){
-    //     //Create new father
-    //     Node* overFather = new Node();
-    //     //Add children to father
-    //     overFlowed->father = v->father = overFather;
-    //     (overFather->children).push_back(overFlowed);
-    //     (overFather->children).push_back(v);
-    //     overFather->mergeBounds();
-    // }
-    // else{
-    //     Node* w = overFlowed->father;
-    //     v->father = w;
-    //     (w->children).push_back(v);
-    //     w->mergeBounds();
-    //     if((w->children).size() == ORDER + 1)
-    //         handleOverflow(w);
-    // }
 }
 
 void Rtree::split(Node* original, Node* secondHalf){
