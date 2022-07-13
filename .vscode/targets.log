@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Mon Jul 11 00:27:51 2022
+# Make data base, printed on Tue Jul 12 16:52:31 2022
 
 # Variables
 
@@ -53,7 +53,7 @@ PATH = /home/jean/.vscode-server/bin/92d25e35d9bf1a6b16f7d0758f25d48ace11e5b9/bi
 # environment
 ELECTRON_RUN_AS_NODE = 1
 # environment
-VSCODE_IPC_HOOK_CLI = /tmp/vscode-ipc-01f931c1-ac35-40a5-b8c1-97b150ca658c.sock
+VSCODE_IPC_HOOK_CLI = /tmp/vscode-ipc-db2c36f2-f7a2-493f-a9f9-37e0c6551abc.sock
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
 # environment
@@ -69,7 +69,7 @@ PWD = /home/jean/code/Utec/2022-1/eda/a
 # default
 .LOADED := 
 # environment
-WSL_INTEROP = /run/WSL/30891_interop
+WSL_INTEROP = /run/WSL/69_interop
 # environment
 VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
 # environment
@@ -81,7 +81,7 @@ LESSCLOSE = /usr/bin/lesspipe %s %s
 # environment
 LOGNAME = jean
 # environment
-APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
 # makefile (from 'Makefile', line 7)
 execname = a.out
 # environment
@@ -167,11 +167,9 @@ TERM = xterm-256color
 # environment
 WSL_DISTRO_NAME = Ubuntu-20.04
 # environment
-MOTD_SHOWN = update-motd
-# environment
 _CE_CONDA = 
 # variable set hash-table stats:
-# Load=80/1024=8%, Rehash=0, Collisions=5/113=4%
+# Load=79/1024=8%, Rehash=0, Collisions=5/114=4%
 
 # Pattern-specific Variable Values
 
@@ -179,9 +177,9 @@ _CE_CONDA =
 
 # Directories
 
-# . (device 2064, inode 309040): 31 files, no impossibilities.
+# . (device 2064, inode 309040): 32 files, no impossibilities.
 
-# 31 files, no impossibilities in 1 directories.
+# 32 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -193,6 +191,13 @@ _CE_CONDA =
 
 # Files
 
+# Not a target:
+Figure.cpp:
+#  Implicit rule search has been done.
+#  Last modified 2022-07-10 23:28:09.630817529
+#  File has been updated.
+#  Successfully updated.
+
 all: build
 #  Command line target.
 #  Implicit rule search has been done.
@@ -200,9 +205,22 @@ all: build
 #  File has been updated.
 #  Needs to be updated (-q is set).
 # variable set hash-table stats:
-# Load=0/32=0%, Rehash=0, Collisions=0/6=0%
+# Load=0/32=0%, Rehash=0, Collisions=0/8=0%
+
+# Not a target:
+Rtree.cpp:
+#  Implicit rule search has been done.
+#  Last modified 2022-07-12 00:13:04.930191671
+#  File has been updated.
+#  Successfully updated.
 
 .PHONY: clean cleanall
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+.SUFFIXES:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
@@ -222,23 +240,44 @@ debug: clean build
 # Not a target:
 Display.cpp:
 #  Implicit rule search has been done.
-#  Last modified 2022-07-11 00:26:58.330804068
+#  Last modified 2022-07-11 17:37:19.730282252
 #  File has been updated.
 #  Successfully updated.
 
-# Not a target:
-Point.o:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+Point.o: Point.cpp
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'Point'
+#  Last modified 2022-07-12 00:11:55.980191934
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 21):
+	$(CC) -c $(CFLAGS) $(LINKERFLAGS) $< -o $@
 
 build: main.o Display.o Point.o MBC.o Rtree.o RtreeNode.o Figure.o
 #  Implicit rule search has not been done.
+#  Implicit/static pattern stem: ''
 #  File does not exist.
 #  File has been updated.
 #  Needs to be updated (-q is set).
+# automatic
+# @ := build
+# automatic
+# % := 
+# automatic
+# * := 
+# automatic
+# + := main.o Display.o Point.o MBC.o Rtree.o RtreeNode.o Figure.o
+# automatic
+# | := 
+# automatic
+# < := main.o
+# automatic
+# ^ := main.o Display.o Point.o MBC.o Rtree.o RtreeNode.o Figure.o
+# automatic
+# ? := main.o Display.o Point.o MBC.o Rtree.o RtreeNode.o Figure.o
 # variable set hash-table stats:
-# Load=0/32=0%, Rehash=0, Collisions=0/6=0%
+ 
+# Load=8/32=25%, Rehash=0, Collisions=1/16=6%
 #  recipe to execute (from 'Makefile', line 18):
 	$(CC) $(CFLAGS) -o $(execname) $(objects) $(LINKERFLAGS)
 
@@ -249,23 +288,39 @@ main.cpp:
 #  File has been updated.
 #  Successfully updated.
 
-# Not a target:
-RtreeNode.o:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+RtreeNode.o: RtreeNode.cpp
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'RtreeNode'
+#  Last modified 2022-07-12 00:11:59.170191922
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 21):
+	$(CC) -c $(CFLAGS) $(LINKERFLAGS) $< -o $@
+
+Figure.o: Figure.cpp
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'Figure'
+#  Last modified 2022-07-12 00:12:00.010191919
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 21):
+	$(CC) -c $(CFLAGS) $(LINKERFLAGS) $< -o $@
 
 # Not a target:
-Figure.o:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+MBC.cpp:
+#  Implicit rule search has been done.
+#  Last modified 2022-07-11 00:04:02.370809317
+#  File has been updated.
+#  Successfully updated.
 
-# Not a target:
-Rtree.o:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+Rtree.o: Rtree.cpp
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'Rtree'
+#  Last modified 2022-07-12 00:13:08.070191659
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 21):
+	$(CC) -c $(CFLAGS) $(LINKERFLAGS) $< -o $@
 
 # Not a target:
 .DEFAULT:
@@ -281,38 +336,19 @@ clean:
 #  recipe to execute (from 'Makefile', line 25):
 	rm -f $(objects)
 
- 
 Display.o: Display.cpp
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'Display'
-#  Last modified 2022-07-11 00:21:44.150805267
+#  Last modified 2022-07-12 00:11:55.060191937
 #  File has been updated.
-#  Needs to be updated (-q is set).
-# automatic
-# @ := Display.o
-# automatic
-# % := 
-# automatic
-# * := Display
-# automatic
-# + := Display.cpp
-# automatic
-# | := 
-# automatic
-# < := Display.cpp
-# automatic
-# ^ := Display.cpp
-# automatic
-# ? := Display.cpp
-# variable set hash-table stats:
-# Load=8/32=25%, Rehash=0, Collisions=1/16=6%
+#  Successfully updated.
 #  recipe to execute (from 'Makefile', line 21):
 	$(CC) -c $(CFLAGS) $(LINKERFLAGS) $< -o $@
 
 main.o: main.cpp
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'main'
-#  Last modified 2022-07-11 00:04:44.970809155
+#  Last modified 2022-07-12 00:11:53.940191942
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 21):
@@ -327,25 +363,42 @@ cleanall: clean
 	rm -f $(execname)
 
 # Not a target:
-MBC.o:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+Point.cpp:
+#  Implicit rule search has been done.
+#  Last modified 2022-07-11 19:07:20.42026165
+#  File has been updated.
+#  Successfully updated.
+
+MBC.o: MBC.cpp
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'MBC'
+#  Last modified 2022-07-12 00:11:56.760191931
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 21):
+	$(CC) -c $(CFLAGS) $(LINKERFLAGS) $< -o $@
+
+# Not a target:
+RtreeNode.cpp:
+#  Implicit rule search has been done.
+#  Last modified 2022-07-11 23:36:37.100200017
+#  File has been updated.
+#  Successfully updated.
 
 # files hash-table stats:
-# Load=18/1024=2%, Rehash=0, Collisions=0/51=0%
+# Load=23/1024=2%, Rehash=0, Collisions=0/72=0%
 # VPATH Search Paths
 
 # No 'vpath' search paths.
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 45 / storage = 377 B / avg = 8 B
-# current buf: size = 8162 B / used = 377 B / count = 45 / avg = 8 B
+# strcache buffers: 1 (0) / strings = 51 / storage = 420 B / avg = 8 B
+# current buf: size = 8162 B / used = 420 B / count = 51 / avg = 8 B
 
-# strcache performance: lookups = 73 / hit rate = 38%
+# strcache performance: lookups = 90 / hit rate = 43%
 # hash-table stats:
-# Load=45/8192=1%, Rehash=0, Collisions=1/73=1%
-# Finished Make data base on Mon Jul 11 00:27:51 2022
+# Load=51/8192=1%, Rehash=0, Collisions=1/90=1%
+# Finished Make data base on Tue Jul 12 16:52:31 2022
 
  

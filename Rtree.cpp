@@ -47,9 +47,7 @@ Rtree::Node* Rtree::chooseSubtree(Node* node, const Figure &f){
         
     //optimization made to lessen overlap
     auto it = get_first(node->children, f.getCentroid(), lessHilbert);
-    // auto izq = (it == node->children.begin())  ? node->children.front() : *(it-1);
     auto der = (it == node->children.end() ) ? node->children.back(): *it;
-    // if there isn't a largest node, return the last one
 
     return der;
 }
@@ -63,16 +61,16 @@ Rtree::Node* Rtree::insert(Node* node, const Figure &f){
         // std::cout<<"inserting in leaf\n";
         
         Node* it = new LeafNode(f);
-        auto s = insert_ordered(node->children, it, compare);
+        insert_ordered(node->children, it, compare);
         node->mergeBounds();
         if((node->children).size() == ORDER + 1){
             // std::cout<<"overflow\n";
-            handleOverflow(s, node);
+            handleOverflow(node);
         }
     }
     else{
         Node* v = chooseSubtree(node, f);
-        printf("from [%d], Choose subtree: %d\n", f.getBound().centroid[Z], v->bound.centroid[Z]);
+        printf("from [%d], Choose subtree: %d\n", f.lhv(), v->lhv());
         insert(v, f);
         node->mergeBounds();
     }
@@ -82,20 +80,9 @@ Rtree::Node* Rtree::insert(Node* node, const Figure &f){
 } 
 
 
-void Rtree::handleOverflow(std::vector<Node*>::iterator s, Node* overFlowed){
+void Rtree::handleOverflow(Node* overFlowed){
     
-    //find node where you inserted 
-    // auto rev_q = std::find_if(std::make_reverse_iterator(s), overFlowed->children.rend(), 
-    //                     [](const Node* n1){
-    //                         return n1->children.size()  < ORDER;
-    //                     });
 
-    // // if found a node
-    // if(rev_q != overFlowed->children.rend()){
-    //     //getting normal iterator
-    //     auto q =   overFlowed->children.begin() +  std::distance(overFlowed->children.rend() + 1, rev_q) ;
-    //     //distributing from  (q,s)
-    // }
 
     //if root
     if(!overFlowed->father){
@@ -105,11 +92,50 @@ void Rtree::handleOverflow(std::vector<Node*>::iterator s, Node* overFlowed){
         Node* overFather = new Node();
         //Add children to father
         overFlowed->father = v->father = overFather;
-        
         insert_ordered(overFather->children, overFlowed, compare);
         insert_ordered(overFather->children, v, compare);
         overFather->mergeBounds();
+        return ;
     }
+
+    Node* nodeFather = overFlowed->father;
+    //find position of OverFlowed in father
+    auto s = std::find(nodeFather->children.begin(), nodeFather->children.end(), overFlowed);
+    //find node to the left where so can lease to
+    auto rev_q = std::find_if(std::make_reverse_iterator(s), nodeFather->children.rend(), 
+                            [] (Node* n){ return n->children.size() < ORDER;});
+
+
+    if(rev_q != nodeFather->children.rend()){
+        std::cout<<"lhv:"<<(*rev_q)->lhv()<<'\n';
+        std::cout<<"lhv:"<<(*s)->lhv()<<'\n';
+    } 
+        
+    
+    // if found a node
+    auto q =rev_q.base();
+
+    std::vector<Node*> holder;
+    for(auto it = q; it != (s+1); ++it){
+        holder.push_back(*it);
+    }
+    std::sort(holder.begin(), holder.end(), compare);
+
+    int n = holder.size();
+    int m = nodeFather->children.size();
+    auto it_h = holder.begin();
+    printf("num of nodes: %d| num of cont: %d\n", n,m);
+    // for(auto it = q; it != s+1; it++){
+
+    //     int to_insert =  ceil(m/ (n * 1.0));
+    //     (*it)->children.clear();
+    //     (*it)->children.insert((*it)->children.begin(), it_h , it_h + to_insert);
+
+    //     it_h += to_insert;
+    //     n -=1;
+    //     m-=1;
+    // }
+    // holder.clear();
     // Node* v = new Node();
     // split(overFlowed, v);
     // if(!overFlowed->father){
