@@ -37,7 +37,7 @@ class Rtree final{
         Node* chooseSubtree(Node*, const Figure &);
 
         Node* insert(Node*, const Figure &);
-        void handleOverflow(Node*);
+        void handleUnderflow(Node*);
         void split(Node* original, Node* secondHalf);
         void bestSplit(std::vector<Node*>& u, Node* v, Node* p);
         void distribute(std::vector<Node*>&, iterator, iterator);

@@ -224,7 +224,39 @@ void Rtree::remove(Node* node,const Point& p){
     if(n->children.size() >= std::ceil(ORDER/2.0) || n->father == nullptr) 
         return ;
     
-    reinsert();
+    handleUnderflow(n);
+}
+
+void Rtree::handleUnderflow(Node* underFlowed){
+
+    Node* nodeFather = underFlowed->father;
+    vector<Node*> 
+
+    auto s = std::find(nodeFather->children.begin(), nodeFather->children.end(), overFlowed);
+    
+    auto rev_q = std::find_if(std::make_reverse_iterator(s), nodeFather->children.rend(), 
+                            [] (Node* n){ return n->children.size() > ORDER/2;});
+
+    // if found a node who can lend elements
+    if(rev_q != nodeFather->children.rend()){
+        //distribute among the nodes in (q,s)
+        auto q =rev_q.base() -1;
+        distribute(nodeFather->children, q, s);
+    }
+    else{
+        //merge from s to s-1 nodes
+        node->father =  nodeFather;
+        s = nodeFather->children.erase(s);
+        s--;
+        
+        //distribute between ( begin() , s)
+        distribute(nodeFather->children, nodeFather->children.begin(), s);
+
+        if(nodeFather->children.size() < ORDER/2){
+            handleUnderflow(nodeFather);
+            nodeFather->mergeBounds();
+        }
+    }
 }
 
 
@@ -241,21 +273,6 @@ void Rtree::dfs(std::vector<Figure> &s, Rtree::Node* u){
         dfs(s,r);
     }
 }
-
-void Rtree::reinsert(){
-
-    std::vector<Figure> s;
-
-    dfs(s,this->root);
-    
-    this->root = new Node;
-
-    for(auto fig: s){
-        insert(fig);
-    }
-    
-}
-
 
 template<typename TCmp>
 void Rtree::k_depthFirst(std::priority_queue<Figure* , std::vector<Figure*>, TCmp> &p,
