@@ -16,7 +16,7 @@ void Rtree::insert(const Figure& f){
     root = insert(root, f);
     // std::cout<<"Finish insert\n";
     std::cout<<"----------------------------------------------\n";
-    print();
+  //  print();
 }
 
 void Rtree::remove(const Point& p){
@@ -300,4 +300,28 @@ std::vector<Figure*> Rtree::depthFirst(const Point& p){
     }
 
     return res;
+}
+std::vector<Figure*> Rtree::getFigures(){
+    std::vector<Figure*> result;
+    const int k = 1215752192;
+    Point p(0,0);
+    auto func  = [&p](const Figure* f1, const Figure*f2){
+        Bound m1 = f1->getBound();
+        Bound m2 = f2->getBound();
+        return MBC::distance(p, m1) < MBC::distance(p, m2);
+    };
+
+
+    std::priority_queue<Figure* , std::vector<Figure*>, decltype(func) > s(func);
+    k_depthFirst(s,k,root);
+    
+    // df.clear();
+    while(!s.empty()){
+        auto f = s.top();
+        result.push_back(f);
+        s.pop();
+    }
+
+   
+    return result;
 }

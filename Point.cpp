@@ -16,6 +16,10 @@ bool operator !=(const Point& left, const Point& right){
     return  !(left==right);
 }
 
+Point operator-(const Point& left, const Point& right){
+    return Point(left.x-right.x, left.y-right.y);
+}
+
 int Point::operator[] (int axis){
     if(axis == X) return x;
     else if(axis == Y) return y;
@@ -31,6 +35,10 @@ int Point::operator[] (int axis) const{
 
 double Point::distance(const Point& from, const Point& to){
     return std::sqrt(std::pow(from.x - to.x, 2) + std::pow(from.y - to.y, 2));
+}
+
+double Point::length(){
+    return std::sqrt(x*x + y*y);
 }
 
 

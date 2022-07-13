@@ -18,6 +18,7 @@ class Figure{
         Figure(const Figure&) = default;
         //TODO: chequear si poner const aquí
         const MBC& getBound() const {return myBound;}
+        MBC getCopyBound() const {return myBound;}
         const Point& getCentroid() const{return myBound.centroid;}
         int lhv() const{
             return myBound.centroid[Z];

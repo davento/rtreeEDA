@@ -28,6 +28,7 @@ class Rtree final{
         void print() const;
         
         std::vector<Figure*> depthFirst(const Point& p);
+        std::vector<Figure*> getFigures();
 
     private:
 

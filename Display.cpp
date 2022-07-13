@@ -1,4 +1,131 @@
 #include "Display.h"
+#include <set>
+#include <algorithm>
+#include <random>
+std::random_device dev;
+int random(int low, int high){
+    std::uniform_int_distribution<int> dist(low, high);
+    return dist(dev);
+}
+
+
+Point createRandomPoint(Point leading, int bound){
+    return Point(random(leading.x, leading.x + bound), random(leading.y, leading.y + bound));
+}
+
+Figure Display::generateRandomFigure(){
+    
+    Figure result;
+    int bounding_length = screenSize*0.03;
+
+    int numberOfPoints = random(3,10); //get random number between 3 - 10
+
+    Point leadingPoint = createRandomPoint(Point(0,0), screenSize - bounding_length); // get a point that fits the window boundings
+    
+    std::vector <Point> points;
+    double middleX = 0, middleY = 0;
+
+    for(int i = 0; i < numberOfPoints; ++i){
+        Point newPoint = createRandomPoint(leadingPoint, bounding_length);
+        middleX += newPoint.x;
+        middleY += newPoint.y;
+        points.push_back(newPoint);
+        
+    }
+    middleX /= numberOfPoints*1.0;
+    middleY /= numberOfPoints*1.0;
+
+    Point middlePoint(middleX, middleY);
+
+    auto sortByAngle = [middlePoint](const Point& a, const Point& b) -> bool {
+        Point A = a - middlePoint;
+        Point B = b - middlePoint;
+        return std::acos(A.x/A.length())*A.y/std::abs(A.y) < std::acos(B.x/B.length())*B.y/std::abs(B.y);
+
+    };
+    std::sort(points.begin(), points.end(), sortByAngle );
+    for(const auto& p: points){
+        result.addPoint(p);
+    }
+    result.addPoint(points[0]);
+    return result;
+
+}
+
+struct Limits{
+    std::size_t begin, end;
+};
+
+struct Region{
+    Limits x, y;
+};
+
+std::vector<MBC> getMBCs(const std::vector<Figure*>& figures){
+    std::vector<MBC> result;
+    for(const auto& figure: figures){
+        result.push_back(figure->getCopyBound());
+    }
+    return result;
+}
+Region getLimits(const MBC& mbc, std::vector<double>& xValues, std::vector<double>& yValues){
+    Region result;
+    for(std::size_t i = 0; i != xValues.size(); ++i){
+        if(xValues[i] == mbc.getTopLeft().x)
+            result.x.begin = i;
+        else if(xValues[i] == mbc.getBottomRight().x)
+            result.x.end = i;
+    }
+    for(std::size_t i = 0; i != yValues.size(); ++i){
+        if(yValues[i] == mbc.getTopLeft().y)
+            result.y.begin = i;
+        else if(yValues[i] == mbc.getBottomRight().y)
+            result.y.end = i;
+    }
+    return result;
+}
+double getUnion_intersection(std::vector<MBC>& mbcs, std::size_t ui){
+    double result = 0;
+    std::set<double> xValues, yValues;
+    //xValues.insert(0); yValues.insert(0);
+    for(const auto& mbc: mbcs){
+        Point tl = mbc.getTopLeft();
+        Point br = mbc.getBottomRight();
+        xValues.insert(tl.x); xValues.insert(br.x);
+        yValues.insert(tl.y); yValues.insert(br.y);
+    }
+    std::vector<double> xSegments(xValues.begin(), xValues.end()), ySegments(yValues.begin(), yValues.end());
+    xValues.clear(); yValues.clear();
+    std::vector<std::vector<std::size_t>> matrix (ySegments.size(), std::vector<std::size_t>(xSegments.size(), 0));
+    for(const auto& mbc: mbcs){
+        Region limits = getLimits(mbc, xSegments, ySegments);
+        for(std::size_t i = limits.y.begin; i != limits.y.end; ++i){
+            for(std::size_t j = limits.x.begin; j != limits.x.end; ++j){
+                matrix[i][j] +=1;
+            }
+        }
+    }
+    for(std::size_t i = 0; i != matrix.size()-1; ++i){
+        for(std::size_t j = 0; j != matrix[i].size()-1; ++j){
+            if(matrix[i][j] > ui)
+                result += (xSegments[j+1] - xSegments[j])*(ySegments[i+1]-ySegments[i]);
+        }
+    }
+    return result;
+}
+std::vector<MBC> getIntersections(std::vector<MBC>& mbcs){
+    std::vector<MBC> result;
+
+    return result;
+}
+
+
+void coeficienteSolapamiento(Rtree* r){
+    std::vector<MBC> figuresMBC = getMBCs(r->getFigures());
+    double unionArea = getUnion_intersection(figuresMBC, 0);
+    //std::vector<MBC> intersections = getIntersections(figuresMBC);
+    double intersectionArea = getUnion_intersection(figuresMBC, 1);
+    std::cout << intersectionArea/unionArea << std::endl;
+}
 
 Display::Display(): isRunning(false), window(nullptr), renderer(nullptr), ss(nullptr){}
 
@@ -18,6 +145,7 @@ bool Display::initialize(double dim){
     
     ss = new Rtree();
 
+    screenSize = dim;
     return true;
 }
 
@@ -53,16 +181,24 @@ void Display::processInputs(){
             else if(event.type == SDL_MOUSEBUTTONDOWN){
                 int x, y;
             
-                SDL_GetMouseState(&x, &y);
+                /*SDL_GetMouseState(&x, &y);
                 if(event.button.button == SDL_BUTTON_LEFT){
                     if(!fig.addPoint(Point(x,y)) ){
                            ss->insert(fig);
                            fig.clear();
+                           coeficienteSolapamiento(ss);
                     }
+                }*/
+                for(std::size_t i = 0; i < 1111; ++i){
+                    ss->insert(generateRandomFigure());
+                    std::cout << i+1 <<": ";
+                    coeficienteSolapamiento(ss);
+                    std::cout << std::endl;
                 }
+                
                 if(event.button.button == SDL_BUTTON_RIGHT){
                     ss->remove(Point(x,y));
-                  
+                    coeficienteSolapamiento(ss);
                 }
             }
             else{
@@ -86,7 +222,7 @@ void Display::updateDisplay(){
 }
 
 void Display::generateOutput(){
-    // std::cout<<"out1\n";
+/*    // std::cout<<"out1\n";
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     // std::cout<<"out2\n";
     SDL_RenderClear(renderer);
@@ -102,5 +238,5 @@ void Display::generateOutput(){
     }
     figures.clear();
 
-    SDL_RenderPresent(renderer);
+    SDL_RenderPresent(renderer);*/
 }

@@ -12,6 +12,7 @@ class MBC{
     public:
         MBC();
         MBC(const MBC&) = default;
+        MBC(const Point& p, int length);
         MBC(const Point& inCentroid, double inRadius);
         MBC(const Point&, const Point&);
 
@@ -19,7 +20,9 @@ class MBC{
         double area() const;
         double metric() const;
         bool inArea(const Point& p) const;
-        
+       
+        Point getTopLeft() const {return topLeft;}
+        Point getBottomRight() const {return bottomRight;}
         double& getRadius(){return radius;}
         const double& getRadius() const {return radius;}
         Point& getCentroid(){return centroid;}
