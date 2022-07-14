@@ -34,14 +34,24 @@ void Rtree::draw(SDL_Renderer* renderer) const{
 Rtree::Node* Rtree::search(Node* node, const Point &p){
     
     if (node->isLeaf()) {
-        return node;
+        if(node->father == nullptr) return node;
+
+        for(auto r: node->children){
+            auto f = static_cast<LeafNode*>(r);
+
+            if(f->bound.inArea(p)) return node;
+        }
+
+        return nullptr;
     }
 
-    //find first largest element
-    auto it = get_first(node->children, p, lessHilbert);
-
-    if(it == node->children.end()) return nullptr;
-    return search(*it, p);
+    for (auto r : node->children) {
+        if (r->bound.inArea(p)){
+            auto res = search(r, p);
+            if(res != nullptr) return res;
+        }
+    }
+    return nullptr;
 }
 
 Rtree::Node* Rtree::chooseSubtree(Node* node, const Figure &f){
