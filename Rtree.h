@@ -49,7 +49,7 @@ class Rtree final{
         
 
         template<typename TCmp>
-        void k_depthFirst(std::priority_queue<Figure* , std::vector<Figure*>, TCmp> &p,const int &k,Rtree::Node* u);
+        void k_depthFirst(std::priority_queue<Figure* , std::vector<Figure*>, TCmp> &p, int &k,Rtree::Node* u);
 
         void clear(Node*);
         
