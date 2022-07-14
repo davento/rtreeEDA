@@ -40,17 +40,14 @@ class Rtree final{
         void handleOverflow(Node* overFlowed);
         void propagateUpward(Node* );
 
-        void handleUnderflow(Node*);
         void split(Node* original, Node* secondHalf);
         void bestSplit(std::vector<Node*>& u, Node* v, Node* p);
         void distribute(std::vector<Node*>&, iterator, iterator);
 
-        
         void remove(Node*, const Point &);
-        void reinsert();
+        void handleUnderflow(Node*);
+        void update(Node*);
         void dfs(std::vector<Figure> &s, Rtree::Node* u);
-
-        
 
         template<typename TCmp>
         void k_depthFirst(std::priority_queue<Figure* , std::vector<Figure*>, TCmp> &p,const int &k,Rtree::Node* u);

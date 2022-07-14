@@ -177,7 +177,7 @@ void Rtree::handleOverflow(Node* overFlowed){
     }
     else{
         //create a node s+1
-        std::cout<<"Didn't Found to lease\n";
+        std::cout<<"Didn't find to lease\n";
         
         auto node =  new Node();
 
@@ -290,6 +290,13 @@ void Rtree::handleUnderflow(Node* underFlowed){
             handleUnderflow(nodeFather);
             nodeFather->mergeBounds();
         }
+    }
+}
+
+void Rtree::update(Node* v) {
+    v->mergeBounds();
+    if(v != root) {
+        update(v->father);
     }
 }
 
