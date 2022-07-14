@@ -25,6 +25,8 @@ class MBC{
         const double& getRadius() const {return radius;}
         Point& getCentroid(){return centroid;}
         const Point& getCentroid() const{return centroid;}
+        Point getTopLeft() const {return topLeft;}
+        Point getBottomRight() const {return bottomRight;}
 
 
         static double distance(const Point& from, const MBC& to);

@@ -30,7 +30,7 @@ class Display{
         SDL_Renderer* renderer;
         Rtree* ss;
         Figure fig;
-        std::vector<Figure*> figures;
+        std::vector<Figure> figures;
         int screenSize;
 
 };
