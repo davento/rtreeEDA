@@ -40,32 +40,33 @@ void Tester::search() {
     Rtree * r = new Rtree();
     
 
-    std::vector<double> exp_time(polygonLimit/searchBatchSize, 0) ;
+    std::vector<double> exp_time[n];
 
     for(int e = 0; e < n; e++) {
-        std::vector<double> times;
+        exp_time[e].reserve(polygonLimit/searchBatchSize);
+        
         for(int i = 0; i < polygonLimit/searchBatchSize; i++) {
-            times.push_back(searchBatch(r));
-        }
-
-        for(int i = 0; i < polygonLimit/searchBatchSize; i++) {
-            exp_time[i] += times[i];
+            exp_time[e].push_back(searchBatch(r));
         }
 
         delete r;
         r = new Rtree();
     }
 
-    int i = 1;
-    for(auto it: exp_time){
-        printf("t%d,%f\n",i++, it/ n);
+    for(int i = 0; i < n; i++){
+        for(int j = 0; j < polygonLimit/searchBatchSize; j++){
+            std::cout<<exp_time[i][j];
+            if(j+1 != polygonLimit/searchBatchSize) std::cout<<',';
+        }
+        std::cout<<'\n';
     }
 }
 
 void Tester::remove(){
 
     Rtree * r = new Rtree();
-    std::vector<double> exp_time(polygonLimit/searchBatchSize, 0) ;
+
+    std::vector<double> exp_time[n];
 
     for(int e = 0; e < n; e++) {
         std::vector<double> times;
