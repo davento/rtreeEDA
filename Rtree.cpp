@@ -191,6 +191,15 @@ void Rtree::print() const{
     root->print();
 }
 
+
+void Rtree::propagateUpwards(Node* node){
+
+    while(node){
+        node->mergeBounds();
+        node = node->father;
+    }
+}
+
 void Rtree::remove(Node* node,const Point& p){
     
     Node* n = search(p);
@@ -216,7 +225,7 @@ void Rtree::remove(Node* node,const Point& p){
         return ;
     }
 
-    n->mergeBounds();
+    propagateUpwards(n);
     if(n->children.size() >= std::ceil(ORDER/2.0) || n->father == nullptr) 
         return ;
     

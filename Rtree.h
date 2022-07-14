@@ -43,6 +43,8 @@ class Rtree final{
         void reinsert();
         void dfs(std::vector<Figure> &s, Rtree::Node* u);
 
+        void propagateUpwards(Node* node);
+
         
 
         template<typename TCmp>

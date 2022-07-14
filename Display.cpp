@@ -219,12 +219,6 @@ void Display::processInputs(){
                            ss->insert(fig);
                            fig.clear();
                     }
-                    for(std::size_t i = 1; i <= 1111; ++i){
-                        ss->insert(generateRandomFigure());
-                        std::cout << i << ": ";
-                        coeficienteSolapamiento(ss);
-                        std::cout << std::endl;
-                    }
                 }
                 if(event.button.button == SDL_BUTTON_RIGHT){
                     ss->remove(Point(x,y));
@@ -240,7 +234,6 @@ void Display::processInputs(){
                 quit = true;
             }
         }
-        quit = true;
     }
     /*figures.push_back(generateRandomFigure());
     std::cout<<i++<<",";
@@ -248,6 +241,9 @@ void Display::processInputs(){
     const Uint8* state = SDL_GetKeyboardState(NULL);
     if(state[SDL_SCANCODE_ESCAPE])
         isRunning = false;
+    else if(state[SDL_SCANCODE_Z]){
+        ss->insert(generateRandomFigure());
+    }
 }
 
 void Display::updateDisplay(){
@@ -259,7 +255,7 @@ void Display::generateOutput(){
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     // std::cout<<"out2\n";
     SDL_RenderClear(renderer);
-    //fig.draw(renderer);
+    fig.draw(renderer);
 
     // std::cout<<"out3\n";
     ss->draw(renderer);
