@@ -23,7 +23,7 @@ void Rtree::insert(const Figure& f){
 void Rtree::remove(const Point& p){
     remove(root, p);
     std::cout<<"----------------------------------------------\n";
-    print();
+    if(root) print();
 }
 
 void Rtree::draw(SDL_Renderer* renderer) const{
@@ -245,18 +245,17 @@ void Rtree::remove(Node* node,const Point& p){
     
     Node* n = search(p);
     if(n == nullptr || !n->isLeaf() ) return ;
-    
+
     auto fun = [&p](Node* node){
         return  (static_cast<LeafNode*>(node)->getBound().inArea(p));
     };
-    
     auto it = std::find_if(n->children.begin(), n->children.end(), fun);
     if(it == n->children.end()) return ;
 
     (n->children).erase(it);
-
+    
     if(n->father == nullptr && n->children.size() == 0){
-        n->bound   = Bound();
+        n->bound = Bound();
         return ;
     }
 
@@ -276,6 +275,22 @@ void Rtree::handleUnderflow(Node* underFlowed){
 
     if(underFlowed->father == nullptr){
         
+        std::cout<<"Handeling root merge\n";
+
+        std::vector<Node*> holder;
+        for(auto it : underFlowed->children){
+            std::cout<<it->children.size()<<'\n';
+            for(auto child: it->children){
+                holder.push_back(child);    
+            }
+        }
+        underFlowed->children.clear();
+        std::sort(holder.begin(), holder.end(), compare);
+        for(auto it: holder){
+            underFlowed->children.push_back(it);
+        }
+        holder.clear();
+        return ;
     }
 
     Node* nodeFather = underFlowed->father;
