@@ -1,4 +1,4 @@
-#include "tester.h"
+#include "Tester.h"
 
 Tester::Tester() : Tester(100){ }
 
@@ -83,11 +83,11 @@ double Tester::insertBatch(Rtree* &r) {
                 auto f = Display::generateRandomFigure();
                 figs.push_back(f);
             }
-            start = clock();
+            start = std::clock();
             for(auto f : figs) {
                 r->insert(f);
             }
-            end = clock();
+            end = std::clock();
             printf("Tiempo total: %d ms\n", ((double)(end-start))*1000/CLOCKS_PER_SEC);
             return ((double)(end-start))*1000/CLOCKS_PER_SEC;
         }
@@ -99,21 +99,21 @@ double Tester::searchBatch(Rtree* &r) {
         figs.push_back(f);
         r->insert(f);
     }
-    start = clock();
+    start = std::clock();
     for(auto f : figs) {
         r->search(f.getCentroidPoint());
     }
-    end = clock();
+    end = std::clock();
     printf("Tiempo total: %d ms\n", ((double)(end-start))*1000/CLOCKS_PER_SEC);
     return ((double)(end-start))*1000/CLOCKS_PER_SEC;
 }
 
-double Tester::removeBatch(Rtree* &r, &std::vector<Figure>) {
-    start = clock();
+double Tester::removeBatch(Rtree* &r, std::vector<Figure> &figs) {
+    start = std::clock();
     for(auto f : figs) {
         r->remove(f.getCentroidPoint());
     }
-    end = clock();
+    end = std::clock();
     printf("Tiempo total: %d ms\n", ((double)(end-start))*1000/CLOCKS_PER_SEC);
     return ((double)(end-start))*1000/CLOCKS_PER_SEC;
 }
@@ -125,11 +125,11 @@ double Tester::knnBatch(Rtree* &r, int k) {
         figs.push_back(f);
         r->insert(f);
     }
-    start = clock();
+    start = std::clock();
     for(auto f : figs) {
         r->depthFirst(f.getCentroidPoint(), k);
     }
-    end = clock();
+    end = std::clock();
     printf("Tiempo total: %d ms\n", ((double)(end-start))*1000/CLOCKS_PER_SEC);
     return ((double)(end-start))*1000/CLOCKS_PER_SEC;
 }

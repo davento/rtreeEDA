@@ -4,7 +4,7 @@
 #include "Display.h"
 
 const int kTestsSize = 3;
-vector kTests[kTestsSize] = {1,5,20};
+int kTests[kTestsSize] = {1,5,20};
 
 class Tester {
 
@@ -33,8 +33,8 @@ class Tester {
         int polygonLimit;
         clock_t start, end;
         
-        double insertBatch(Rtree* &r);
-        double searchBatch(Rtree* &r);
-        double removeBatch(Rtree* &r, &std::vector<Figure>);
-        double knnBatch(Rtree* &r, int k);
+        double insertBatch(Rtree* &);
+        double searchBatch(Rtree* &);
+        double removeBatch(Rtree* &, std::vector<Figure> &);
+        double knnBatch(Rtree* &, int);
 };

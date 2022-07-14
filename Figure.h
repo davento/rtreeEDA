@@ -21,7 +21,7 @@ class Figure{
         MBC getCopyBound() const {return myBound;}
 
         const MBC& getCentroid() const{return myBound;}
-        const Point& getCentroidPoint() const{return myBound.centroid};
+        const Point& getCentroidPoint() const{return myBound.centroid;}
         
         bool addPoint(const Point& p);
         void draw(SDL_Renderer* renderer, Color color = Color(0,250,0)) const;
