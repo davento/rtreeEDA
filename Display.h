@@ -21,14 +21,13 @@ class Display{
         bool initialize(double dim);
         void runLoop();
         void shutdown();
-
+        static Figure generateRandomFigure(int);
     private:
 
         void processInputs();
         void updateDisplay();
         void generateOutput(); 
 
-        Figure generateRandomFigure();
         bool isRunning;
         SDL_Window* window;
         SDL_Renderer* renderer;

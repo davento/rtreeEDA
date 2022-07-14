@@ -1,11 +1,20 @@
+
 #include "Display.h"
-#include <set>
 #include <algorithm>
 #include <random>
+#include <set>
 std::random_device dev;
+std::mt19937 gen(dev());
 int random(int low, int high){
+    //std::mt19937 gen(dev());
     std::uniform_int_distribution<int> dist(low, high);
-    return dist(dev);
+    return dist(gen);
+}
+
+double random(double low, double high){
+
+    std::uniform_real_distribution<double> dist(low, high);
+    return dist(gen);
 }
 
 
@@ -13,18 +22,26 @@ Point createRandomPoint(Point leading, int bound){
     return Point(random(leading.x, leading.x + bound), random(leading.y, leading.y + bound));
 }
 
-Figure Display::generateRandomFigure(){
-    
+Point createRandomPoint(Point leading, int maxBound, int minBound){
+    return Point(random(leading.x+minBound, leading.x+maxBound), random(leading.y+minBound, leading.y+maxBound));
+}
+
+Figure Display::generateRandomFigure(int size){
+    bool flag = true;
     Figure result;
-    int bounding_length = screenSize*0.03;
+    while(flag){
+    Figure resultwhile;
+    double min_bounding_length = size*0.01;
+    double bounding_length = size*0.02;
 
     int numberOfPoints = random(3,10); //get random number between 3 - 10
 
-    Point leadingPoint = createRandomPoint(Point(0,0), screenSize - bounding_length); // get a point that fits the window boundings
+    Point leadingPoint = createRandomPoint(Point(0,0), size - bounding_length); // get a point that fits the window boundings
     
+    //leadingPoint.print(); 
     std::vector <Point> points;
     double middleX = 0, middleY = 0;
-
+    
     for(int i = 0; i < numberOfPoints; ++i){
         Point newPoint = createRandomPoint(leadingPoint, bounding_length);
         middleX += newPoint.x;
@@ -45,9 +62,17 @@ Figure Display::generateRandomFigure(){
     };
     std::sort(points.begin(), points.end(), sortByAngle );
     for(const auto& p: points){
-        result.addPoint(p);
+        resultwhile.addPoint(p);
     }
-    result.addPoint(points[0]);
+    resultwhile.addPoint(points[0]);
+    MBC gb = resultwhile.getCopyBound();
+    bool goodEnough = (gb.getBottomRight().x - gb.getTopLeft().x ) > min_bounding_length && (gb.getBottomRight().y - gb.getTopLeft().y ) > min_bounding_length;
+    if(goodEnough){
+        result = resultwhile;
+        flag = false;
+    }
+    }
+
     return result;
 
 }
@@ -60,6 +85,7 @@ struct Region{
     Limits x, y;
 };
 
+
 std::vector<MBC> getMBCs(const std::vector<Figure*>& figures){
     std::vector<MBC> result;
     for(const auto& figure: figures){
@@ -67,6 +93,14 @@ std::vector<MBC> getMBCs(const std::vector<Figure*>& figures){
     }
     return result;
 }
+std::vector<MBC> getMBCs(const std::vector<Figure>& figures){
+    std::vector<MBC> result;
+    for(const auto& figure: figures){
+        result.push_back(figure.getCopyBound());
+    }
+    return result;
+}
+
 Region getLimits(const MBC& mbc, std::vector<double>& xValues, std::vector<double>& yValues){
     Region result;
     for(std::size_t i = 0; i != xValues.size(); ++i){
@@ -83,8 +117,8 @@ Region getLimits(const MBC& mbc, std::vector<double>& xValues, std::vector<doubl
     }
     return result;
 }
-double getUnion_intersection(std::vector<MBC>& mbcs, std::size_t ui){
-    double result = 0;
+double getUnion_intersection(std::vector<MBC>& mbcs){
+    double unionArea = 0, intersectionArea = 0;
     std::set<double> xValues, yValues;
     //xValues.insert(0); yValues.insert(0);
     for(const auto& mbc: mbcs){
@@ -106,26 +140,24 @@ double getUnion_intersection(std::vector<MBC>& mbcs, std::size_t ui){
     }
     for(std::size_t i = 0; i != matrix.size()-1; ++i){
         for(std::size_t j = 0; j != matrix[i].size()-1; ++j){
-            if(matrix[i][j] > ui)
-                result += (xSegments[j+1] - xSegments[j])*(ySegments[i+1]-ySegments[i]);
+            if(matrix[i][j] > 0)
+                unionArea += (xSegments[j+1] - xSegments[j])*(ySegments[i+1]-ySegments[i]);
+            if(matrix[i][j] > 1)
+                intersectionArea += (xSegments[j+1] - xSegments[j])*(ySegments[i+1]-ySegments[i]);
         }
     }
-    return result;
+    return intersectionArea/unionArea;
 }
-std::vector<MBC> getIntersections(std::vector<MBC>& mbcs){
-    std::vector<MBC> result;
-
-    return result;
-}
-
 
 void coeficienteSolapamiento(Rtree* r){
     std::vector<MBC> figuresMBC = getMBCs(r->getFigures());
-    double unionArea = getUnion_intersection(figuresMBC, 0);
-    //std::vector<MBC> intersections = getIntersections(figuresMBC);
-    double intersectionArea = getUnion_intersection(figuresMBC, 1);
-    std::cout << intersectionArea/unionArea << std::endl;
+    std::cout << getUnion_intersection(figuresMBC) << std::endl;
 }
+void coeficienteSolapamiento(std::vector<Figure>& figures){
+    std::vector<MBC> figuresMBC = getMBCs(figures);
+    std::cout << getUnion_intersection(figuresMBC) << std::endl;
+}
+
 
 Display::Display(): isRunning(false), window(nullptr), renderer(nullptr), ss(nullptr){}
 
@@ -136,16 +168,16 @@ bool Display::initialize(double dim){
         SDL_Log("No se pudo inicializar SDL: %s", SDL_GetError());
         return false;
     }
-    window = SDL_CreateWindow("Rtree", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SIDEDIM, SIDEDIM,0);
+    window = SDL_CreateWindow("Rtree", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, dim, dim,0);
     if(!window){
         SDL_Log("Falla en la creación de la ventana: %s", SDL_GetError());
     }
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     isRunning = true;
     
+    screenSize = dim;
     ss = new Rtree();
 
-    screenSize = dim;
     return true;
 }
 
@@ -155,7 +187,7 @@ void Display::runLoop(){
         processInputs();
         // std::cout<<"diplay\n";
         updateDisplay();
-        // std::cout<<"out\n";s
+         //std::cout<<"out\n";s
         generateOutput();
     }
 }
@@ -169,6 +201,7 @@ void Display::shutdown(){
 void Display::processInputs(){
     SDL_Event event;
     bool quit = false;
+    static std::size_t i= 1;
 
 
     while (!quit){
@@ -183,32 +216,36 @@ void Display::processInputs(){
             
                 SDL_GetMouseState(&x, &y);
                 if(event.button.button == SDL_BUTTON_LEFT){
-                    // ss->insert(generateRandomFigure());
-                    if(!fig.addPoint(Point(x,y))){
-                       ss->insert(fig);
-                       fig.clear();
+                    if(!fig.addPoint(Point(x,y)) ){
+                           ss->insert(fig);
+                           fig.clear();
                     }
                 }
-                
                 if(event.button.button == SDL_BUTTON_RIGHT){
                     ss->remove(Point(x,y));
-                    //coeficienteSolapamiento(ss);
+                  
                 }
             }
             else{
-                int x, y;
-                SDL_GetMouseState(&x, &y);
-                Point po(x,y);
-                figures = ss->depthFirst(po);
+                //int x, y;
+                //SDL_GetMouseState(&x, &y);
+                //Point po(x,y);
+                //figures = ss->depthFirst(po);
                 //std::cout << figures.size() << std::endl;
                 quit = true;
             }
         }
     }
-    
+    /*figures.push_back(generateRandomFigure());
+    std::cout<<i++<<",";
+    coeficienteSolapamiento(figures);*/
     const Uint8* state = SDL_GetKeyboardState(NULL);
     if(state[SDL_SCANCODE_ESCAPE])
         isRunning = false;
+    else if(state[SDL_SCANCODE_Z]){
+        std::cout<<"random inserted num: "<<i++<<'\n';
+        ss->insert(generateRandomFigure(screenSize));
+    }
 }
 
 void Display::updateDisplay(){
@@ -216,8 +253,7 @@ void Display::updateDisplay(){
 }
 
 void Display::generateOutput(){
-
-   // std::cout<<"out1\n";
+    // std::cout<<"out1\n";
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     // std::cout<<"out2\n";
     SDL_RenderClear(renderer);
@@ -231,7 +267,7 @@ void Display::generateOutput(){
     for(auto f: figures){
         f->draw(renderer, Color(159,43,104));
     }
-    figures.clear();
+    //figures.clear();
 
     SDL_RenderPresent(renderer);
 }
