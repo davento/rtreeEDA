@@ -275,7 +275,7 @@ void Rtree::handleUnderflow(Node* underFlowed){
 
     if(underFlowed->father == nullptr){
         
-        std::cout<<"Handeling root merge\n";
+        std::cout<<"Handling root merge\n";
 
         std::vector<Node*> holder;
         for(auto it : underFlowed->children){
