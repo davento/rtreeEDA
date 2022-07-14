@@ -181,19 +181,9 @@ void Display::processInputs(){
             else if(event.type == SDL_MOUSEBUTTONDOWN){
                 int x, y;
             
-                /*SDL_GetMouseState(&x, &y);
+                SDL_GetMouseState(&x, &y);
                 if(event.button.button == SDL_BUTTON_LEFT){
-                    if(!fig.addPoint(Point(x,y)) ){
-                           ss->insert(fig);
-                           fig.clear();
-                           coeficienteSolapamiento(ss);
-                    }
-                }*/
-                for(std::size_t i = 0; i < 1111; ++i){
                     ss->insert(generateRandomFigure());
-                    std::cout << i+1 <<": ";
-                    coeficienteSolapamiento(ss);
-                    std::cout << std::endl;
                 }
                 
                 if(event.button.button == SDL_BUTTON_RIGHT){
@@ -222,7 +212,8 @@ void Display::updateDisplay(){
 }
 
 void Display::generateOutput(){
-/*    // std::cout<<"out1\n";
+
+   // std::cout<<"out1\n";
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     // std::cout<<"out2\n";
     SDL_RenderClear(renderer);
@@ -238,5 +229,5 @@ void Display::generateOutput(){
     }
     figures.clear();
 
-    SDL_RenderPresent(renderer);*/
+    SDL_RenderPresent(renderer);
 }

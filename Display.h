@@ -11,7 +11,7 @@
 #include <iostream>
 
 
-#define SIDEDIM 512
+#define SIDEDIM 1024
 
 class Display{
 
