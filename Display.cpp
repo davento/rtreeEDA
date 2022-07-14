@@ -240,6 +240,7 @@ void Display::processInputs(){
                 quit = true;
             }
         }
+        quit = true;
     }
     /*figures.push_back(generateRandomFigure());
     std::cout<<i++<<",";
