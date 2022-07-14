@@ -1,5 +1,6 @@
 #include "Rtree.h"
 #include "RtreeNode.h"
+#include <assert.h>
 
 Rtree::Rtree(){
     root = new Node();
@@ -129,7 +130,7 @@ void Rtree::propagateUpward(Node* node){
 
 void Rtree::handleOverflow(Node* overFlowed){
     
-
+    std::cout<<"handle overflow\n";
 
     //if root
     if(!overFlowed->father){
@@ -148,29 +149,28 @@ void Rtree::handleOverflow(Node* overFlowed){
     Node* nodeFather = overFlowed->father;
     //find position of OverFlowed in father
     auto s = std::find(nodeFather->children.begin(), nodeFather->children.end(), overFlowed);
+    assert(s != nodeFather->children.end());
     //find node to the left where so can lease to
     auto rev_q = std::find_if(std::make_reverse_iterator(s), nodeFather->children.rend(), 
                             [] (Node* n){ return n->children.size() < ORDER;});
 
-
-    if(rev_q != nodeFather->children.rend()){
-        std::cout<<"lhv:"<<(*rev_q)->lhv()<<'\n';
-        std::cout<<"lhv:"<<(*s)->lhv()<<'\n';
-    } 
-        
     
     // if found a node where you can lease to
     if(rev_q != nodeFather->children.rend()){
         //distribute among the nodes in (q,s)
+        std::cout<<"Found to lease\n";
+
         auto q =rev_q.base() -1;
         distribute(nodeFather->children, q, s);
     }
     else{
         //create a node s+1
+        std::cout<<"Didn't Found to lease\n";
+        
         auto node =  new Node();
 
         node->father =  nodeFather;
-        s = nodeFather->children.insert(s+1, node);
+        s = nodeFather->children.insert(s + 1, node);
         
         //distribute between ( begin() , s+1)
         distribute(nodeFather->children, nodeFather->children.begin(), s);
