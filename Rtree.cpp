@@ -16,7 +16,7 @@ void Rtree::insert(const Figure& f){
     root = insert(root, f);
     // std::cout<<"Finish insert\n";
     std::cout<<"----------------------------------------------\n";
-  //  print();
+   print();
 }
 
 void Rtree::remove(const Point& p){
@@ -104,6 +104,11 @@ void Rtree::distribute(std::vector<Node*>& vec, iterator q, iterator s){
         std::cout<<to_insert<<'\n';
         (*it)->children.clear();
         (*it)->children.insert((*it)->children.begin(), it_h , it_h + to_insert);
+        
+        std::for_each(it_h, it_h + to_insert, [&](Node* lamb_n){  
+            lamb_n->father = (*it);
+        } );
+
         (*it)->mergeBounds();
 
         it_h += to_insert;
@@ -111,6 +116,15 @@ void Rtree::distribute(std::vector<Node*>& vec, iterator q, iterator s){
         m--;
     }
     holder.clear();
+}
+
+
+void Rtree::propagateUpward(Node* node){
+
+    while(node->father != nullptr){
+        node->mergeBounds();
+        node = node->father;
+    }
 }
 
 void Rtree::handleOverflow(Node* overFlowed){
@@ -230,9 +244,8 @@ void Rtree::remove(Node* node,const Point& p){
 void Rtree::handleUnderflow(Node* underFlowed){
 
     Node* nodeFather = underFlowed->father;
-    vector<Node*> 
 
-    auto s = std::find(nodeFather->children.begin(), nodeFather->children.end(), overFlowed);
+    auto s = std::find(nodeFather->children.begin(), nodeFather->children.end(), underFlowed);
     
     auto rev_q = std::find_if(std::make_reverse_iterator(s), nodeFather->children.rend(), 
                             [] (Node* n){ return n->children.size() > ORDER/2;});
@@ -245,7 +258,6 @@ void Rtree::handleUnderflow(Node* underFlowed){
     }
     else{
         //merge from s to s-1 nodes
-        node->father =  nodeFather;
         s = nodeFather->children.erase(s);
         s--;
         
