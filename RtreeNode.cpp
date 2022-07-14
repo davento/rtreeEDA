@@ -35,9 +35,7 @@ MBC RtreeNode::mergeBounds(std::vector<RtreeNode*> bounds){
 
 void RtreeNode::mergeBounds(){
     bound  = mergeBounds(this->children);
-    std::for_each(this->children.begin(), this->children.end(), [&](RtreeNode* lamb_n){  
-            lamb_n->father = this;
-    } );
+
 }
 
 void RtreeNode::draw(SDL_Renderer* renderer, Color color) const {

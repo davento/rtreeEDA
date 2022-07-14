@@ -62,6 +62,7 @@ Rtree::Node* Rtree::insert(Node* node, const Figure &f){
         // std::cout<<"inserting in leaf\n";
         
         Node* it = new LeafNode(f);
+        it->father = node;
         insert_ordered(node->children, it, compare);
         node->mergeBounds();
         if((node->children).size() == ORDER + 1){
@@ -149,6 +150,7 @@ void Rtree::handleOverflow(Node* overFlowed){
     Node* nodeFather = overFlowed->father;
     //find position of OverFlowed in father
     auto s = std::find(nodeFather->children.begin(), nodeFather->children.end(), overFlowed);
+
     assert(s != nodeFather->children.end());
     //find node to the left where so can lease to
     auto rev_q = std::find_if(std::make_reverse_iterator(s), nodeFather->children.rend(), 
@@ -197,6 +199,7 @@ void Rtree::bestSplit(std::vector<Node*>& u, Node* v, Node* p){
     std::vector<Node*> s1 = {u.begin(), u.begin() + ceil(m/2) };
     std::vector<Node*> s2 = {u.begin() + ceil(m/2) , u.end()};
 
+
     MBC m1 = Node::mergeBounds(s1);
     MBC m2 = Node::mergeBounds(s2);
 
@@ -205,6 +208,15 @@ void Rtree::bestSplit(std::vector<Node*>& u, Node* v, Node* p){
 
     v->children = s1;
     p->children = s2;
+
+
+    std::for_each(v->children.begin(), v->children.end(), [&](Node* lamb_n){  
+            lamb_n->father = v;
+    } );
+    
+    std::for_each(p->children.begin(), p->children.end(), [&](Node* lamb_n){  
+            lamb_n->father = p;
+    } );
 
     v->mergeBounds();
     p->mergeBounds();
