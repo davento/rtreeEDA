@@ -14,18 +14,18 @@ Rtree::Node* Rtree::search(const Point& p){
 }
 
 void Rtree::insert(const Figure& f){
-    std::cout<<"inserting...\n";
+    // std::cout<<"inserting...\n";
     root = insert(root, f);
     // std::cout<<"Finish insert\n";
-    std::cout<<"----------------------------------------------\n";
-   print();
+    // std::cout<<"----------------------------------------------\n";
+//    print();
 }
 
 void Rtree::remove(const Point& p){
-    std::cout<<"removing...\n";
+    // std::cout<<"removing...\n";
     remove(root, p);
-    std::cout<<"----------------------------------------------\n";
-    if(root) print();
+    // std::cout<<"----------------------------------------------\n";
+    // if(root) print();
 }
 
 void Rtree::draw(SDL_Renderer* renderer) const{
@@ -86,7 +86,7 @@ Rtree::Node* Rtree::insert(Node* node, const Figure &f){
     }
     else{
         Node* v = chooseSubtree(node, f);
-        printf("from [%d], Choose subtree: %d\n", f.lhv(), v->lhv());
+        // printf("from [%d], Choose subtree: %d\n", f.lhv(), v->lhv());
         insert(v, f);
         node->mergeBounds();
     }
@@ -101,7 +101,7 @@ void Rtree::distribute(std::vector<Node*>& vec, iterator q, iterator s, int to_d
     
     std::vector<Node*> holder;
     for(auto it = q; it != (s+1); ++it){
-        std::cout<<(*it)->children.size()<<'\n';
+        // std::cout<<(*it)->children.size()<<'\n';
         for(auto child: (*it)->children){
             holder.push_back(child);    
         }
@@ -113,11 +113,11 @@ void Rtree::distribute(std::vector<Node*>& vec, iterator q, iterator s, int to_d
     int m = std::distance(q, s) + 1 - to_delete;
 
     auto it_h = holder.begin();
-    printf("num of nodes: %d| num of cont: %d\n", n,m);
+    // printf("num of nodes: %d| num of cont: %d\n", n,m);
     for(auto it = q; it != s+1; it++){
 
         int to_insert =  ceil(n/ (m * 1.0));
-        std::cout<<to_insert<<'\n';
+        // std::cout<<to_insert<<'\n';
         (*it)->children.clear();
         (*it)->children.insert((*it)->children.begin(), it_h , it_h + to_insert);
         
@@ -147,7 +147,7 @@ void Rtree::propagateUpward(Node* node){
 
 void Rtree::handleOverflow(Node* overFlowed){
     
-    std::cout<<"handle overflow\n";
+    // std::cout<<"handle overflow\n";
 
     //if root
     if(!overFlowed->father){
@@ -176,14 +176,16 @@ void Rtree::handleOverflow(Node* overFlowed){
     // if found a node where you can lease to
     if(rev_q != nodeFather->children.rend()){
         //distribute among the nodes in (q,s)
-        std::cout<<"Found to lease\n";
+        // std::cout<<"Found to lease\n";
 
         auto q =rev_q.base() -1;
         distribute(nodeFather->children, q, s);
+        nodeFather->mergeBounds();
+
     }
     else{
         //create a node s+1
-        std::cout<<"Didn't find to lease\n";
+        // std::cout<<"Didn't find to lease\n";
         
         auto node =  new Node();
 
@@ -192,10 +194,9 @@ void Rtree::handleOverflow(Node* overFlowed){
         
         //distribute between ( begin() , s+1)
         distribute(nodeFather->children, nodeFather->children.begin(), s);
-
+        nodeFather->mergeBounds();
         if(nodeFather->children.size() == ORDER +1){
             handleOverflow(nodeFather);
-            nodeFather->mergeBounds();
         }
     }
 
@@ -273,15 +274,15 @@ void Rtree::remove(Node* node,const Point& p){
 
 void Rtree::handleUnderflow(Node* underFlowed){
 
-    std::cout<<"handleUnderflow\n";
+    // std::cout<<"handleUnderflow\n";
 
     if(underFlowed->father == nullptr){
         
-        std::cout<<"Handling root merge\n";
+        // std::cout<<"Handling root merge\n";
 
         std::vector<Node*> holder;
         for(auto it : underFlowed->children){
-            std::cout<<it->children.size()<<'\n';
+            // std::cout<<it->children.size()<<'\n';
             for(auto child: it->children){
                 holder.push_back(child);    
             }
@@ -306,13 +307,13 @@ void Rtree::handleUnderflow(Node* underFlowed){
 
     // if found a node who can lend elements
     if(rev_q != nodeFather->children.rend()){
-        std::cout<<"found lender\n";
+        // std::cout<<"found lender\n";
         //distribute among the nodes in (q,s)
         auto q =rev_q.base() -1;
         distribute(nodeFather->children, q, s);
     }
     else{
-        std::cout<<"didn't find lender\n";
+        // std::cout<<"didn't find lender\n";
         //merge from s to s-1 nodes
 
         

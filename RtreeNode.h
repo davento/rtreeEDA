@@ -38,18 +38,13 @@ class RtreeNode{
 
     protected:
 
-        // const auto compare  = [](const RtreeNode& n1, const RtreeNode& n2){
-
-        //     return n1.lhv() > n2.lhv();
-        // };
-
-
         typedef std::function<bool (RtreeNode*, RtreeNode*) > comptype;
         typedef std::priority_queue<RtreeNode* , std::vector<RtreeNode*>, comptype> HibertVec;
 
         MBC bound;
         std::vector<RtreeNode*> children;
         RtreeNode* father;
+        int hv;
 
         friend class Rtree;
 };

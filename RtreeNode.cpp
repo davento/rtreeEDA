@@ -6,7 +6,7 @@
 //     return n1->lhv() > n2->lhv();
 // };
 
-RtreeNode::RtreeNode(const MBC& other): bound(other), father(nullptr){
+RtreeNode::RtreeNode(const MBC& other): bound(other), father(nullptr), hv(0){
 
 }
 
@@ -35,7 +35,7 @@ MBC RtreeNode::mergeBounds(std::vector<RtreeNode*> bounds){
 
 void RtreeNode::mergeBounds(){
     bound  = mergeBounds(this->children);
-
+    hv = this->children.back()->lhv();
 }
 
 void RtreeNode::draw(SDL_Renderer* renderer, Color color) const {
@@ -53,9 +53,7 @@ void RtreeNode::draw(SDL_Renderer* renderer, Color color) const {
 }
 
 int RtreeNode::lhv() const{
-    if(children.size()>0)
-        return children.back()->lhv();
-    else return bound.centroid[Z];
+    return hv;
 }
 
 void FigureNode::draw(SDL_Renderer* renderer, Color color) const {

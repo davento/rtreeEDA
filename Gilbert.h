@@ -6,7 +6,7 @@
 #include "Point.h"
 
 
-#define SIDEDIM 1024
+#define SIDEDIM 512
 
 
 void rot(int n, int *x, int *y, int rx, int ry) {

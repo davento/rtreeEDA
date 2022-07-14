@@ -11,7 +11,7 @@
 #include <iostream>
 
 
-#define SIDEDIM 1024
+#define SIDEDIM 512
 
 class Display{
 
@@ -37,6 +37,8 @@ class Display{
         int screenSize;
 
 };
+
+int random(int low, int high);
 
 #endif
 
