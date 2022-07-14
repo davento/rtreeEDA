@@ -234,10 +234,12 @@ void Display::processInputs(){
                 quit = true;
             }
         }
+        // quit = true;
     }
-    /*figures.push_back(generateRandomFigure());
-    std::cout<<i++<<",";
-    coeficienteSolapamiento(figures);*/
+    // figures.push_back();
+    // ss->insert(generateRandomFigure(screenSize));
+    // std::cout<<i++<<"\n";
+    // coeficienteSolapamiento(figures);
     const Uint8* state = SDL_GetKeyboardState(NULL);
     if(state[SDL_SCANCODE_ESCAPE])
         isRunning = false;
