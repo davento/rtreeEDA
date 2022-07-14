@@ -242,6 +242,7 @@ void Display::processInputs(){
     if(state[SDL_SCANCODE_ESCAPE])
         isRunning = false;
     else if(state[SDL_SCANCODE_Z]){
+        std::cout<<"random inserted num: "<<i++<<'\n';
         ss->insert(generateRandomFigure());
     }
 }

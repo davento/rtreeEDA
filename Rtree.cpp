@@ -82,6 +82,7 @@ Rtree::Node* Rtree::insert(Node* node, const Figure &f){
         
         Node* it = new LeafNode(f);
         (node->children).push_back(it);
+        it->father = node;
         node->mergeBounds();
         if((node->children).size() == ORDER + 1){
             // std::cout<<"overflow\n";
@@ -117,8 +118,10 @@ void Rtree::handleOverflow(Node* overFlowed){
         v->father = w;
         (w->children).push_back(v);
         w->mergeBounds();
-        if((w->children).size() == ORDER + 1)
+        if((w->children).size() == ORDER + 1){
             handleOverflow(w);
+            w->mergeBounds();
+        }
     }
 }
 
@@ -153,6 +156,13 @@ void Rtree::split(Node* original, Node* secondHalf){
         return m1->getBound().bottomRight.y < m2->getBound().bottomRight.y;
     });
     bestSplit(regions,original,secondHalf);
+
+    std::for_each(original->children.begin(), original->children.end(), [&](Node* node){
+        node->father = original;
+    });
+    std::for_each(secondHalf->children.begin(), secondHalf->children.end(), [&](Node* node){
+        node->father = secondHalf;
+    });
 }
 
 void Rtree::bestSplit(std::vector<Node*>& u, Node* v, Node* p){
@@ -225,10 +235,14 @@ void Rtree::remove(Node* node,const Point& p){
         return ;
     }
 
-    propagateUpwards(n);
-    if(n->children.size() >= std::ceil(ORDER/2.0) || n->father == nullptr) 
+
+    if(n->children.size() >= std::ceil(ORDER/2.0) || n->father == nullptr){
+        n->mergeBounds();
+        propagateUpwards(n);
         return ;
+    } 
     
+    std::cout<<"reinsert\n";
     reinsert();
 }
 
@@ -247,18 +261,42 @@ void Rtree::dfs(std::vector<Figure> &s, Rtree::Node* u){
     }
 }
 
+
+void Rtree::clear(Node* node){
+    
+    for(auto child: node->children){
+        clear(child);
+        delete child;
+    }
+}
+
+
+void Rtree::updateTree(Node* node){
+    
+    node->mergeBounds();
+    if(node->isLeaf()) return;
+    for(auto child: node->children){
+        updateTree(child);
+    }
+}
+
 void Rtree::reinsert(){
 
     std::vector<Figure> s;
 
     dfs(s,this->root);
-    
+
     this->root = new Node;
 
+    std::cout<<"figures collected: "<< s.size()<<'\n';
+
+    clear(root);
     for(auto fig: s){
         insert(fig);
     }
-    
+    root->mergeBounds();
+
+    // updateTree(root);
 }
 
 

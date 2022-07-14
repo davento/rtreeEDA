@@ -31,6 +31,13 @@ class RtreeNode{
         
         virtual void draw(SDL_Renderer* renderer, Color color = Color(0,0,255)) const;
         virtual void print() const;
+
+        virtual ~RtreeNode(){
+            children.clear();
+            father = nullptr;
+            bound = MBC();
+        }
+
     protected:
         MBC bound;
         std::vector<RtreeNode*> children;
@@ -47,6 +54,12 @@ class FigureNode final : public RtreeNode{
         void print() const override;
 
         Figure& getFigure() {return f;}
+
+
+        ~FigureNode(){
+            f = Figure();
+        }
+
 
     private:
         Figure f;

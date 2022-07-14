@@ -41,14 +41,17 @@ class Rtree final{
         
         void remove(Node*, const Point &);
         void reinsert();
-        void dfs(std::vector<Figure> &s, Rtree::Node* u);
-
+        void updateTree(Node* node);
         void propagateUpwards(Node* node);
+        
+        void dfs(std::vector<Figure> &s, Rtree::Node* u);
 
         
 
         template<typename TCmp>
         void k_depthFirst(std::priority_queue<Figure* , std::vector<Figure*>, TCmp> &p,const int &k,Rtree::Node* u);
+
+        void clear(Node*);
         
 
 };
