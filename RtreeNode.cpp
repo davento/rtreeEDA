@@ -57,7 +57,7 @@ FigureNode::FigureNode():RtreeNode(){
     
 }
 
-FigureNode::FigureNode(const Figure& p): f(p), RtreeNode(){
+FigureNode::FigureNode(const Figure& p): RtreeNode(),  f(p){
     bound = f.getBound();
 
 }

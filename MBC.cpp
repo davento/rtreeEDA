@@ -90,8 +90,6 @@ void MBC::draw(SDL_Renderer* renderer, Color color) const {
     
     // std::cout<<"c\n";
     
-//    centroid.draw(renderer);
-
     if(topLeft.x == INF && topLeft.y == INF)
         return;
     const int &lx = topLeft.x, &ty = topLeft.y, &rx = bottomRight.x, &by = bottomRight.y;

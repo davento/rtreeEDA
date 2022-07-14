@@ -33,7 +33,15 @@ void Rtree::draw(SDL_Renderer* renderer) const{
 Rtree::Node* Rtree::search(Node* node, const Point &p){
     
     if (node->isLeaf()) {
-        return node;
+        if(node->father == nullptr) return node;
+
+        for(auto r: node->children){
+            auto f = static_cast<LeafNode*>(r);
+
+            if(f->bound.inArea(p)) return node;
+        }
+
+        return nullptr;
     }
 
     for (auto r : node->children) {
@@ -186,7 +194,13 @@ void Rtree::print() const{
 void Rtree::remove(Node* node,const Point& p){
     
     Node* n = search(p);
-    if(n == nullptr || !n->isLeaf() ) return ;
+    if(n == nullptr || !n->isLeaf() ){
+        std::cout<<"Not found\n";
+        return ;
+    } 
+    else{
+        std::cout<<"Found\n";
+    }
     
     auto fun = [&p](Node* node){
         return  (static_cast<LeafNode*>(node)->getBound().inArea(p));
