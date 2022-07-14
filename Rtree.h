@@ -27,7 +27,7 @@ class Rtree final{
         void draw(SDL_Renderer* renderer) const;
         void print() const;
         
-        std::vector<Figure*> depthFirst(const Point& p);
+        std::vector<Figure*> depthFirst(const Point& p, int k = 3);
         std::vector<Figure*> getFigures();
 
     private:

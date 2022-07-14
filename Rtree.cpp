@@ -370,12 +370,9 @@ void Rtree::k_depthFirst(std::priority_queue<Figure* , std::vector<Figure*>, TCm
     }
 }
 
-std::vector<Figure*> Rtree::depthFirst(const Point& p){
+std::vector<Figure*> Rtree::depthFirst(const Point& p, int k ){
 
-
-    std::vector<Figure*> res;
-
-    const int  k =3;
+   std::vector<Figure*> res;
 
     auto func  = [&p](const Figure* f1, const Figure*f2){
         Bound m1 = f1->getBound();
@@ -395,6 +392,7 @@ std::vector<Figure*> Rtree::depthFirst(const Point& p){
     }
 
     return res;
+
 }
 std::vector<Figure*> Rtree::getFigures(){
     std::vector<Figure*> result;
