@@ -42,7 +42,7 @@ class Rtree final{
 
         void split(Node* original, Node* secondHalf);
         void bestSplit(std::vector<Node*>& u, Node* v, Node* p);
-        void distribute(std::vector<Node*>&, iterator, iterator);
+        void distribute(std::vector<Node*>&, iterator, iterator, int);
 
         void remove(Node*, const Point &);
         void handleUnderflow(Node*);

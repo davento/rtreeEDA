@@ -183,7 +183,11 @@ void Display::processInputs(){
             
                 SDL_GetMouseState(&x, &y);
                 if(event.button.button == SDL_BUTTON_LEFT){
-                    ss->insert(generateRandomFigure());
+                    // ss->insert(generateRandomFigure());
+                    if(!fig.addPoint(Point(x,y))){
+                       ss->insert(fig);
+                       fig.clear();
+                    }
                 }
                 
                 if(event.button.button == SDL_BUTTON_RIGHT){

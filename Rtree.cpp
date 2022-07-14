@@ -22,6 +22,8 @@ void Rtree::insert(const Figure& f){
 
 void Rtree::remove(const Point& p){
     remove(root, p);
+    std::cout<<"----------------------------------------------\n";
+    print();
 }
 
 void Rtree::draw(SDL_Renderer* renderer) const{
@@ -93,7 +95,7 @@ Rtree::Node* Rtree::insert(Node* node, const Figure &f){
 
 
 
-void Rtree::distribute(std::vector<Node*>& vec, iterator q, iterator s){
+void Rtree::distribute(std::vector<Node*>& vec, iterator q, iterator s, int to_delete = 0){
     
     std::vector<Node*> holder;
     for(auto it = q; it != (s+1); ++it){
@@ -106,7 +108,7 @@ void Rtree::distribute(std::vector<Node*>& vec, iterator q, iterator s){
     std::sort(holder.begin(), holder.end(), compare);
 
     int n = holder.size();
-    int m = std::distance(q, s) + 1;
+    int m = std::distance(q, s) + 1 - to_delete;
 
     auto it_h = holder.begin();
     printf("num of nodes: %d| num of cont: %d\n", n,m);
@@ -126,6 +128,8 @@ void Rtree::distribute(std::vector<Node*>& vec, iterator q, iterator s){
         it_h += to_insert;
         n -= to_insert;
         m--;
+
+        if(n <= 0) break;
     }
     holder.clear();
 }
@@ -257,6 +261,8 @@ void Rtree::remove(Node* node,const Point& p){
     }
 
     n->mergeBounds();
+    update(n);
+
     if(n->children.size() >= std::ceil(ORDER/2.0) || n->father == nullptr) 
         return ;
     
@@ -268,12 +274,17 @@ void Rtree::handleUnderflow(Node* underFlowed){
 
     std::cout<<"handleUnderflow\n";
 
+    if(underFlowed->father == nullptr){
+        
+    }
+
     Node* nodeFather = underFlowed->father;
 
     auto s = std::find(nodeFather->children.begin(), nodeFather->children.end(), underFlowed);
+    assert(s != nodeFather->children.end());
     
     auto rev_q = std::find_if(std::make_reverse_iterator(s), nodeFather->children.rend(), 
-                            [] (Node* n){ return n->children.size() > ORDER/2;});
+                            [] (Node* n){ return n->children.size() > ceil(ORDER/2.0);});
 
     // if found a node who can lend elements
     if(rev_q != nodeFather->children.rend()){
@@ -285,13 +296,16 @@ void Rtree::handleUnderflow(Node* underFlowed){
     else{
         std::cout<<"didn't find lender\n";
         //merge from s to s-1 nodes
-        s = nodeFather->children.erase(s);
-        s--;
+
         
         //distribute between ( begin() , s)
-        distribute(nodeFather->children, nodeFather->children.begin(), s);
+        distribute(nodeFather->children, nodeFather->children.begin(), nodeFather->children.end() - 1, 1);
+        
+        nodeFather->children.erase(nodeFather->children.end() - 1);
+        nodeFather->mergeBounds();
 
-        if(nodeFather->children.size() < ORDER/2){
+
+        if(nodeFather->children.size() < ceil(ORDER/2.0)){
             handleUnderflow(nodeFather);
             nodeFather->mergeBounds();
         }
