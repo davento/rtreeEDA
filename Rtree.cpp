@@ -8,6 +8,9 @@ Rtree::Rtree(int dim){
     root = new Node(MBC(Point(0,0), Point(dim, dim)));
 }
 
+Rtree::~Rtree(){
+    delete root;
+}
 Rtree::Node* Rtree::search(const Point& p){
     return search(root, p);
 }

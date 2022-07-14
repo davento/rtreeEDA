@@ -19,6 +19,7 @@ class Rtree final{
         
         Rtree();
         Rtree(int dim);
+        ~Rtree();
         Node* search(const Point &);
         void insert(const Figure &);
         void remove(const Point &);
