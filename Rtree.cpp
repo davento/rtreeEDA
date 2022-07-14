@@ -261,9 +261,12 @@ void Rtree::remove(Node* node,const Point& p){
         return ;
     
     handleUnderflow(n);
+    update(n);
 }
 
 void Rtree::handleUnderflow(Node* underFlowed){
+
+    std::cout<<"handleUnderflow\n";
 
     Node* nodeFather = underFlowed->father;
 
@@ -274,11 +277,13 @@ void Rtree::handleUnderflow(Node* underFlowed){
 
     // if found a node who can lend elements
     if(rev_q != nodeFather->children.rend()){
+        std::cout<<"found lender\n";
         //distribute among the nodes in (q,s)
         auto q =rev_q.base() -1;
         distribute(nodeFather->children, q, s);
     }
     else{
+        std::cout<<"didn't find lender\n";
         //merge from s to s-1 nodes
         s = nodeFather->children.erase(s);
         s--;
