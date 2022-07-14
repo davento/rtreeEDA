@@ -4,6 +4,8 @@
 #include <set>
 std::random_device dev;
 std::mt19937 gen(dev());
+
+
 int random(int low, int high){
     //std::mt19937 gen(dev());
     std::uniform_int_distribution<int> dist(low, high);

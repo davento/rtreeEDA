@@ -8,7 +8,7 @@ int main(int argc, char *argv[]){
     int dim = 800;
 
     Tester  t;
-    t.remove();
+    t.knn();
     // if (argc >1) dim = std::stoi(argv[1], nullptr, 10);
 
     // Display display;

@@ -66,10 +66,11 @@ void Tester::remove(){
 
     Rtree * r = new Rtree();
 
-    std::vector<double> exp_time[n];
 
+    std::vector<double> exp_time[n];
     for(int e = 0; e < n; e++) {
-        std::vector<double> times;
+        exp_time[e].reserve(polygonLimit/removeBatchSize);
+
         std::vector<Figure> figs;
         for(int i = 0; i < polygonLimit; i++) {
             Figure f = Display::generateRandomFigure(dim);
@@ -77,32 +78,47 @@ void Tester::remove(){
         }
         
         for(int i = 0; i < polygonLimit/removeBatchSize; i++) {
-            times.push_back(removeBatch(r, figs));
-        }
-        double avg = 0;
-        for(auto t : times) {
-            avg += t;
+            exp_time[e].push_back(removeBatch(r, figs));
         }
         delete r;
         r = new Rtree();
+    }
+
+    for(int i = 0; i < n; i++){
+        for(int j = 0; j < polygonLimit/removeBatchSize; j++){
+            std::cout<<exp_time[i][j];
+            if(j+1 != polygonLimit/removeBatchSize) std::cout<<',';
+        }
+        std::cout<<'\n';
     }
 }
 
 void Tester::knn() {
     Rtree * r = new Rtree();
-    for(int k = 0; k < kTestsSize; k++) {
+
+
+    // for(int k = 0; k < kTestsSize; k++) {
+
+        std::vector<double> exp_time[n];
         for(int e = 0; e < n; e++) {
-            std::vector<double> times;
+            exp_time[e].reserve(polygonLimit/knnBatchSize);
             for(int i = 0; i < polygonLimit/knnBatchSize; i++) {
-                times.push_back(knnBatch(r, kTests[i]));
+                exp_time[e].push_back(knnBatch(r, kTests[1]));
             }
-            double avg = 0;
-            for(auto t : times) {
-                avg += t;
-            }
-            printf("Tiempo promedio del experimento: %f ms", avg/(polygonLimit/searchBatchSize));
+            // double avg = 0;
+            // printf("Tiempo promedio del experimento: %f ms", avg/(polygonLimit/searchBatchSize));
+            delete r;
+            r = new Rtree();
         }
-    }
+
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < polygonLimit/knnBatchSize; j++){
+                std::cout<<exp_time[i][j];
+                if(j+1 != polygonLimit/knnBatchSize) std::cout<<',';
+            }
+            std::cout<<'\n';
+        }
+    // }
 }
 
 double Tester::insertBatch(Rtree* &r) {
@@ -142,7 +158,7 @@ double Tester::removeBatch(Rtree* &r, std::vector<Figure> &figs) {
         r->remove(f.getCentroidPoint());
     }
     end = std::clock();
-    printf("Tiempo total: %f ms\n", ((double)(end-start))*1000/CLOCKS_PER_SEC);
+    // printf("Tiempo total: %f ms\n", ((double)(end-start))*1000/CLOCKS_PER_SEC);
     return ((double)(end-start))*1000/CLOCKS_PER_SEC;
 }
 
@@ -154,10 +170,13 @@ double Tester::knnBatch(Rtree* &r, int k) {
         r->insert(f);
     }
     start = std::clock();
-    for(auto f : figs) {
-        r->depthFirst(f.getCentroidPoint(), k);
-    }
+    
+    double x = random(0,dim);
+    double y = random(0,dim);
+    
+    Point p  = Point(x, y);
+    r->depthFirst(p, k);
     end = std::clock();
-    printf("Tiempo total: %f ms\n", ((double)(end-start))*1000/CLOCKS_PER_SEC);
+    // printf("Tiempo total: %f ms\n", ((double)(end-start))*1000/CLOCKS_PER_SEC);
     return ((double)(end-start))*1000/CLOCKS_PER_SEC;
 }

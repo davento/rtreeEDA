@@ -217,11 +217,11 @@ void Rtree::remove(Node* node,const Point& p){
     
     Node* n = search(p);
     if(n == nullptr || !n->isLeaf() ){
-        std::cout<<"Not found\n";
+        // std::cout<<"Not found\n";
         return ;
     } 
     else{
-        std::cout<<"Found\n";
+        // std::cout<<"Found\n";
     }
     
     auto fun = [&p](Node* node){
