@@ -1,10 +1,12 @@
+#ifndef TESTER_H
+#define  TESTER_H
+
+
 #include <ctime>
 #include <cstdlib>
 #include "Rtree.h"
 #include "Display.h"
 
-const int kTestsSize = 3;
-int kTests[kTestsSize] = {1,5,20};
 
 class Tester {
 
@@ -12,7 +14,7 @@ class Tester {
         typedef RtreeNode Node;
 
         Tester();
-        Tester(int n_);
+        Tester(int n_, int l_);
 
         void insert();
         void search();
@@ -31,6 +33,8 @@ class Tester {
         int removeBatchSize;
         int knnBatchSize;
         int polygonLimit;
+
+        int dim;
         clock_t start, end;
         
         double insertBatch(Rtree* &);
@@ -38,3 +42,5 @@ class Tester {
         double removeBatch(Rtree* &, std::vector<Figure> &);
         double knnBatch(Rtree* &, int);
 };
+
+#endif

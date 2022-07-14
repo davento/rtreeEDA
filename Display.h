@@ -18,7 +18,7 @@ class Display{
         bool initialize(double dim);
         void runLoop();
         void shutdown();
-        Figure generateRandomFigure();
+        static Figure generateRandomFigure(int );
 
     private:
 

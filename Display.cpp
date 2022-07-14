@@ -25,17 +25,17 @@ Point createRandomPoint(Point leading, int maxBound, int minBound){
     return Point(random(leading.x+minBound, leading.x+maxBound), random(leading.y+minBound, leading.y+maxBound));
 }
 
-Figure Display::generateRandomFigure(){
+Figure Display::generateRandomFigure(int size){
     bool flag = true;
     Figure result;
     while(flag){
     Figure resultwhile;
-    double min_bounding_length = screenSize*0.01;
-    double bounding_length = screenSize*0.02;
+    double min_bounding_length = size*0.01;
+    double bounding_length = size*0.02;
 
     int numberOfPoints = random(3,10); //get random number between 3 - 10
 
-    Point leadingPoint = createRandomPoint(Point(0,0), screenSize - bounding_length); // get a point that fits the window boundings
+    Point leadingPoint = createRandomPoint(Point(0,0), size - bounding_length); // get a point that fits the window boundings
     
     //leadingPoint.print(); 
     std::vector <Point> points;
@@ -243,7 +243,7 @@ void Display::processInputs(){
         isRunning = false;
     else if(state[SDL_SCANCODE_Z]){
         std::cout<<"random inserted num: "<<i++<<'\n';
-        ss->insert(generateRandomFigure());
+        ss->insert(generateRandomFigure(screenSize));
     }
 }
 

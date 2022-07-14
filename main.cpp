@@ -6,7 +6,10 @@
 int main(int argc, char *argv[]){
 
     int dim = 800;
-    if (argc >1) dim = std::stoi(argv[1], nullptr, 10);
+
+    // Tester  t;
+    // t.insert();
+    // if (argc >1) dim = std::stoi(argv[1], nullptr, 10);
 
     Display display;
     if(display.initialize(static_cast<double>(dim)))
