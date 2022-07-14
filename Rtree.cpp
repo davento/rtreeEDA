@@ -289,6 +289,7 @@ void Rtree::handleUnderflow(Node* underFlowed){
         underFlowed->children.clear();
         std::sort(holder.begin(), holder.end(), compare);
         for(auto it: holder){
+            it->father = underFlowed;
             underFlowed->children.push_back(it);
         }
         holder.clear();
