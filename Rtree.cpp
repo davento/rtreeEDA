@@ -264,7 +264,7 @@ void Rtree::reinsert(){
 
 template<typename TCmp>
 void Rtree::k_depthFirst(std::priority_queue<Figure* , std::vector<Figure*>, TCmp> &p,
-                const int &k,Rtree::Node* u){
+                int &k,Rtree::Node* u){
 
 
     if(u->isLeaf()){
@@ -283,7 +283,7 @@ void Rtree::k_depthFirst(std::priority_queue<Figure* , std::vector<Figure*>, TCm
 std::vector<Figure*> Rtree::getFigures(){
    std::vector<Figure*> res;
     Point p(0,0);
-    const int  k =1316134912;
+    int  k =1316134912;
 
     auto func  = [&p](const Figure* f1, const Figure*f2){
         Bound m1 = f1->getBound();
@@ -306,11 +306,9 @@ std::vector<Figure*> Rtree::getFigures(){
 
 }
 
-std::vector<Figure*> Rtree::depthFirst(const Point& p){
+std::vector<Figure*> Rtree::depthFirst(const Point& p, int k = 3){
 
    std::vector<Figure*> res;
-
-    const int  k =3;
 
     auto func  = [&p](const Figure* f1, const Figure*f2){
         Bound m1 = f1->getBound();
