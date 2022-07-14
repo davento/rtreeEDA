@@ -14,6 +14,7 @@ Rtree::Node* Rtree::search(const Point& p){
 }
 
 void Rtree::insert(const Figure& f){
+    std::cout<<"inserting...\n";
     root = insert(root, f);
     // std::cout<<"Finish insert\n";
     std::cout<<"----------------------------------------------\n";
@@ -21,6 +22,7 @@ void Rtree::insert(const Figure& f){
 }
 
 void Rtree::remove(const Point& p){
+    std::cout<<"removing...\n";
     remove(root, p);
     std::cout<<"----------------------------------------------\n";
     if(root) print();
@@ -244,7 +246,7 @@ void Rtree::print() const{
 void Rtree::remove(Node* node,const Point& p){
     
     Node* n = search(p);
-    if(n == nullptr || !n->isLeaf() ) return ;
+    if(n == nullptr || !n->isLeaf()) return ;
 
     auto fun = [&p](Node* node){
         return  (static_cast<LeafNode*>(node)->getBound().inArea(p));

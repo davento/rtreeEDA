@@ -53,7 +53,9 @@ void RtreeNode::draw(SDL_Renderer* renderer, Color color) const {
 }
 
 int RtreeNode::lhv() const{
-    return children.back()->lhv();
+    if(children.size()>0)
+        return children.back()->lhv();
+    else return bound.centroid[Z];
 }
 
 void FigureNode::draw(SDL_Renderer* renderer, Color color) const {

@@ -192,7 +192,7 @@ void Display::processInputs(){
                 
                 if(event.button.button == SDL_BUTTON_RIGHT){
                     ss->remove(Point(x,y));
-                    coeficienteSolapamiento(ss);
+                    //coeficienteSolapamiento(ss);
                 }
             }
             else{
