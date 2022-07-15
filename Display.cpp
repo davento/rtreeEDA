@@ -248,13 +248,16 @@ void Display::processInputs(){
         ss->insert(generateRandomFigure(screenSize));
     }
     else if(state[SDL_SCANCODE_C]){
-    while(i <= 1111){
-        figures.push_back(generateRandomFigure(screenSize));
-        std::cout<<i++<<",";
-        coeficienteSolapamiento(figures);
+        coeficienteSolapamiento(ss);
     }
+    else if(state[SDL_SCANCODE_T]){
+        while(i <= 1111){
+            figures.push_back(generateRandomFigure(screenSize));
+            std::cout<<i++<<",";
+            coeficienteSolapamiento(figures);
+        }
   
-    }
+    } 
 }
 
 void Display::updateDisplay(){
