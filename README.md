@@ -24,7 +24,9 @@ Una vez cubiertos estos prerequisitos, podemos ejecutarlo.
 
 ### Compilación
 
-Nos dirigimos a la carpeta para la que queremos crear el ejecutable. `rtree` contiene el R-Tree vanilla y `hilbert_rtree` el Dynamic Hilbert R-Tree.
+Nos dirigimos a la carpeta para la que queremos crear el ejecutable:
+- `rtree` contiene el R-Tree vanilla
+- `hilbert_rtree` el Dynamic Hilbert R-Tree.
 
 Para poder hacer la compilación, ofrecemos dos formas:
 
