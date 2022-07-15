@@ -227,11 +227,10 @@ void Display::processInputs(){
                 }
             }
             else{
-                //int x, y;
-                //SDL_GetMouseState(&x, &y);
-                //Point po(x,y);
-                //figures = ss->depthFirst(po);
-                //std::cout << figures.size() << std::endl;
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+                Point po(x,y);
+                knn_fig = ss->depthFirst(po);
                 quit = true;
             }
         }
@@ -243,7 +242,6 @@ void Display::processInputs(){
     if(state[SDL_SCANCODE_ESCAPE])
         isRunning = false;
     else if(state[SDL_SCANCODE_Z]){
-        std::cout<<"random inserted num: "<<i++<<'\n';
         ss->insert(generateRandomFigure(screenSize));
     }
 }
@@ -264,10 +262,16 @@ void Display::generateOutput(){
     // std::cout<<"out4\n";
     
     // std::cout<<figures.size()<<'\n';
-    for(auto f: figures){
-        f->draw(renderer, Color(159,43,104));
+    // for(auto f: figures){
+    //     f->draw(renderer, Color(159,43,104));
+    // }
+
+    for(auto f: knn_fig){
+         f->draw(renderer, Color(159,43,104));
+
     }
-    //figures.clear();
+    knn_fig.clear();
+    
 
     SDL_RenderPresent(renderer);
 }

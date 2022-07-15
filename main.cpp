@@ -5,7 +5,7 @@
 
 int main(int argc, char *argv[]){
 
-    int dim = 512;
+    int dim = SIDEDIM;
     // Tester t;
     // t.knn();
     

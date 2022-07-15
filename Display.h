@@ -11,7 +11,7 @@
 #include <iostream>
 
 
-#define SIDEDIM 512
+#define SIDEDIM 1024
 
 class Display{
 
@@ -34,6 +34,9 @@ class Display{
         Rtree* ss;
         Figure fig;
         std::vector<Figure*> figures;
+            
+        std::vector<Figure*> knn_fig;
+
         int screenSize;
 
 };
