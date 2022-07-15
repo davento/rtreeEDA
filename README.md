@@ -43,7 +43,7 @@ Correr el ejecutable que resulta de la compilación.
 Los comandos son sencillos:
 - **Click izquierdo:** añadir un punto (sea independiente o para formar una figura)
 - **Click derecho:** remover una figura
-- **Presionar Z:** agregar una figura aleatoria
-- **Posición del Mouse:** colorear los k = 3 nodos mas cercanos
+- **Presionar la tecla `z` en el teclado:** agregar una figura aleatoria
+- **Posición del mouse:** colorear los k = 3 nodos mas cercanos
 
 El R-Tree se actualiza automáticamente tras recibir estos inputs.
