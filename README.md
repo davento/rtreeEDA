@@ -43,5 +43,7 @@ Correr el ejecutable que resulta de la compilación.
 Los comandos son sencillos:
 - **Click izquierdo:** añadir un punto (sea independiente o para formar una figura)
 - **Click derecho:** remover una figura
+- **Presionar Z:** Agregar una figura aleatoria
+
 
 El R-Tree se actualiza automáticamente tras recibir este input.
