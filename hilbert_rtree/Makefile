@@ -1,4 +1,5 @@
-objects = main.o Display.o structs/rtree.o 
+objects = main.o Display.o Point.o MBC.o Rtree.o RtreeNode.o Figure.o Tester.o
+ 
 CFLAGS = -Wall -O2 
 LINKERFLAGS = -lSDL2
 debugflags = -g

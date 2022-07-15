@@ -2,7 +2,16 @@
 #define DISPLAY_H
 
 #include <SDL2/SDL.h>
-#include "structs/rtree.h"
+#include "Rtree.h"
+#include "Figure.h"
+
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_events.h>
+#include <SDL2/SDL_mouse.h>
+#include <iostream>
+
+
+#define SIDEDIM 1024
 
 class Display{
 
@@ -12,7 +21,7 @@ class Display{
         bool initialize(double dim);
         void runLoop();
         void shutdown();
-
+        static Figure generateRandomFigure(int);
     private:
 
         void processInputs();
@@ -22,10 +31,17 @@ class Display{
         bool isRunning;
         SDL_Window* window;
         SDL_Renderer* renderer;
-        Rtree* r;
-        std::vector<Figure> figures;
+        Rtree* ss;
         Figure fig;
+        std::vector<Figure*> figures;
+            
+        std::vector<Figure*> knn_fig;
+
+        int screenSize;
+
 };
+
+int random(int low, int high);
 
 #endif
 
