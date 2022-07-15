@@ -44,6 +44,7 @@ Los comandos son sencillos:
 - **Click izquierdo:** añadir un punto (sea independiente o para formar una figura)
 - **Click derecho:** remover una figura
 - **Presionar la tecla `z` en el teclado:** agregar una figura aleatoria
+- **Presionar la tecla `c` en el teclado:** crear 1111 figuras aleatorias y calcular su coeficiente de solapamiento
 - **Posición del mouse:** colorear los k = 3 nodos mas cercanos
 
 El R-Tree se actualiza automáticamente tras recibir estos inputs.
