@@ -28,7 +28,7 @@ int xy2d ( const Point& p) {
     int n = SIDEDIM;
     int rx, ry, s, d=0;
     int x = p[X];
-    int y = SIDEDIM - p[Y] - 1;
+    int y = SIDEDIM - p[Y] - 1; // Force convertion to conventional Axis orientation
     for (s=n/2; s>0; s/=2) {
         rx = (x & s) > 0;
         ry = (y & s) > 0;

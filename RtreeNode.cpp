@@ -2,10 +2,6 @@
 #include "Rtree.h"
 
 
-// const auto compare  = [](const RtreeNode* n1, const RtreeNode* n2){
-//     return n1->lhv() > n2->lhv();
-// };
-
 RtreeNode::RtreeNode(const MBC& other): bound(other), father(nullptr), hv(0){
 
 }
@@ -39,14 +35,10 @@ void RtreeNode::mergeBounds(){
 }
 
 void RtreeNode::draw(SDL_Renderer* renderer, Color color) const {
-    // std::cout<<"A1\n";
 
-    // color.print();
     bound.draw(renderer, color);
-    // std::cout<<"A1.4\n";
     color.changeColor(150);
     
-    // std::cout<<"A2\n";
     for(const auto& child: children){
         child->draw(renderer, color);
     }
@@ -58,7 +50,6 @@ int RtreeNode::lhv() const{
 
 void FigureNode::draw(SDL_Renderer* renderer, Color color) const {
     bound.draw(renderer);
-    // RtreeNode::draw(renderer, Color(0,0,255));
     f.draw(renderer);
 }
 

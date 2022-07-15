@@ -235,9 +235,7 @@ void Display::processInputs(){
             }
         }
     }
-    /*figures.push_back(generateRandomFigure());
-    std::cout<<i++<<",";
-    coeficienteSolapamiento(figures);*/
+
     const Uint8* state = SDL_GetKeyboardState(NULL);
     if(state[SDL_SCANCODE_ESCAPE])
         isRunning = false;
@@ -251,21 +249,17 @@ void Display::updateDisplay(){
 }
 
 void Display::generateOutput(){
-    // std::cout<<"out1\n";
+
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    // std::cout<<"out2\n";
     SDL_RenderClear(renderer);
-    fig.draw(renderer);
-
-    // std::cout<<"out3\n";
-    ss->draw(renderer);
-    // std::cout<<"out4\n";
     
-    // std::cout<<figures.size()<<'\n';
-    // for(auto f: figures){
-    //     f->draw(renderer, Color(159,43,104));
-    // }
+    //rendering figure currently drawing
+    fig.draw(renderer);
+    // draw the Tree
+    ss->draw(renderer);
 
+
+    // draw the figures obtainer by the DF
     for(auto f: knn_fig){
          f->draw(renderer, Color(159,43,104));
 

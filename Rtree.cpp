@@ -14,23 +14,18 @@ Rtree::Node* Rtree::search(const Point& p){
 }
 
 void Rtree::insert(const Figure& f){
-    // std::cout<<"inserting...\n";
     root = insert(root, f);
-    // std::cout<<"Finish insert\n";
     // std::cout<<"----------------------------------------------\n";
-//    print();
+    // print();
 }
 
 void Rtree::remove(const Point& p){
-    // std::cout<<"removing...\n";
     remove(root, p);
     // std::cout<<"----------------------------------------------\n";
     // if(root) print();
 }
 
 void Rtree::draw(SDL_Renderer* renderer) const{
-    // std::cout<<"A\n";
-    //RGB -> BGR
     root->draw(renderer, Color(0,40,0));
 }
 
@@ -60,7 +55,7 @@ Rtree::Node* Rtree::search(Node* node, const Point &p){
 
 Rtree::Node* Rtree::chooseSubtree(Node* node, const Figure &f){
         
-    //optimization made to lessen overlap
+    //chooses the first to the right (int h greates) with the greates  
     auto it = get_first(node->children, f.getCentroid(), lessHilbert);
     auto der = (it == node->children.end() ) ? node->children.back(): *it;
 
@@ -69,27 +64,25 @@ Rtree::Node* Rtree::chooseSubtree(Node* node, const Figure &f){
 
 Rtree::Node* Rtree::insert(Node* node, const Figure &f){
     
-    // std::cout<<"entering insert\n";
-    // printf("inserting Point(%f,%f)\n", p.x,p.y);
+
     
+    //if leaf, insert figure, and check for overdlow
     if(node->isLeaf()){
-        // std::cout<<"inserting in leaf\n";
-        
         Node* it = new LeafNode(f);
         it->father = node;
         insert_ordered(node->children, it, compare);
         node->mergeBounds();
         if((node->children).size() == ORDER + 1){
-            // std::cout<<"overflow\n";
             handleOverflow(node);
         }
     }
     else{
+        //chooses subtree, inserts, and updates
         Node* v = chooseSubtree(node, f);
-        // printf("from [%d], Choose subtree: %d\n", f.lhv(), v->lhv());
         insert(v, f);
         node->mergeBounds();
     }
+    //returns node to update the root
     if(node->father)
         return node->father;
     return node;
@@ -101,7 +94,6 @@ void Rtree::distribute(std::vector<Node*>& vec, iterator q, iterator s, int to_d
     
     std::vector<Node*> holder;
     for(auto it = q; it != (s+1); ++it){
-        // std::cout<<(*it)->children.size()<<'\n';
         for(auto child: (*it)->children){
             holder.push_back(child);    
         }
@@ -113,11 +105,9 @@ void Rtree::distribute(std::vector<Node*>& vec, iterator q, iterator s, int to_d
     int m = std::distance(q, s) + 1 - to_delete;
 
     auto it_h = holder.begin();
-    // printf("num of nodes: %d| num of cont: %d\n", n,m);
     for(auto it = q; it != s+1; it++){
 
         int to_insert =  ceil(n/ (m * 1.0));
-        // std::cout<<to_insert<<'\n';
         (*it)->children.clear();
         (*it)->children.insert((*it)->children.begin(), it_h , it_h + to_insert);
         
@@ -147,7 +137,6 @@ void Rtree::propagateUpward(Node* node){
 
 void Rtree::handleOverflow(Node* overFlowed){
     
-    // std::cout<<"handle overflow\n";
 
     //if root
     if(!overFlowed->father){
@@ -176,7 +165,6 @@ void Rtree::handleOverflow(Node* overFlowed){
     // if found a node where you can lease to
     if(rev_q != nodeFather->children.rend()){
         //distribute among the nodes in (q,s)
-        // std::cout<<"Found to lease\n";
 
         auto q =rev_q.base() -1;
         distribute(nodeFather->children, q, s);
@@ -185,13 +173,11 @@ void Rtree::handleOverflow(Node* overFlowed){
     }
     else{
         //create a node s+1
-        // std::cout<<"Didn't find to lease\n";
-        
         auto node =  new Node();
 
         node->father =  nodeFather;
         s = nodeFather->children.insert(s + 1, node);
-        
+
         //distribute between ( begin() , s+1)
         distribute(nodeFather->children, nodeFather->children.begin(), s);
         nodeFather->mergeBounds();
@@ -204,6 +190,7 @@ void Rtree::handleOverflow(Node* overFlowed){
 
 void Rtree::split(Node* original, Node* secondHalf){
 
+    //makes split of children  to distribute into original and secondHalf
     std::vector<Node*> regions = original->children;
 
     bestSplit(regions,original,secondHalf);
@@ -213,6 +200,7 @@ void Rtree::bestSplit(std::vector<Node*>& u, Node* v, Node* p){
 
     int m = u.size();
 
+    // we just split in half
     std::vector<Node*> s1 = {u.begin(), u.begin() + ceil(m/2) };
     std::vector<Node*> s2 = {u.begin() + ceil(m/2) , u.end()};
 
@@ -226,7 +214,7 @@ void Rtree::bestSplit(std::vector<Node*>& u, Node* v, Node* p){
     v->children = s1;
     p->children = s2;
 
-
+    // updates father and bounds
     std::for_each(v->children.begin(), v->children.end(), [&](Node* lamb_n){  
             lamb_n->father = v;
     } );
@@ -246,6 +234,7 @@ void Rtree::print() const{
 
 void Rtree::remove(Node* node,const Point& p){
     
+    // if n is found, deletes the figure that contains p
     Node* n = search(p);
     if(n == nullptr || !n->isLeaf()) return ;
 
@@ -257,32 +246,33 @@ void Rtree::remove(Node* node,const Point& p){
 
     (n->children).erase(it);
     
+    // in case that n is root
     if(n->father == nullptr && n->children.size() == 0){
         n->bound = Bound();
         return ;
     }
 
+    //update bound and values
     n->mergeBounds();
     update(n);
 
+    //we check if we have underflow
     if(n->children.size() >= std::ceil(ORDER/2.0) || n->father == nullptr) 
         return ;
     
+    // if we do, handle the cases for the distribution and merging of nodes
     handleUnderflow(n);
     update(n);
 }
 
 void Rtree::handleUnderflow(Node* underFlowed){
 
-    // std::cout<<"handleUnderflow\n";
-
+    // in the case that the node is the root
+    // we insert manually the figures into the root
     if(underFlowed->father == nullptr){
-        
-        // std::cout<<"Handling root merge\n";
 
         std::vector<Node*> holder;
         for(auto it : underFlowed->children){
-            // std::cout<<it->children.size()<<'\n';
             for(auto child: it->children){
                 holder.push_back(child);    
             }
@@ -297,25 +287,25 @@ void Rtree::handleUnderflow(Node* underFlowed){
         return ;
     }
 
+
+    // we find the underflowed node position in its parent
     Node* nodeFather = underFlowed->father;
 
     auto s = std::find(nodeFather->children.begin(), nodeFather->children.end(), underFlowed);
     assert(s != nodeFather->children.end());
     
+    // find the node where it can lease
     auto rev_q = std::find_if(std::make_reverse_iterator(s), nodeFather->children.rend(), 
                             [] (Node* n){ return n->children.size() > ceil(ORDER/2.0);});
 
-    // if found a node who can lend elements
+    // if found a node who can borrow elements
     if(rev_q != nodeFather->children.rend()){
-        // std::cout<<"found lender\n";
         //distribute among the nodes in (q,s)
         auto q =rev_q.base() -1;
         distribute(nodeFather->children, q, s);
     }
     else{
-        // std::cout<<"didn't find lender\n";
         //merge from s to s-1 nodes
-
         
         //distribute between ( begin() , s)
         distribute(nodeFather->children, nodeFather->children.begin(), nodeFather->children.end() - 1, 1);
@@ -331,6 +321,8 @@ void Rtree::handleUnderflow(Node* underFlowed){
     }
 }
 
+
+// we update the whole tree untile reaching root
 void Rtree::update(Node* v) {
     v->mergeBounds();
     if(v != root) {
@@ -339,6 +331,7 @@ void Rtree::update(Node* v) {
 }
 
 
+// we get all the figures with a dfs traversal
 void Rtree::dfs(std::vector<Figure> &s, Rtree::Node* u){
 
     if(u->isLeaf()){
@@ -353,6 +346,7 @@ void Rtree::dfs(std::vector<Figure> &s, Rtree::Node* u){
     }
 }
 
+// we get only k figures with dfs traversal
 template<typename TCmp>
 void Rtree::k_depthFirst(std::priority_queue<Figure* , std::vector<Figure*>, TCmp> &p,
                 const int &k,Rtree::Node* u){
@@ -371,6 +365,8 @@ void Rtree::k_depthFirst(std::priority_queue<Figure* , std::vector<Figure*>, TCm
     }
 }
 
+
+// Using DF to get the Knn
 std::vector<Figure*> Rtree::depthFirst(const Point& p, int k ){
 
    std::vector<Figure*> res;
@@ -385,7 +381,6 @@ std::vector<Figure*> Rtree::depthFirst(const Point& p, int k ){
     std::priority_queue<Figure* , std::vector<Figure*>, decltype(func) > s(func);
     k_depthFirst(s,k,root);
     
-    // df.clear();
     while(!s.empty()){
         auto f = s.top();
         res.push_back(f);
