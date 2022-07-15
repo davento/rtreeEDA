@@ -36,5 +36,8 @@ class Display{
 
 };
 
+
+int random(int low, int high);
+
 #endif
 

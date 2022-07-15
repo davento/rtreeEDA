@@ -5,6 +5,8 @@
 #include <set>
 std::random_device dev;
 std::mt19937 gen(dev());
+
+
 int random(int low, int high){
     //std::mt19937 gen(dev());
     std::uniform_int_distribution<int> dist(low, high);
@@ -238,7 +240,8 @@ void Display::processInputs(){
         }
         quit = true;
     }
-        const Uint8* state = SDL_GetKeyboardState(NULL);
+
+    const Uint8* state = SDL_GetKeyboardState(NULL);
     if(state[SDL_SCANCODE_ESCAPE])
         isRunning = false;
     else if(state[SDL_SCANCODE_Z]){
