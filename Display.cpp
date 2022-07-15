@@ -1,4 +1,5 @@
 #include "Display.h"
+#include <SDL2/SDL_scancode.h>
 #include <algorithm>
 #include <random>
 #include <set>
@@ -30,8 +31,8 @@ Figure Display::generateRandomFigure(int size){
     Figure result;
     while(flag){
     Figure resultwhile;
-    double min_bounding_length = size*0.01;
-    double bounding_length = size*0.02;
+    double min_bounding_length = size*0.0042;
+    double bounding_length = size*0.0084;
 
     int numberOfPoints = random(3,10); //get random number between 3 - 10
 
@@ -226,24 +227,30 @@ void Display::processInputs(){
                 }
             }
             else{
-                //int x, y;
-                //SDL_GetMouseState(&x, &y);
-                //Point po(x,y);
-                //figures = ss->depthFirst(po);
+                depthFirst.clear();
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+                Point po(x,y);
+                depthFirst = ss->depthFirst(po, 3);
                 //std::cout << figures.size() << std::endl;
                 quit = true;
             }
         }
+        quit = true;
     }
-    /*figures.push_back(generateRandomFigure());
-    std::cout<<i++<<",";
-    coeficienteSolapamiento(figures);*/
-    const Uint8* state = SDL_GetKeyboardState(NULL);
+        const Uint8* state = SDL_GetKeyboardState(NULL);
     if(state[SDL_SCANCODE_ESCAPE])
         isRunning = false;
     else if(state[SDL_SCANCODE_Z]){
-        std::cout<<"random inserted num: "<<i++<<'\n';
         ss->insert(generateRandomFigure(screenSize));
+    }
+    else if(state[SDL_SCANCODE_C]){
+    while(i <= 1111){
+        figures.push_back(generateRandomFigure(screenSize));
+        std::cout<<i++<<",";
+        coeficienteSolapamiento(figures);
+    }
+  
     }
 }
 
@@ -263,9 +270,11 @@ void Display::generateOutput(){
     // std::cout<<"out4\n";
     
     // std::cout<<figures.size()<<'\n';
-    for(auto f: figures){
-        f.draw(renderer, Color(159,43,104));
+    for(auto f: depthFirst){
+        f->draw(renderer, Color(159,43,104));
     }
+    for(auto f: figures)
+        f.draw(renderer);
     //figures.clear();
 
     SDL_RenderPresent(renderer);

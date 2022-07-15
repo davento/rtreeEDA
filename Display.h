@@ -31,6 +31,7 @@ class Display{
         Rtree* ss;
         Figure fig;
         std::vector<Figure> figures;
+        std::vector<Figure*> depthFirst;
         int screenSize;
 
 };
